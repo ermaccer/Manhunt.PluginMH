@@ -7,6 +7,9 @@ Check PluginMH.ini for available features.
 
 # Controls (default)
 **CTRL + V** - Enable Camera Control
+
 **CTRL + B** - Disable Camera Control
+
 **F5** - Display Player Position
+
 **F1/F2** - Enable/Disable Debug Menu

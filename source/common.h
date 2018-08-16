@@ -53,8 +53,9 @@ void(__cdecl *WriteSDebug)(int, char*,char*);
 void(__cdecl *FlashScreen)(int,int,int);
 void(__cdecl *ReloadFrontend)();
 // debug menu
-void(__cdecl *AddToggleEntry)(char*, unsigned int);
-void(__cdecl *AddFunctionEntry)(char*, void*);
+int(__cdecl *AddToggleEntry)(char*, unsigned int);
+int(__cdecl *AddSliderEntry)(char*, void*, void*, void*, void*, void*, void*, void*);
+int(__cdecl *AddFunctionEntry)(char*, void*);
 void(__cdecl *EnableItemIfTrue)(unsigned int);
 
 
@@ -80,17 +81,25 @@ void ReloadIni()
 }
 
 
-void AddDebugMenuOptions()
+int AddDebugMenuOptions()
 {
-	(int(__cdecl *)())0x591E60;
-	// no need to check if InGame is true
-	// this function inits when game is started anyway
-	AddToggleEntry("Freeze World", 0x715BA0);
-	AddToggleEntry("Display HUD", 0x7CF0A0);
-	AddToggleEntry("Display Health", 0x7CF09B);
-	AddToggleEntry("Display Text Box", 0x7CF0B9);
-	AddFunctionEntry("Reload PluginMH.ini", ReloadIni);
+	int result;
+	if (!*(unsigned char*)0x7A13D0)
+	{
+		// function for HC : Display Values was removed
+		// so it's not included
+		AddFunctionEntry("HC : Toggle ON/OFF", (void*)0x591E30);
+		AddToggleEntry("Freeze World", 0x715BA0);
+		AddToggleEntry("Display HUD", 0x7CF0A0);
+		AddToggleEntry("Display Health", 0x7CF09B);
+		AddToggleEntry("Display Text Box", 0x7CF0B9);
+		result = AddFunctionEntry("Reload PluginMH.ini", ReloadIni);
+	}
+	Patch<unsigned char>(0x7A0FAC + 0x424,1);
+	return result;
 }
+
+
 
 
 bool KeyHit(unsigned int keyCode)

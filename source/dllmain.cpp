@@ -12,8 +12,9 @@ void GetFuncs()
 	WriteSDebug = (void(__cdecl *)(int, char*, char *))0x5E5480;
 	WriteDebug = (void(__cdecl *)(int, char*))0x5E5480;
 	// debug menu
-	AddToggleEntry = (void(__cdecl *)(char*, unsigned int))0x5E9840;
-	AddFunctionEntry = (void(__cdecl *)(char*, void*))0x5E9920;
+	AddToggleEntry = (int(__cdecl *)(char*, unsigned int))0x5E9840;
+	AddFunctionEntry = (int(__cdecl *)(char*, void*))0x5E9920;
+	AddSliderEntry = (int(__cdecl *)(char*, void*, void*, void*, void*, void*, void*, void*))0x5E98F0;
 	EnableItemIfTrue = (void(__cdecl *)(unsigned int))0x5E9960;
 	FlashScreen = (void(__cdecl *)(int,int,int))0x5EF890;
 }
@@ -47,9 +48,9 @@ void WINAPI Init()
 
 		InjectHook(0x45FD86, DisplayWeaponsHook, PATCH_JUMP);
 		InjectHook(0x5EE9E0, SwitchCameraHook, PATCH_JUMP);
-
+		if (AddMoreDebugMenuOptions) InjectHook(0x591E60, AddDebugMenuOptions, PATCH_JUMP);
 		if (RemoveCameraEffects) CameraEffects();
-		if (AddMoreDebugMenuOptions) ReplaceCall(0x4376F3, AddDebugMenuOptions);
+	
 		if (KeyHit(KeyDebugMenuEnable)) DebugMode = 1;
 		if (KeyHit(KeyDebugMenuDisable)) DebugMode = 0;
 

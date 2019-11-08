@@ -22,7 +22,7 @@ Experimental.
 
 Fully working weapon spawner designed to replace broken Cheat functions with 3 slots for custom weapons.
 
-## Screenshot Mode##
+## Screenshot Mode ##
 
 Quickly freeze game and gain control of camera.
 

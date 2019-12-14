@@ -3,6 +3,7 @@
 #include "code\CSettingsManager.h"
 #include "code\CDebugMenuLimit.h"
 #include "code\CWeaponAdjuster.h"
+#include "code\CPlayerModelLoader.h"
 #include "code\CStuff.h"
 #include "code\ManhuntSDK.h"
 #include "MemoryMgr.h"
@@ -24,6 +25,7 @@ void Init()
 		freopen("CONOUT$", "w", stderr);
 	}
 
+
 //	CDebugMenuLimit::Init();
 //	InjectHook(0x5F1EC3, CDebugMenuLimit::HookOne, PATCH_JUMP);
 
@@ -35,18 +37,26 @@ void Init()
 		Patch<char>(0x49D6DE + 2, SettingsMgr->iRestrictedHeliumCheatWeaponType);
 
 	InjectHook(0x591E60, CStuff::HookDebugEntires, PATCH_JUMP);
-	CStuff::LoadSkins(SettingsMgr->szSkinsLine);
-	InjectHook(0x45FD86, CStuff::DisplayWeaponsHook, PATCH_JUMP);
 
 
 	if (SettingsMgr->bEnableFirearmsExecutions)
 		Patch<int>(0x46C7F2 + 1, (int)CWeaponAdjuster::CheckExecutionWeaponType - ((int)0x46C7F2 + 5));
 
 	if (SettingsMgr->bEnableConfirmationIcon)
-	Patch<int>(0x5F085E + 1, (int)CStuff::HookManTriIcon - ((int)0x5F085E + 5));
+    	Patch<int>(0x5F085E + 1, (int)CStuff::HookManTriIcon - ((int)0x5F085E + 5));
 
 
 	if (SettingsMgr->bEnableFXMode) Nop(0x5E9180, 10);
+
+	if (SettingsMgr->bHookPlayerModelLoader)
+	{
+		if (CPlayerModelLoader::ReadFile("data\\skinLoader.dat"))
+		{
+			InjectHook(0x437FB0, CPlayerModelLoader::Hook, PATCH_JUMP);
+			InjectHook(0x45FD86, CPlayerModelLoader::HookWeapon, PATCH_JUMP);
+		}
+	}
+
 
 	if (SettingsMgr->bHookWeaponAdjuster)
 	{

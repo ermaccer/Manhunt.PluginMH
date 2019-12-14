@@ -13,6 +13,11 @@ Check PluginMH.ini for available features.
 
 # Features
 
+## Player Model Loader ##
+
+Allows you to load more player models and set them with one ini option, no need to replace existing files.
+
+
 ## Weapon Limit Adjuster/Customizer ##
 
 Allows you to edit certain hardcoded values for weapons, and also add new ones with unique stuff like scopes or head explosion.

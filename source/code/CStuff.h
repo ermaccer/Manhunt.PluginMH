@@ -9,4 +9,7 @@ namespace CStuff {
 	void LoadSkins(char* line);
 	void DisplayWeaponsHook();
 	void HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture);
+	void LoadTrashman();
+	void HookSkipIntroSeq();
+	void DisableExecutionCamera();
 }

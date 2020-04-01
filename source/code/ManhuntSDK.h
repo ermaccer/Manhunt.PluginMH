@@ -208,7 +208,8 @@ enum eMenuTypes {
 	MENU_CREDITS,
 	// pc exclusive
 	MENU_REMAP_CONTROLS,
-	MENU_QUIT
+	MENU_QUIT,
+	MENU_MODS
 };
 
 enum eCheats {
@@ -277,9 +278,11 @@ namespace ManhuntFunctions {
 	void            CompleteLevel();
 	int             LoadTexture(int txd, const char* name);
 	wchar_t*        GetText(int gxt, const char* entry);
+	wchar_t*        FastGetText(const char* entry);
 	void            GiveAmmo(int amount, int item);
 	CEntity*        GetEntity(const char* name);
-
+	void            AddMenuEntry(wchar_t* name, float posX, float posY, float textScaleX, float textScaleY, int buttonID);
+	void            DrawTexture(float posx, float posy, float scaleX, float scaleY, int r, int g, int b, int a, int pTexture);
 
 
 	template<typename ...Args>
@@ -289,6 +292,7 @@ namespace ManhuntFunctions {
 	}
 };
 
+
 namespace ManhuntDebugMenu {
 	void    EditVariableInt(const char* name, int* variable);
 	void    EnableItemIfTrue(int* variable);
@@ -296,3 +300,7 @@ namespace ManhuntDebugMenu {
 };
 
 
+namespace MLSOperators {
+	int GetParam(int mls);
+	int GetStringParam(int mls);
+};

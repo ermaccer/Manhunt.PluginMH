@@ -16,6 +16,9 @@ public:
 	bool bEnableFPSMode;
 	bool bEnableConfirmationIcon;
 	bool bEnableExperimentalRIBLoopFix;
+	bool bHookPlayerModelLoader;
+	bool bDisableLegalScreen;
+	bool bEnableRIBStreamFix;
 
 	int  iForcePlayerSkin;
 	char iRestrictedHeliumCheatWeaponType;

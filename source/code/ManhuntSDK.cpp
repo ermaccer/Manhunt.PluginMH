@@ -73,6 +73,11 @@ wchar_t * ManhuntFunctions::GetText(int buffer, const char * entry)
 	return CallMethodAndReturn<wchar_t*,0x4937E0,int,const char*>(buffer,entry);
 }
 
+wchar_t * ManhuntFunctions::FastGetText(const char * entry)
+{
+	return CallMethodAndReturn<wchar_t*, 0x4937E0, int, const char*>(0x725A38, entry);
+}
+
 void ManhuntFunctions::GiveAmmo(int amount, int item)
 {
 	int v0 = *(int*)(*(int*)0x715B9C + 336);
@@ -84,6 +89,17 @@ void ManhuntFunctions::GiveAmmo(int amount, int item)
 CEntity * ManhuntFunctions::GetEntity(const char * name)
 {
 	return CallAndReturn<CEntity*, 0x437BE0, const char*>(name);
+}
+
+void ManhuntFunctions::AddMenuEntry(wchar_t * name, float posX, float posY, float textScaleX, float textScaleY, int buttonID)
+{
+	Call<0x5D55C0, wchar_t*, float, float, float, int>(name, posX, posY, textScaleX, textScaleY, buttonID);
+	//Call<0x5D5B30, wchar_t*, float, float, float, float>(name, posX, posY, textScaleX, textScaleY);
+}
+
+void ManhuntFunctions::DrawTexture(float posx, float posy, float scaleX, float scaleY, int r, int g, int b, int a, int pTexture)
+{
+	Call<0x5F96F0, float, float, float, float, int, int, int, int, int>(posx, posy, scaleX, scaleY, r, g, b, a, pTexture);
 }
 
 void ManhuntDebugMenu::EditVariableInt(const char * name, int * variable)
@@ -99,4 +115,14 @@ void ManhuntDebugMenu::EnableItemIfTrue(int * variable)
 int ManhuntDebugMenu::CallFunction(const char * name, void * function)
 {
 	return CallAndReturn<int,0x5E9920, const char*, void*>(name, function);
+}
+
+int MLSOperators::GetParam(int mls)
+{
+	return CallMethodAndReturn<int, 0x4822A0, int>(mls);
+}
+
+int MLSOperators::GetStringParam(int mls)
+{
+	return CallMethodAndReturn<int, 0x4822E0,int>(mls);
 }

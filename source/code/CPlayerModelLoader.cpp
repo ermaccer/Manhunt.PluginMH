@@ -74,7 +74,7 @@ int CPlayerModelLoader::Hook(int skinID)
 	sprintf(txdFile,"%s", vSkins[FindSkin(skinID)].sTxdFile.c_str());
 	sprintf(dffFile,"%s", vSkins[FindSkin(skinID)].sModelFile.c_str());
 	strcpy((char*)0x6A94A0, vSkins[FindSkin(skinID)].sRootName.c_str()); // root name
-	*(int*)0x7AE94C = 0;
+	*(int*)0x7AE94C = vSkins[FindSkin(skinID)].iFlag;
 
 
 	sprintf(fullTxdPath, "%s%s", "./levels", txdFile);
@@ -109,7 +109,7 @@ void __declspec(naked) CPlayerModelLoader::HookWeapon()
 	static int jmpTrue = 0x45FD98;
 	static int jmpFalse = 0x45FDA0;
 	_asm {
-		mov ecx, ds:0x6A94C0
+		mov ecx, ds:0x6A94C
 	    mov tecx,ecx
 	}
 	if (vSkins[FindSkin(tecx)].iShowWeapons == 1)

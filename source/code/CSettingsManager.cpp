@@ -15,6 +15,9 @@ void CSettingsManager::Init()
 	bEnableFXMode = reader.ReadBoolean("Settings","bEnableFXMode", false);
 	bEnableConfirmationIcon = reader.ReadBoolean("Patches", "bEnableConfirmationIcon", false);
 	bEnableExperimentalRIBLoopFix = reader.ReadBoolean("Patches", "bEnableExperimentalRIBLoopFix", false);
+	bHookPlayerModelLoader = reader.ReadBoolean("Settings", "bHookPlayerModelLoader", false);
+	bDisableLegalScreen = reader.ReadBoolean("Patches", "bDisableLegalScreen", true);
+	bEnableRIBStreamFix = reader.ReadBoolean("Patches", "bEnableRIBStreamFix", true);
 	iForcePlayerSkin = reader.ReadInteger("Settings", "iForcePlayerSkin", 0);
 	iRestrictedHeliumCheatWeaponType = reader.ReadInteger("Settings", "iRestrictedHeliumCheatWeaponType", 0);
 	iDebugMenuKey = reader.ReadInteger("Settings", "iDebugMenuKey", 0);

@@ -130,4 +130,23 @@ void CStuff::HookManTriIcon(float x, float y, float scaleX, float scaleY, int re
 	Call<0x5F96F0, float, float, float, float, int, int, int, int, int>(0.81300002,0.88100001, 0.04, 0.05, 255, 255, 255, 255, *(int*)0x7D343C);
 }
 
+void CStuff::LoadTrashman()
+{
+	Call<0x4D82C0, const char*>("attic");
+}
+
+void __declspec(naked) CStuff::HookSkipIntroSeq()
+{
+	static int jmpPoint = 0x5E276E;
+	_asm jmp jmpPoint
+
+}
+
+void __declspec(naked) CStuff::DisableExecutionCamera()
+{
+	static int jmpPoint = 0x589D10;
+	_asm jmp jmpPoint
+}
+
+
 

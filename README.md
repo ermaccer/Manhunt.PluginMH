@@ -2,8 +2,12 @@
 A plugin for Manhunt.
 
 # Installation
+## NOTE
+Since 0.3, you just need to place files into main Manhunt folder.
+
 PluginMH requires https://github.com/ThirteenAG/Ultimate-ASI-Loader or https://github.com/aap/simpledllloader.
 Check PluginMH.ini for available features.
+
 
 # Controls (default)
 **CTRL + V** - Enable/Disable Camera Control

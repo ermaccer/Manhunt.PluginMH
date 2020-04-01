@@ -20,6 +20,17 @@ Patched executable: https://drive.google.com/open?id=1CW8GVt0Z04iJtF8Qxljk3n1vOK
 
 # Features
 
+
+## Script RIB Looping Fix ##
+
+Fixes RIB audio streams which were looping.
+
+
+## Legal Screen Skip ##
+
+Skips 3 seconds long legal screen.
+
+
 ## Player Model Loader ##
 
 Allows you to load more player models and set them with one ini option, no need to replace existing files.

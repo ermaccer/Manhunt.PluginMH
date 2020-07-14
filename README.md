@@ -2,15 +2,12 @@
 A plugin for Manhunt.
 
 # Installation
+
 ## NOTE
-Since 0.3, you just need to place files into main Manhunt folder.
 
 PluginMH requires https://github.com/ThirteenAG/Ultimate-ASI-Loader or https://github.com/aap/simpledllloader.
 Check PluginMH.ini for available features.
 
-In case your exe doesn't work:
-
-Patched executable: https://drive.google.com/open?id=1CW8GVt0Z04iJtF8Qxljk3n1vOKJ90Fyx
 
 # Controls (default)
 **CTRL + V** - Enable/Disable Camera Control
@@ -21,10 +18,9 @@ Patched executable: https://drive.google.com/open?id=1CW8GVt0Z04iJtF8Qxljk3n1vOK
 # Features
 
 
-## Script RIB Looping Fix ##
+## TOC Disabler ##
 
-Fixes RIB audio streams which were looping.
-
+Removes the need to constantly update toc.txt
 
 ## Legal Screen Skip ##
 

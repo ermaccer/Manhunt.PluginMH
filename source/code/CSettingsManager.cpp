@@ -7,6 +7,7 @@ void CSettingsManager::Init()
 {
 	CIniReader reader("");
 	bEnableCheatsOnBonusLevels = reader.ReadBoolean("Settings", "bEnableCheatsOnBonusLevels", false);
+	bEnableScreenshotMode = reader.ReadBoolean("Settings", "bEnableScreenshotMode", false);
 	bEnableWeaponSpawner = reader.ReadBoolean("Settings", "bEnableWeaponSpawner", false);
 	bHookWeaponAdjuster = reader.ReadBoolean("Settings", "bHookWeaponAdjuster", false);
 	bEnableFirearmsExecutions = reader.ReadBoolean("Settings", "bEnableFirearmsExecutions", false);
@@ -17,13 +18,13 @@ void CSettingsManager::Init()
 	bEnableExperimentalRIBLoopFix = reader.ReadBoolean("Patches", "bEnableExperimentalRIBLoopFix", false);
 	bHookPlayerModelLoader = reader.ReadBoolean("Settings", "bHookPlayerModelLoader", false);
 	bDisableLegalScreen = reader.ReadBoolean("Patches", "bDisableLegalScreen", true);
-	bEnableRIBStreamFix = reader.ReadBoolean("Patches", "bEnableRIBStreamFix", true);
+	bDisableTOC = reader.ReadBoolean("Settings", "bDisableTOC", true);
 	iForcePlayerSkin = reader.ReadInteger("Settings", "iForcePlayerSkin", 0);
 	iRestrictedHeliumCheatWeaponType = reader.ReadInteger("Settings", "iRestrictedHeliumCheatWeaponType", 0);
 	iDebugMenuKey = reader.ReadInteger("Settings", "iDebugMenuKey", 0);
 	iQuickScreenshotKeyMain = reader.ReadInteger("Settings", "iQuickScreenshotKeyMain", 0);
 	iQuickScreenshotKeySub = reader.ReadInteger("Settings", "iQuickScreenshotKeySub", 0);
-	
+	iQuickHideHUDKey = reader.ReadInteger("Settings", "iQuickHideHUDKey", 0);
 	// custom weaps
 	szCustomWeapon[0] = reader.ReadString("Spawner", "szCustomWeapon1Record",0);
 	szCustomWeapon[1] = reader.ReadString("Spawner", "szCustomWeapon2Record",0);

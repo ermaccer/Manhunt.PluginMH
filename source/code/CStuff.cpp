@@ -9,8 +9,6 @@ using namespace Memory::VP;
 using namespace ManhuntDebugMenu;
 using namespace ManhuntFunctions;
 
-int buffer1, buffer2, buffer3, buffer4;
-
 void CStuff::EnableCheatsOnBonusLevels()
 {
 
@@ -74,11 +72,6 @@ int CStuff::HookDebugEntires()
 	return result;
 }
 
-void CStuff::DisplayVariousData()
-{
-	WriteDebug(1, "Level ID: %d", *(int*)0x75622C);
-	WriteDebug(2, "Total debug menu items: %d/170", *(int*)0x7CF55C);
-}
 
 void CStuff::DumpPlayerCoords()
 {
@@ -97,31 +90,8 @@ void CStuff::DumpPlayerCoords()
 	WriteDebug(12, "Saved coords to data\\out.txt!");
 }
 
-void CStuff::LoadSkins(char * line)
-{
-	sscanf(line, "%d %d %d %d", &buffer1, &buffer2, &buffer3, &buffer4);
-}
 
-void CStuff::DisplayWeaponsHook()
-{
-	_asm {
-		mov ecx, ds:0x6A94C0
-		cmp   ecx, buffer1
-		je	jump
-		cmp   ecx, buffer2
-		je	jump
-		cmp   ecx, buffer3
-		je	jump
-		cmp   ecx, buffer4
-		je	jump
-		push	0x45FDA0
-		retn
 
-		jump :
-		push	0x45FD98
-		retn
-	}
-}
 
 void CStuff::HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture)
 {
@@ -130,10 +100,6 @@ void CStuff::HookManTriIcon(float x, float y, float scaleX, float scaleY, int re
 	Call<0x5F96F0, float, float, float, float, int, int, int, int, int>(0.81300002,0.88100001, 0.04, 0.05, 255, 255, 255, 255, *(int*)0x7D343C);
 }
 
-void CStuff::LoadTrashman()
-{
-	Call<0x4D82C0, const char*>("attic");
-}
 
 void __declspec(naked) CStuff::HookSkipIntroSeq()
 {

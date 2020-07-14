@@ -246,6 +246,33 @@ enum eExecutions {
 	EXEC_DEFAULT
 };
 
+enum eShotClass {
+	SC_BASIC,
+	SC_INSTANT,
+	SC_INSTANT_MACHINEGUN,
+	SC_MELEE,
+	SC_MELEE_KICK,
+	SC_MELEE_OBSTRUCT,
+	SC_PROJECTICLE,
+	SC_PROJECTILE_WEAPON,
+	SC_AREA
+};
+
+enum eShotPrimitive {
+	SP_LINE,
+	SP_SHERE
+};
+
+enum eWeaponMeleeClass {
+	FISTS,
+	BEATER1,
+	BEATER2,
+	BLADE1,
+	BLADE2
+};
+
+
+
 // structs
 
 struct CVector {
@@ -253,13 +280,79 @@ struct CVector {
 };
 
 
+struct CFile {
+	int m_nLastMode;
+	int m_nLastFileMode;
+	int field8;
+	int field12; // unused? in most cases set to 0
+	int m_nBufferSize;
+	int m_pFilePointer;
+	int field24;
+	int field28;
+	int field32; // always 1?
+};
+
+struct CConsole {
+	int field0;
+	int field4;
+	int m_nCharacterCounter;
+	int m_nAvailableLines;
+	int m_nMaxChars;
+	int m_nTotalLines;
+	int field24;
+	int field28;
+	int field32;
+	int m_pCharacterData; // buffer
+	int field40;
+	int field44;
+	int field48;
+	int field52;
+	int m_pConsoleFunctionList;
+	int field60;
+	int field64;
+	// buffer is automatically generated, i've just put this here
+	// to make it nicer
+	//char Buffer[m_nTotalLines - 1][m_nMaxChars];
+};
+
 
 struct CEntity {
-	// todo: all
-	char pad[20];
-	float fHealth;
+	int      field_0;
+	int      field_4;
+	int      field_8;
+	int      field_C;
+	int      field_10;
+	float    fHealth;
+	int      field_18;
+	CVector  pos;
+	float    field_28;
+	int      field_2C;
+	int      field_30;
+	double   field_34;
+	int      field_3C;
+	int      field_40;
+	int      field_44;
+	int      field_48;
+	int      field_4C;
+	int      field_50;
+	int      field_54;
+	int      field_58;
+	int      field_5C;
+	int      field_60;
+	int      field_64;
+	int      field_68;
+	int      field_6C;
+	int*     model;
 
 };
+
+enum EFontType {
+	FONT_TYPE_DEBUG,
+	FONT_TYPE_DEFAULT,
+	FONT_FRONTEND,
+	FONT_TYPE_LOADING
+};
+
 
 // functions
 
@@ -283,6 +376,8 @@ namespace ManhuntFunctions {
 	CEntity*        GetEntity(const char* name);
 	void            AddMenuEntry(wchar_t* name, float posX, float posY, float textScaleX, float textScaleY, int buttonID);
 	void            DrawTexture(float posx, float posy, float scaleX, float scaleY, int r, int g, int b, int a, int pTexture);
+	void            SetDrawRGBA(int r, int g, int b, int a);
+	void            PrintText(const char* text, float x, float y, float sizex, float sizey, float unk, EFontType font);
 
 
 	template<typename ...Args>
@@ -299,8 +394,16 @@ namespace ManhuntDebugMenu {
     int    CallFunction(const char* name, void* function);
 };
 
+namespace ManhuntFileFunctions
+{
+	CFile* Rockstar_fopen(int mode, int fMode, char* extraParam);
+	int    ReadFileBytes(CFile* src, int dst, int size);
+}
+
 
 namespace MLSOperators {
 	int GetParam(int mls);
 	int GetStringParam(int mls);
 };
+
+

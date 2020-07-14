@@ -33,7 +33,8 @@ void CNewMenu::ProcessMainMenuHook()
 
 	// play game
 	menuText = GetText(0x725A38,"PLAY");
-	AddMenuEntry(menuText, fMenuPositionX, fMenuPositionY, fTextScaleX, fTextScaleY, button == 0);
+	AddMenuEntry(menuText, fMenuPositionX, fMenuPositionY, fTextScaleX, fTextScaleY,button == 0);
+
 	// select scene
 	pos += 0.40000001;
 	menuText = GetText(0x725A38,"SELSCE");
@@ -102,7 +103,6 @@ void CNewMenu::ProcessMainMenuHook()
 			break;
 		}
 	}
-
 
 	if (iCheatsON)
 		Call<0x5D5BB0, const wchar_t*, int*,int*,int*>(cheatText, &*(int*)0x7D6360, &*(int*)0x7D6360, &*(int*)0x7D6360);

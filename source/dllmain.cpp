@@ -7,10 +7,17 @@
 #include "code\CStuff.h"
 #include "code\CNewMenu.h"
 #include "code\ManhuntSDK.h"
-#include "code\CRibStreamFix.h"
+#include "code\CAnimLimit.h"
+#include "code\CTOC.h"
+#include "code\ManhuntRW.h"
+#include "code\CHalosFix.h"
 #include "MemoryMgr.h"
 #include <memory>
 #include <filesystem>
+#include <fstream>
+
+// TODO:
+// big cleanup
 
 using namespace Memory::VP;
 
@@ -19,10 +26,11 @@ void printf_hook(int a1, const char* print) {
 }
 
 
+
 void NullFunc(){}
 
 void Init()
-{
+{                
 
 	SettingsMgr->Init();
 	if (SettingsMgr->bEnableConsoleOutput)
@@ -33,6 +41,9 @@ void Init()
 		freopen("CONOUT$", "w", stderr);
 	}
 
+	if (SettingsMgr->bDisableTOC)
+		InjectHook(0x4D5090, eTOC::HookLoadFile, PATCH_JUMP);
+
 	if (SettingsMgr->bEnableCheatsOnBonusLevels)
 		InjectHook(0x5D4A50, CStuff::EnableCheatsOnBonusLevels, PATCH_JUMP);
 
@@ -41,14 +52,13 @@ void Init()
 
 	InjectHook(0x591E60, CStuff::HookDebugEntires, PATCH_JUMP);
 
-	InjectHook(0x542480, CRibStreamFix::HookScriptCutsceneEnd, PATCH_JUMP);
-	InjectHook(0x59218A, CRibStreamFix::HookWhiteNoiseSetVal, PATCH_JUMP);
+   
 
 	if (SettingsMgr->bEnableFirearmsExecutions)
-		InjectHook(0x46C7F2, CWeaponAdjuster::CheckExecutionWeaponType, PATCH_CALL); //Patch<int>(0x46C7F2 + 1, (int)CWeaponAdjuster::CheckExecutionWeaponType - ((int)0x46C7F2 + 5));
+		InjectHook(0x46C7F2, CWeaponAdjuster::CheckExecutionWeaponType, PATCH_CALL);
 
 	if (SettingsMgr->bEnableConfirmationIcon)
-		InjectHook(0x5F085E, CStuff::HookManTriIcon, PATCH_CALL); //Patch<int>(0x5F085E + 1, (int)CStuff::HookManTriIcon - ((int)0x5F085E + 5));
+		InjectHook(0x5F085E, CStuff::HookManTriIcon, PATCH_CALL); 
 
 	if (SettingsMgr->bDisableLegalScreen)
 		InjectHook(0x5E25D2, CStuff::HookSkipIntroSeq, PATCH_JUMP);
@@ -77,6 +87,8 @@ void Init()
 			InjectHook(0x4C6FC0, CWeaponAdjuster::HookShotgun, PATCH_JUMP);
 			InjectHook(0x4C6F90, CWeaponAdjuster::HookSniperRifle, PATCH_JUMP);
 			InjectHook(0x4C7020, CWeaponAdjuster::HookHealthItem, PATCH_JUMP);
+			//TODO
+			// replace this
 			Patch<char>(0x49D78C, 0xE9);
 			Patch<int>(0x49D78C + 1, (int)CWeaponAdjuster::HookExplodeHeadF - ((int)0x49D78C + 5));
 			Patch<char>(0x49D782 + 7, 0);
@@ -85,15 +97,13 @@ void Init()
 			Patch<int>(0x49D94D + 1, (int)CWeaponAdjuster::HookAutoHeadshot - ((int)0x49D94D + 5));
 		}
 	}
+
+	// TODO:
+	// split this from main function or hook in-game
 	while (true)
 	{
 		Sleep(1);
 
-		if (CStuff::KeyHit(VK_F2))
-		{
-			Call<0x4BBC30>();
-			Sleep(130);
-		}
 
 		if (CStuff::KeyHit(SettingsMgr->iDebugMenuKey))
 		{
@@ -109,13 +119,23 @@ void Init()
 			Patch<int>(0x46033F, 0x00000000);
 		}
 
-		if (CStuff::KeyHit(SettingsMgr->iQuickScreenshotKeyMain) && CStuff::KeyHit(SettingsMgr->iQuickScreenshotKeySub))
+		if (CStuff::KeyHit(SettingsMgr->iQuickHideHUDKey))
 		{
-			*(int*)0x715BA0 ^= 1; // freeze
-			*(int*)0x715BB0 ^= 1; // free cam
 			*(int*)0x7CF0A0 ^= 1; // hud
 			Sleep(180);
 		}
+
+		if (SettingsMgr->bEnableScreenshotMode)
+		{
+			if (CStuff::KeyHit(SettingsMgr->iQuickScreenshotKeyMain) && CStuff::KeyHit(SettingsMgr->iQuickScreenshotKeySub))
+			{
+				*(int*)0x715BA0 ^= 1; // freeze
+				*(int*)0x715BB0 ^= 1; // free cam
+				*(int*)0x7CF0A0 ^= 1; // hud
+				Sleep(180);
+			}
+		}
+
 
 		if (SettingsMgr->iForcePlayerSkin)
 			Patch<int>(0x6A94C0, SettingsMgr->iForcePlayerSkin);

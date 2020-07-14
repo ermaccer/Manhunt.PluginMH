@@ -93,13 +93,25 @@ CEntity * ManhuntFunctions::GetEntity(const char * name)
 
 void ManhuntFunctions::AddMenuEntry(wchar_t * name, float posX, float posY, float textScaleX, float textScaleY, int buttonID)
 {
-	Call<0x5D55C0, wchar_t*, float, float, float, int>(name, posX, posY, textScaleX, textScaleY, buttonID);
-	//Call<0x5D5B30, wchar_t*, float, float, float, float>(name, posX, posY, textScaleX, textScaleY);
+
+    Call<0x5D55C0, wchar_t*, float, float, float, int>(name, posX, posY, textScaleX, textScaleY, buttonID);
+	Call<0x5D5B30, wchar_t*, float, float, float, float>(name, posX, posY, textScaleX, textScaleY);
 }
 
 void ManhuntFunctions::DrawTexture(float posx, float posy, float scaleX, float scaleY, int r, int g, int b, int a, int pTexture)
 {
 	Call<0x5F96F0, float, float, float, float, int, int, int, int, int>(posx, posy, scaleX, scaleY, r, g, b, a, pTexture);
+}
+
+void ManhuntFunctions::SetDrawRGBA(int r, int g, int b, int a)
+{
+	int col = b | (g << 8) | (a << 24) | (r << 16);
+	*(int*)(0x7D35C0 + 16) = col;
+}
+
+void ManhuntFunctions::PrintText(const char * text, float x, float y, float sizex, float sizey, float unk, EFontType font)
+{
+	Call<0x5E55E0, const char*, float, float, float, float, float, EFontType>(text, x, y, sizex, sizey, unk, font);
 }
 
 void ManhuntDebugMenu::EditVariableInt(const char * name, int * variable)
@@ -125,4 +137,14 @@ int MLSOperators::GetParam(int mls)
 int MLSOperators::GetStringParam(int mls)
 {
 	return CallMethodAndReturn<int, 0x4822E0,int>(mls);
+}
+
+CFile * ManhuntFileFunctions::Rockstar_fopen(int mode, int fMode, char* extraParam)
+{
+	return CallAndReturn<CFile*, 0x6121A0, int, int, char*>(mode, fMode, extraParam);
+}
+
+int ManhuntFileFunctions::ReadFileBytes(CFile * src, int dst, int size)
+{
+	return CallAndReturn<int, 0x611C80, CFile*, int, int>(src, dst, size);
 }

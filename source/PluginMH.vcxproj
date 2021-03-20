@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,35 +19,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7C6D04C2-EE52-4BAC-AC69-4E53F97A931A}</ProjectGuid>
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{DF58B4F9-5FA8-4A06-95A5-8ED91DD1A4AC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>PluginMH</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -85,101 +86,188 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGINMH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;PLUGINMH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;PLUGINMH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;PLUGINMH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGINMH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;PLUGINMH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;PLUGINMH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;PLUGINMH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="code\CDebugMenuLimit.h" />
-    <ClInclude Include="code\CSettingsManager.h" />
-    <ClInclude Include="code\CStuff.h" />
-    <ClInclude Include="code\CWeaponAdjuster.h" />
-    <ClInclude Include="code\CWeaponSpawner.h" />
-    <ClInclude Include="code\ManhuntSDK.h" />
+    <ClInclude Include="code\core\eMain.h" />
+    <ClInclude Include="code\core\eSettingsManager.h" />
+    <ClInclude Include="code\core\FileFunctions.h" />
+    <ClInclude Include="code\manhunt\AI.h" />
+    <ClInclude Include="code\manhunt\AmmoWeapon.h" />
+    <ClInclude Include="code\manhunt\Anim.h" />
+    <ClInclude Include="code\manhunt\App.h" />
+    <ClInclude Include="code\manhunt\Character.h" />
+    <ClInclude Include="code\manhunt\Cheats.h" />
+    <ClInclude Include="code\manhunt\Clump.h" />
+    <ClInclude Include="code\manhunt\ClumpDict.h" />
+    <ClInclude Include="code\manhunt\Collectable.h" />
+    <ClInclude Include="code\manhunt\core.h" />
+    <ClInclude Include="code\manhunt\CreationManager.h" />
+    <ClInclude Include="code\manhunt\DevMenu.h" />
+    <ClInclude Include="code\manhunt\Entity.h" />
+    <ClInclude Include="code\manhunt\EntityManager.h" />
+    <ClInclude Include="code\manhunt\Filenames.h" />
+    <ClInclude Include="code\manhunt\Frontend.h" />
+    <ClInclude Include="code\manhunt\Input.h" />
+    <ClInclude Include="code\manhunt\Inventory.h" />
+    <ClInclude Include="code\manhunt\MaterialMananger.h" />
+    <ClInclude Include="code\manhunt\Misc.h" />
+    <ClInclude Include="code\manhunt\Player.h" />
+    <ClInclude Include="code\manhunt\Renderer.h" />
+    <ClInclude Include="code\manhunt\Scene.h" />
+    <ClInclude Include="code\manhunt\Script.h" />
+    <ClInclude Include="code\manhunt\Shot.h" />
+    <ClInclude Include="code\manhunt\SpecialFX.h" />
+    <ClInclude Include="code\manhunt\String.h" />
+    <ClInclude Include="code\manhunt\Text.h" />
+    <ClInclude Include="code\manhunt\Time.h" />
+    <ClInclude Include="code\manhunt\TypeData.h" />
+    <ClInclude Include="code\manhunt\Vector.h" />
+    <ClInclude Include="code\manhunt\Weapon.h" />
+    <ClInclude Include="code\plugin\console\eConsole.h" />
+    <ClInclude Include="code\plugin\eCommonHooks.h" />
+    <ClInclude Include="code\plugin\eCustomAnimManager.h" />
+    <ClInclude Include="code\plugin\eCustomTableOfContents.h" />
+    <ClInclude Include="code\plugin\eLog.h" />
+    <ClInclude Include="code\plugin\eModSettings.h" />
+    <ClInclude Include="code\plugin\eNewFrontend.h" />
+    <ClInclude Include="code\plugin\eQoLChanges.h" />
+    <ClInclude Include="code\plugin\eSkinLoader.h" />
+    <ClInclude Include="code\plugin\eStatsManager.h" />
+    <ClInclude Include="code\plugin\menu\eMenu.h" />
+    <ClInclude Include="code\plugin\MHcommon.h" />
+    <ClInclude Include="code\plugin\modloader\eCustomClumpDict.h" />
+    <ClInclude Include="code\plugin\modloader\eModLoader.h" />
+    <ClInclude Include="code\plugin\script\eScriptExtender.h" />
+    <ClInclude Include="framework.h" />
     <ClInclude Include="IniReader.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code\CDebugMenuLimit.cpp" />
-    <ClCompile Include="code\CSettingsManager.cpp" />
-    <ClCompile Include="code\CStuff.cpp" />
-    <ClCompile Include="code\CWeaponAdjuster.cpp" />
-    <ClCompile Include="code\CWeaponSpawner.cpp" />
-    <ClCompile Include="code\ManhuntSDK.cpp" />
-    <ClCompile Include="dllmain.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="code\core\eMain.cpp" />
+    <ClCompile Include="code\core\eSettingsManager.cpp" />
+    <ClCompile Include="code\core\FileFunctions.cpp" />
+    <ClCompile Include="code\manhunt\AI.cpp" />
+    <ClCompile Include="code\manhunt\AmmoWeapon.cpp" />
+    <ClCompile Include="code\manhunt\Anim.cpp" />
+    <ClCompile Include="code\manhunt\App.cpp" />
+    <ClCompile Include="code\manhunt\Character.cpp" />
+    <ClCompile Include="code\manhunt\Cheats.cpp" />
+    <ClCompile Include="code\manhunt\ClumpDict.cpp" />
+    <ClCompile Include="code\manhunt\Collectable.cpp" />
+    <ClCompile Include="code\manhunt\CreationManager.cpp" />
+    <ClCompile Include="code\manhunt\Entity.cpp" />
+    <ClCompile Include="code\manhunt\EntityManager.cpp" />
+    <ClCompile Include="code\manhunt\Filenames.cpp" />
+    <ClCompile Include="code\manhunt\Frontend.cpp" />
+    <ClCompile Include="code\manhunt\Input.cpp" />
+    <ClCompile Include="code\manhunt\Inventory.cpp" />
+    <ClCompile Include="code\manhunt\Misc.cpp" />
+    <ClCompile Include="code\manhunt\Player.cpp" />
+    <ClCompile Include="code\manhunt\Renderer.cpp" />
+    <ClCompile Include="code\manhunt\Scene.cpp" />
+    <ClCompile Include="code\manhunt\Script.cpp" />
+    <ClCompile Include="code\manhunt\SpecialFX.cpp" />
+    <ClCompile Include="code\manhunt\String.cpp" />
+    <ClCompile Include="code\manhunt\Text.cpp" />
+    <ClCompile Include="code\manhunt\Time.cpp" />
+    <ClCompile Include="code\plugin\console\eConsole.cpp" />
+    <ClCompile Include="code\plugin\eCommonHooks.cpp" />
+    <ClCompile Include="code\plugin\eCustomAnimManager.cpp" />
+    <ClCompile Include="code\plugin\eCustomTableOfContents.cpp" />
+    <ClCompile Include="code\plugin\eLog.cpp" />
+    <ClCompile Include="code\plugin\eModSettings.cpp" />
+    <ClCompile Include="code\plugin\eNewFrontend.cpp" />
+    <ClCompile Include="code\plugin\eQoLChanges.cpp" />
+    <ClCompile Include="code\plugin\eSkinLoader.cpp" />
+    <ClCompile Include="code\plugin\eStatsManager.cpp" />
+    <ClCompile Include="code\plugin\menu\eMenu.cpp" />
+    <ClCompile Include="code\plugin\MHcommon.cpp" />
+    <ClCompile Include="code\plugin\modloader\eCustomClumpDict.cpp" />
+    <ClCompile Include="code\plugin\modloader\eModLoader.cpp" />
+    <ClCompile Include="code\plugin\script\eScriptExtender.cpp" />
+    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IniReader.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PluginMH.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

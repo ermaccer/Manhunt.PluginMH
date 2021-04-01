@@ -28,5 +28,6 @@ public:
 	static void ScanFolderForFiles(const char* folder);
 	static char* FindFile(char* input);
 	static CFile* LoadFile(char* fileName, int* fileBuffer, int* arg3, CFile** pFile, int* fileSize);
+	static bool  CustomFileExists(char* input);
 	static bool  IsFileIgnored(std::string& name);
 };

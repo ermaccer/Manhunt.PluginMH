@@ -210,9 +210,53 @@ char * eModLoader::FindFile(char * input)
 
 CFile* eModLoader::LoadFile(char * fileName, int * fileBuffer, int * arg3, CFile ** pFile, int * fileSize)
 {
-	fileName = FindFile(fileName);
+	if (CustomFileExists(fileName))
+		fileName = FindFile(fileName);
 	CFile* result = CallAndReturn<CFile*, 0x4D5090, char*, int*, int*, CFile**, int*>(fileName, fileBuffer, arg3, pFile, fileSize);
 	return result;
+}
+
+bool eModLoader::CustomFileExists(char * input)
+{
+	char result[256] = {};
+	sprintf(result, input);
+
+
+	if (result[0] == '.')
+	{
+		char tmpBuff[260] = {};
+		strncpy(tmpBuff, result + 2, strlen(result) - 2);
+		sprintf(result, tmpBuff);
+	}
+
+	for (int i = 0; i < strlen(result); i++)
+	{
+		if (result[i] == '/')
+			result[i] = '\\';
+	}
+
+	for (int i = 0; i < strlen(result); i++)
+		result[i] = tolower(result[i]);
+
+	// check file
+	std::string str(result, strlen(result));
+	std::string file = splitString(str, true);
+
+	if (IsFileIgnored(file))
+		return false;
+
+	for (int i = 0; i < m_vMods.size(); i++)
+	{
+		for (int a = 0; a < m_vMods[i].files.size(); a++)
+		{
+
+			if (strcmp(m_vMods[i].files_game[a].c_str(), result) == 0)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 

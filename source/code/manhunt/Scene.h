@@ -9,6 +9,7 @@ public:
 	static int&  ms_stepMode;
 	static CEntity*& ms_pPlayer;
 	static CEntity*& ms_pCamera;
+	static int&  ms_pWorld;
 	static void OpenLevel(const char* level);
 	static CEntity* FindPlayer();
 	static void PlayerFullBodyAnimDone();

@@ -189,9 +189,6 @@
     <ClInclude Include="code\manhunt\Anim.h">
       <Filter>Header Files\manhunt\game\core</Filter>
     </ClInclude>
-    <ClInclude Include="code\manhunt\MaterialMananger.h">
-      <Filter>Header Files\manhunt\game\core</Filter>
-    </ClInclude>
     <ClInclude Include="code\manhunt\Shot.h">
       <Filter>Header Files\manhunt\game\weapons</Filter>
     </ClInclude>
@@ -209,6 +206,18 @@
     </ClInclude>
     <ClInclude Include="code\plugin\eSkinLoader.h">
       <Filter>Header Files\plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="code\plugin\eMapLimits.h">
+      <Filter>Header Files\plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\MaterialManager.h">
+      <Filter>Header Files\manhunt\game\core</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\MemoryHeap.h">
+      <Filter>Header Files\manhunt\main</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\Weather.h">
+      <Filter>Header Files\manhunt\game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +355,15 @@
     </ClCompile>
     <ClCompile Include="code\plugin\eSkinLoader.cpp">
       <Filter>Header Files\plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\eMapLimits.cpp">
+      <Filter>Header Files\plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\MemoryHeap.cpp">
+      <Filter>Header Files\manhunt\main</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\Weather.cpp">
+      <Filter>Header Files\manhunt\game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

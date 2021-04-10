@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include "Vector.h"
 #include "Shot.h"
-#include "MaterialMananger.h"
+#include "MaterialManager.h"
 
 enum eEntityClass {
 	EC_BASIC = 0x1,

@@ -317,7 +317,7 @@ void __declspec(naked) HookConsoleInputPause()
 {
 	static int input_jump = 0x590E9F;
 
-	if (TheConsole.m_consoleActive)
+	if (TheConsole.m_consoleActive || TheMenu.bDisplayMenu)
 		CInputManager::m_bInputEnabled = 0;
 	else
 		CInputManager::m_bInputEnabled = 1;

@@ -180,7 +180,8 @@
     <ClInclude Include="code\manhunt\Frontend.h" />
     <ClInclude Include="code\manhunt\Input.h" />
     <ClInclude Include="code\manhunt\Inventory.h" />
-    <ClInclude Include="code\manhunt\MaterialMananger.h" />
+    <ClInclude Include="code\manhunt\MaterialManager.h" />
+    <ClInclude Include="code\manhunt\MemoryHeap.h" />
     <ClInclude Include="code\manhunt\Misc.h" />
     <ClInclude Include="code\manhunt\Player.h" />
     <ClInclude Include="code\manhunt\Renderer.h" />
@@ -194,11 +195,13 @@
     <ClInclude Include="code\manhunt\TypeData.h" />
     <ClInclude Include="code\manhunt\Vector.h" />
     <ClInclude Include="code\manhunt\Weapon.h" />
+    <ClInclude Include="code\manhunt\Weather.h" />
     <ClInclude Include="code\plugin\console\eConsole.h" />
     <ClInclude Include="code\plugin\eCommonHooks.h" />
     <ClInclude Include="code\plugin\eCustomAnimManager.h" />
     <ClInclude Include="code\plugin\eCustomTableOfContents.h" />
     <ClInclude Include="code\plugin\eLog.h" />
+    <ClInclude Include="code\plugin\eMapLimits.h" />
     <ClInclude Include="code\plugin\eModSettings.h" />
     <ClInclude Include="code\plugin\eNewFrontend.h" />
     <ClInclude Include="code\plugin\eQoLChanges.h" />
@@ -233,6 +236,7 @@
     <ClCompile Include="code\manhunt\Frontend.cpp" />
     <ClCompile Include="code\manhunt\Input.cpp" />
     <ClCompile Include="code\manhunt\Inventory.cpp" />
+    <ClCompile Include="code\manhunt\MemoryHeap.cpp" />
     <ClCompile Include="code\manhunt\Misc.cpp" />
     <ClCompile Include="code\manhunt\Player.cpp" />
     <ClCompile Include="code\manhunt\Renderer.cpp" />
@@ -242,11 +246,13 @@
     <ClCompile Include="code\manhunt\String.cpp" />
     <ClCompile Include="code\manhunt\Text.cpp" />
     <ClCompile Include="code\manhunt\Time.cpp" />
+    <ClCompile Include="code\manhunt\Weather.cpp" />
     <ClCompile Include="code\plugin\console\eConsole.cpp" />
     <ClCompile Include="code\plugin\eCommonHooks.cpp" />
     <ClCompile Include="code\plugin\eCustomAnimManager.cpp" />
     <ClCompile Include="code\plugin\eCustomTableOfContents.cpp" />
     <ClCompile Include="code\plugin\eLog.cpp" />
+    <ClCompile Include="code\plugin\eMapLimits.cpp" />
     <ClCompile Include="code\plugin\eModSettings.cpp" />
     <ClCompile Include="code\plugin\eNewFrontend.cpp" />
     <ClCompile Include="code\plugin\eQoLChanges.cpp" />

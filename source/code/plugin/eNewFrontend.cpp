@@ -1,4 +1,4 @@
-#include "eNewFrontend.h"
+﻿#include "eNewFrontend.h"
 #include "..\core\eMain.h"
 #include "..\manhunt\Frontend.h"
 #include "..\manhunt\Text.h"
@@ -227,7 +227,7 @@ void eNewFrontend::DrawEVisionMark()
 {
 
 	CFrontend::SetDrawRGBA(255, 255, 255, 48);
-	CFrontend::Print8("PluginMH BETA by ermaccer", 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
+	CFrontend::Print8("PluginMH 0.5 by ermaccer", 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
 }
 
 void eNewFrontend::StatsMenu()

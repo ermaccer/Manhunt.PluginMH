@@ -107,4 +107,5 @@ public:
 	static void PopRenderStateAll();
 	static void PopRenderStateBlend();
 	static void DrawQuad2d(float posX, float posY, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture);
+	static void DrawQuad2dSet(float posX, float posY, float scaleX, float scaleY, int r1,int r2, int r3, int r4);
 };

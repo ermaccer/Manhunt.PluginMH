@@ -6,6 +6,8 @@ bool eSettingsManager::bEnableLog;
 bool eSettingsManager::bUseEmptyPAKFile;
 bool eSettingsManager::bHookSkinLoader;
 
+bool eSettingsManager::bIncreaseMapLimits;
+bool eSettingsManager::bForceStaticExecutionCamera;
 bool eSettingsManager::bEnableStatsManager;
 
 bool eSettingsManager::bDisableHeartBeat;
@@ -40,6 +42,9 @@ void eSettingsManager::Init()
 
 	bEnableStatsManager = reader.ReadBoolean("Settings.Features", "bEnableStatsManager", false);
 	bHookSkinLoader = reader.ReadBoolean("Settings.Features", "bHookSkinLoader", false);
+
+	bIncreaseMapLimits = reader.ReadBoolean("Settings", "bIncreaseMapLimits", false);
+	bForceStaticExecutionCamera = reader.ReadBoolean("Settings", "bForceStaticExecutionCamera", false);
 
 	bHookCustomAnimManager = reader.ReadBoolean("Settings", "bHookCustomAnimManager", false);
 	bCustomAnimManagerUseGlobalFile = reader.ReadBoolean("Settings", "bCustomAnimMangerUseGlobalFile", false);

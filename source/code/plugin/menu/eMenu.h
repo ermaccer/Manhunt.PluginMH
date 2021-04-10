@@ -56,7 +56,6 @@ struct eMenuCategory {
 
 class eMenu {
 private:
-	bool bDisplayMenu;
 	bool bCategoryOpen;
 	bool bNavigatingInCategory;
 	bool bPressedEnter;
@@ -75,7 +74,7 @@ private:
 	std::vector<eMenuItem>     vTempAnims;
 	std::vector<eMenuCategory> vCategories;
 public:
-
+	bool bDisplayMenu;
 	CVector savedPosition;
 
 

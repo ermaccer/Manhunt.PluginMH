@@ -20,6 +20,7 @@
 #include "code/manhunt/Renderer.h"
 #include "code/manhunt/Frontend.h"
 #include "code/plugin/eSkinLoader.h"
+#include "code/plugin/eMapLimits.h"
 #include "code/core/FileFunctions.h"
 #include "code/plugin/eLog.h"
 
@@ -31,10 +32,10 @@ int GenericFalseReturn() { return 0; }
 void  GenericDummy() { }
 void Init()
 {
-	//	AllocConsole();
-	//	freopen("CONIN$", "r", stdin);
-	//	freopen("CONOUT$", "w", stdout);
-	//	freopen("CONOUT$", "w", stderr);
+	//AllocConsole();
+	//freopen("CONIN$", "r", stdin);
+	//freopen("CONOUT$", "w", stdout);
+	//freopen("CONOUT$", "w", stderr);
 
 	eSettingsManager::Init();
 
@@ -51,6 +52,12 @@ void Init()
 
 	eModLoader::ScanFolderForFiles("modloader");
 	eSkinLoader::InitHooks();
+	if (eSettingsManager::bIncreaseMapLimits)
+	eMapLimits::InitHooks();
+
+	if (eSettingsManager::bForceStaticExecutionCamera)
+		InjectHook(0x4D7942, GenericTrueReturn, PATCH_CALL);
+
 	InitCommonHooks();
 	InitConsoleHooks();
 
@@ -84,6 +91,7 @@ void Init()
 	eNewFrontend::InitHooks();
 	eStatsManager::InitHooks();
 	eCustomClumpDictManager::InitHooks();
+
 
 	InjectHook(0x5E279F, MainHooks::HookWndProc, PATCH_CALL);
 

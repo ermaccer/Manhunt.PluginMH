@@ -36,3 +36,8 @@ void CRenderer::DrawQuad2d(float posX, float posY, float scaleX, float scaleY, i
 {
 	Call<0x5F96F0, float, float, float, float, int, int, int, int, int>(posX, posY, scaleX, scaleY, red, green, blue, alpha, pTexture);
 }
+
+void CRenderer::DrawQuad2dSet(float posX, float posY, float scaleX, float scaleY, int r1, int r2, int r3, int r4)
+{
+	Call<0x5F8470, float, float, float, float, int, int, int, int>(posX, posY, scaleX, scaleY, r1, r2, r3, r4);
+}

@@ -16,6 +16,7 @@
 #include "..\..\manhunt\Character.h"
 #include "..\..\manhunt\AmmoWeapon.h"
 #include "..\..\manhunt\Player.h"
+#include "..\..\manhunt\Weather.h"
 
 
 #include "..\..\core\eSettingsManager.h"
@@ -23,7 +24,7 @@
 #include "..\..\plugin\eCustomAnimManager.h"
 #include "..\..\manhunt\core.h"
 #include "..\..\..\IniReader.h"
-
+#include "..\eMapLimits.h"
 #include "..\MHcommon.h"
 
 
@@ -31,9 +32,13 @@
 
 int bDisplayPlayerCoords = 0;
 int bControllerDebug = 0;
+int bNewManagerDebug = 0;
+int bDisableLockonTriangles = 0;
 int bDisplaySavedPositionMarker = 0;
 int bGodMode = 0;
 int bPlayerInfiniteHealth = 0;
+int bHideMoon = 0;
+int bHideStars = 0;
 int bFallDamage = 1;
 
 int bSilenceWeapons = 0;
@@ -123,6 +128,7 @@ void eMenu::Initialize()
 	AddToggleCharEntry("Timer", &bTimer);
 	AddToggleCharEntry("Body Count", &bBodyCount);
 	AddToggleIntEntry("Enable Body Count", &bEnableKillCounter);
+	AddToggleIntEntry("Hide Lock-on Triangles (use with free cam)", &bDisableLockonTriangles);
 	AddCategory("HUD");
 
 
@@ -134,6 +140,22 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Super Punch", &CCheatHandler::m_superPunch);
 
 	AddCategory("Cheats");
+
+	if (eSettingsManager::bIncreaseMapLimits)
+		AddToggleIntEntry("New Material Manager Debug", &bNewManagerDebug);
+	AddToggleIntEntry("Hide Moon", &bHideMoon);
+	AddToggleIntEntry("Hide Stars", &bHideStars);
+
+	AddCategory("World");
+
+	AddFunctionEntry("Free",	CWeather::SetWeatherFree);
+	AddFunctionEntry("Clear",	CWeather::SetWeatherClear);
+	AddFunctionEntry("Cloudy",	CWeather::SetWeatherCloudy);
+	AddFunctionEntry("Thunder", CWeather::SetWeatherThunder);
+	AddFunctionEntry("Rainy",	CWeather::SetWeatherRainy);
+	AddFunctionEntry("Foggy",	CWeather::SetWeatherFoggy);
+	AddFunctionEntry("Windy",	CWeather::SetWeatherWindy);
+	AddCategory("Weather");
 
 	AddToggleIntEntry("Log Gamepad",&bControllerDebug);
 	AddToggleIntEntry("Silence Firearms", &bSilenceWeapons);
@@ -184,36 +206,51 @@ void eMenu::ProcessMenu()
 	else
 		Patch<char>(0x4F9073 + 6, 1);
 
+	if (bDisableLockonTriangles)
+		Patch<float>(0x728138, 0.0f);
+	else
+		Patch<float>(0x728138, 0.5f);
+
+	if (bHideMoon)
+		Nop(0x5CB59D, 5);
+	else
+		InjectHook(0x5CB59D, CRenderer::DrawQuad2d, PATCH_CALL);
+
+	if (bHideStars)
+		Nop(0x5CB81D, 5);
+	else
+		InjectHook(0x5CB81D, CRenderer::DrawQuad2dSet, PATCH_CALL);
+
 
 	
 	if (bDisplayPlayerCoords)
 	{
 		sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", *(float *)0x821430, *(float *)0x821434, *(float *)0x821438);
-		CFrontend::CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.552f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-		CFrontend::CFrontend::SetDrawRGBA(255, 255, 255, 255);
+		CFrontend::SetDrawRGBA(255, 255, 255, 255);
 		CFrontend::Print8(buffer, 0.554f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
 	if (bControllerDebug)
 	{
 		sprintf(buffer, "GAMEPAD BUTTON 0x%X", *(short*)0x725684);
-		CFrontend::CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.152f, 0.5, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-		CFrontend::CFrontend::SetDrawRGBA(180, 255, 180, 255);
+		CFrontend::SetDrawRGBA(180, 255, 180, 255);
 		CFrontend::Print8(buffer, 0.154f, 0.5f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 
 		sprintf(buffer, "ANALOG STICK %d", *(short*)(0x725684 + 2));
-		CFrontend::CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.152f, 0.55, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-		CFrontend::CFrontend::SetDrawRGBA(180, 255, 180, 255);
+		CFrontend::SetDrawRGBA(180, 255, 180, 255);
 		CFrontend::Print8(buffer, 0.154f, 0.55f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 
 
 		sprintf(buffer, "STICK STATES %f %f", *(float*)0x725674 ,*(float*)0x725678);
-		CFrontend::CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.152f, 0.6, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-		CFrontend::CFrontend::SetDrawRGBA(180, 255, 180, 255);
+		CFrontend::SetDrawRGBA(180, 255, 180, 255);
 		CFrontend::Print8(buffer, 0.154f, 0.6f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
@@ -221,11 +258,19 @@ void eMenu::ProcessMenu()
 	if (bDisplaySavedPositionMarker)
 	{
 		sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", savedPosition.x,savedPosition.y,savedPosition.z);
-		CFrontend::CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.552f, 0.1f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-		CFrontend::CFrontend::SetDrawRGBA(255, 255, 255, 255);
+		CFrontend::SetDrawRGBA(255, 255, 255, 255);
 		CFrontend::Print8(buffer, 0.554f, 0.1f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
+
+	if (bNewManagerDebug)
+	{
+		sprintf(buffer, "Materials = %d/%d Missing Materials = %d", gNewCollisionMaterialManager.m_numWorldMaterials, AMOUNT_OF_MATERIALS, gNewCollisionMaterialManager.m_numMissingMaterials);
+		CFrontend::SetDrawRGBA(255, 255,255, 255);
+		CFrontend::Print8(buffer, 0.1f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+	}
+
 	if (IsWindowFocused())
 	ProcessToggle();
 

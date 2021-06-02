@@ -105,6 +105,9 @@ public:
 
 	static int GetTextureFromTXD(int txd, const char* texture);
 
+	static int GetLastPlayedLevel();
+	static void ForceAndPlayLevel(int levelID, int unk);
+
 	static float CalculateTextLen(wchar_t* text, float charScale, int byteLen);
 
 	static void DrawDisc2D(CVector* pos, float scale, int red, int green, int blue, float a6);

@@ -31,6 +31,7 @@
 // custom
 
 int bDisplayPlayerCoords = 0;
+int bDisplayPlayerCoordsReal = 0;
 int bControllerDebug = 0;
 int bNewManagerDebug = 0;
 int bDisableLockonTriangles = 0;
@@ -82,6 +83,7 @@ void eMenu::Initialize()
 	AddFunctionEntry("Save Position", SavePosition);
 	AddFunctionEntry("Load Position", LoadPosition);
 	AddToggleIntEntry("Display Coordinates", &bDisplayPlayerCoords);
+	AddToggleIntEntry("Use INST Coordinates For Display", &bDisplayPlayerCoordsReal);
 	AddToggleIntEntry("Display Saved Position", &bDisplaySavedPositionMarker);
 	AddCategory("Player");
 
@@ -225,7 +227,11 @@ void eMenu::ProcessMenu()
 	
 	if (bDisplayPlayerCoords)
 	{
-		sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", *(float *)0x821430, *(float *)0x821434, *(float *)0x821438);
+		CVector* pos = CScene::FindPlayer()->GetLocation();
+		if (bDisplayPlayerCoordsReal)
+			sprintf(buffer, "(INST) X: %.3f Y: %.3f Z: %.3f", pos->x, pos->z * -1.0f, pos->y);
+		else
+			sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", pos->x, pos->y, pos->z);
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
 		CFrontend::Print8(buffer, 0.552f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(255, 255, 255, 255);

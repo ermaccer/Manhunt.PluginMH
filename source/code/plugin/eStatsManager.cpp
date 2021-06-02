@@ -1,4 +1,4 @@
-#include "eStatsManager.h"
+﻿#include "eStatsManager.h"
 #include "..\manhunt\core.h"
 #include "..\manhunt\Frontend.h"
 #include <iostream>

@@ -90,6 +90,16 @@ int CFrontend::GetTextureFromTXD(int txd, const char * texture)
 	return CallAndReturn<int,0x5EA520,int,const char*>(txd, texture);
 }
 
+int CFrontend::GetLastPlayedLevel()
+{
+	return CallAndReturn<int, 0x5D6900>();
+}
+
+void CFrontend::ForceAndPlayLevel(int levelID, int unk)
+{
+	Call<0x5D6720, int, int>(levelID, unk);
+}
+
 float CFrontend::CalculateTextLen(wchar_t * text, float charScale, int byteLen)
 {
 	return CallAndReturn<float, 0x5E56F0, wchar_t*, float, int>(text, charScale, byteLen);

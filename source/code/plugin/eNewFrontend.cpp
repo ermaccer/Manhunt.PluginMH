@@ -12,6 +12,7 @@
 #include "..\manhunt\Time.h"
 #include "..\plugin\modloader\eModLoader.h"
 #include "eStatsManager.h"
+#include "..\..\resource.h"
 #include <iostream>
 
 int eNewFrontend::m_pStatsMenu[2] = { (int)eNewFrontend::ProcessStatsMenu, (int)eNewFrontend::StatsMenu };
@@ -104,7 +105,7 @@ void eNewFrontend::MainMenu()
 
 bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 {
-	static int arg = 0;
+	static int lastLevel = 0;
 	static int jmpPoint = 0x6025B6;
 	
 	if (CInputManager::FrontendPressedUp())
@@ -132,16 +133,16 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 		switch (CFrontend::ms_menuButton)
 		{
 		case MB_PLAY:
-			arg = CallAndReturn<int, 0x5D6900>();
-			if (arg == -1)
+			lastLevel = CFrontend::GetLastPlayedLevel();
+			if (lastLevel == -1)
 			{
-				Call<0x5D6A60>();
+				Call<0x5D6A60>(); // resets something
 				CFrontend::m_bNewGame = 0;
 				*(int*)0x7C86F4 = 0;
 				CFrontend::SetCurrentMenu(MENU_GAMMA_SETTINGS);
 			}
 			else
-				Call<0x5D6720, int, int>(arg, 1);
+				CFrontend::ForceAndPlayLevel(lastLevel, 1);
 			break;
 		case MB_SELSCE:
 			*(int*)0x7C89E4 = 7;
@@ -227,7 +228,9 @@ void eNewFrontend::DrawEVisionMark()
 {
 
 	CFrontend::SetDrawRGBA(255, 255, 255, 48);
-	CFrontend::Print8("PluginMH 0.5 by ermaccer", 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
+	char tmp[128] = {};
+	sprintf(tmp, "PluginMH %d.%d.%d Build %d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_BUILD);
+	CFrontend::Print8(tmp, 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
 }
 
 void eNewFrontend::StatsMenu()
@@ -263,9 +266,6 @@ void eNewFrontend::ProcessStatsMenu()
 
 	if (m_nCurrentStatsPage > m_allStatsPages - 1)
 		m_nCurrentStatsPage = m_allStatsPages - 1;
-
-
-
 
 }
 

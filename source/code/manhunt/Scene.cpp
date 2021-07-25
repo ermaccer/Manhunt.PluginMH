@@ -30,3 +30,8 @@ void CScene::PlayerFullBodyAnimDone()
 	player[441] = 0;
 	CPedBodyAnimFSM::SetStand(player[190], 854);
 }
+
+RpWorld * CScene::GetWorld()
+{
+	return *(RpWorld **)0x715B8C;
+}

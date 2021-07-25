@@ -5,14 +5,18 @@
 #include "..\core\FileFunctions.h"
 #include "..\manhunt\EntityManager.h"
 #include <filesystem>
+#include <rwcore.h>
+#include <rwplcore.h>
 
 #include "eLog.h"
 
 std::vector<eSkinEntry> eSkinLoader::vSkins;
-
+bool eSkinLoader::ms_bSkinLoaded;
+RpClump* eSkinLoader::ms_pPlayerClump;
 
 void eSkinLoader::InitHooks()
 {
+	ms_bSkinLoaded = false;
 	if (eSettingsManager::bHookSkinLoader)
 	{
 		if (eSkinLoader::ReadFile("data\\skinLoader.dat"))
@@ -130,4 +134,26 @@ void __declspec(naked) SkinLoader_HookWeapon()
 		_asm jmp jmpTrue
 	else
 		_asm jmp jmpFalse
+}
+
+void eSkinLoader::LoadPlayerDff()
+{
+	if (!ms_bSkinLoaded)
+	{
+		RwStream *stream;
+
+		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "levels\\GLOBAL\\CHARPAK\\pig_pc.dff");
+		printf("stream: %x\n", stream);
+
+		if (RwStreamFindChunk(stream, rwID_CLUMP, NULL, NULL))
+			ms_pPlayerClump = RpClumpStreamRead(stream);
+		printf("clump %x\n", ms_pPlayerClump);
+		if (ms_pPlayerClump)
+			ms_bSkinLoaded = true;
+
+		RwStreamClose(stream, NULL);
+	}
+
+
+
 }

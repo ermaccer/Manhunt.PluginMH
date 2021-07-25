@@ -1,5 +1,7 @@
 #pragma once
 #include "Vector.h"
+#include <rwcore.h>
+#include <rwplcore.h>
 
 enum eFrontendMainMenuButtons {
 	MB_PLAY,
@@ -10,6 +12,7 @@ enum eFrontendMainMenuButtons {
 	// custom menus
 	MB_STATS,
 	MB_MODIFICATIONS,
+	MB_SKINS,
 	// end custom menus
 	MB_QUITPRG,
 	MB_TOTAL_MENUS
@@ -113,4 +116,6 @@ public:
 	static void DrawDisc2D(CVector* pos, float scale, int red, int green, int blue, float a6);
 	static void DrawDisc3D(CVector* pos, float scale, int red, int green, int blue, float a6);
 
+
+	static RwCamera* GetFrontendCamera();
 };

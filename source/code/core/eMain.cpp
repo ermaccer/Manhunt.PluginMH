@@ -48,9 +48,7 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 				else if (wParam == VK_RETURN)
 					TheConsole.Execute();
 				else
-				{
 					TheConsole.PushCharacter(wParam);
-				}
 				
 			}
 		}

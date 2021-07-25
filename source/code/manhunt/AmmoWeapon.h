@@ -259,7 +259,8 @@ public:
 
 	void Reload(int flag);
 	void SetAmmo(unsigned int amount);
-
+	void GetFiringDirection(CVector* dest, float unk, int unk2, int unk3);
+	void UpdateFiringDirection(float unk);
 	static bool& ms_bHeadShot;
 
 	

@@ -8,4 +8,7 @@ public:
 	static CEntity* GetEntity(char* name);
 	static CEntity* FindInstance(char* name);
 	static void     CreateArchetypes();
+
+	static void		LoadCharacterClumpDict(int skinID);
+
 };

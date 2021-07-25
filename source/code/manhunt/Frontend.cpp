@@ -114,3 +114,8 @@ void CFrontend::DrawDisc3D(CVector* pos, float scale, int red, int green, int bl
 {
 	Call<0x5FBBD0, CVector*, float, int, int, int, float>(pos, scale, red, green, blue, a6);
 }
+
+RwCamera * CFrontend::GetFrontendCamera()
+{
+	return *(RwCamera**)0x7CF078;
+}

@@ -177,11 +177,6 @@ void CommonHooks::GameStartInit()
 void CommonHooks::HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture)
 {
 	CRenderer::DrawQuad2d(x, y, scaleX, scaleY, red, green, blue, alpha, pTexture);
-/*
-	// xbox values
-	if (*(int*)0x7D343C)
-		CRenderer::DrawQuad2d(0.81300002, 0.88100001, 0.04, 0.05, 255, 255, 255, 255, *(int*)0x7D343C);
-*/
 	// ps2 values
 	if (*(int*)0x7D343C)
 		CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049, /*yoff+0.406*/0.902999989, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);

@@ -13,6 +13,11 @@
 #include "..\plugin\modloader\eModLoader.h"
 #include "eStatsManager.h"
 #include "..\..\resource.h"
+#include "..\manhunt\Clump.h"
+#include "..\manhunt\ClumpDict.h"
+#include "..\manhunt\Entity.h";
+#include "..\RenderWare.h"
+#include "eSkinLoader.h"
 #include <iostream>
 
 int eNewFrontend::m_pStatsMenu[2] = { (int)eNewFrontend::ProcessStatsMenu, (int)eNewFrontend::StatsMenu };
@@ -26,6 +31,7 @@ int eNewFrontend::m_leftoverStatsPage;
 int eNewFrontend::m_nCurrentStatsPage;
 int eNewFrontend::m_nCurrentModsPage;
 wchar_t* eNewFrontend::m_szCheatText = (wchar_t*)0x7D6360;
+RpLight * eNewFrontend::ms_pMenuLight;
 
 void eNewFrontend::InitHooks()
 {
@@ -36,6 +42,9 @@ void eNewFrontend::InitHooks()
 
 	// lcd display
 	Nop(0x5D7504, 5);
+	// lines?
+	InjectHook(0x5D77B1, eNewFrontend::HookDrawRasterLineFX, PATCH_CALL);
+	InjectHook(0x4D7A91, eNewFrontend::HookCreateMenuLight, PATCH_CALL);
 
 }
 
@@ -52,10 +61,12 @@ void eNewFrontend::Init()
 
 void eNewFrontend::MainMenu()
 {
+
 	CFrontend::ms_fMenuPositionX = 0.15f;
 	float y_pos = CFrontend::ms_fMenuPositionY;
 	float y_temp = 0.0f;
 	float y_adjust = 0.30000001f;
+
 
 	CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
 
@@ -67,14 +78,14 @@ void eNewFrontend::MainMenu()
 	int logoTexture = CFrontend::GetTextureFromTXD(*(int*)0x7C8704, "logo");
 
 
-	CRenderer::DrawQuad2d(*(float*)0x7D6408 + 0.45f,*(float*)0x7D6404,logoX,*(float*)0x7D6400, 180, 180, 180, 255, logoTexture);
+	CRenderer::DrawQuad2d(*(float*)0x7D6408 + 0.45f, *(float*)0x7D6404, logoX, *(float*)0x7D6400, 180, 180, 180, 255, logoTexture);
 
 
 	y_temp = y_pos + y_adjust - CFrontend::ms_fMenuPositionY;
 	CFrontend::AddOption(CText::GetFromKey16("PLAY"), CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_PLAY);
 
-	y_temp = y_pos +  y_adjust;
+	y_temp = y_pos + y_adjust;
 	CFrontend::AddOption(CText::GetFromKey16("SELSCE"), CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SELSCE);
 
@@ -97,6 +108,10 @@ void eNewFrontend::MainMenu()
 	y_temp += CFrontend::ms_fMenuPositionY;
 	CFrontend::AddOption(L"MODIFICATIONS", CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_MODIFICATIONS);
+
+	y_temp += CFrontend::ms_fMenuPositionY;
+	CFrontend::AddOption(L"SKINS", CFrontend::ms_fMenuPositionX, y_temp
+		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SKINS);
 
 	y_temp += CFrontend::ms_fMenuPositionY;
 	CFrontend::AddOption(CText::GetFromKey16("QUITPRG"), CFrontend::ms_fMenuPositionX, y_temp
@@ -163,6 +178,9 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 		case MB_MODIFICATIONS:
 			CFrontend::SetCurrentMenu(MENU_MODS);
 			break;
+		case MB_SKINS:
+			CFrontend::SetCurrentMenu(MENU_SKINS);
+			break;
 		case MB_QUITPRG:
 			CFrontend::SetCurrentMenu(MENU_QUIT);
 			break;
@@ -226,10 +244,9 @@ bool eNewFrontend::IsCustomMenu(int menu)
 
 void eNewFrontend::DrawEVisionMark()
 {
-
 	CFrontend::SetDrawRGBA(255, 255, 255, 48);
 	char tmp[128] = {};
-	sprintf(tmp, "PluginMH %d.%d.%d Build %d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_BUILD);
+	sprintf(tmp, "PluginMH %d.%d.%d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
 	CFrontend::Print8(tmp, 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
 }
 
@@ -276,7 +293,7 @@ void eNewFrontend::ModsMenu()
 
 	CFrontend::SetDrawRGBA(255,255,255, 255);
 
-	sprintf(tmp, "LOADED MODIFICATIONS: %d", eModLoader::modFolders.size());
+	sprintf(tmp, "LOADED MODIFICATIONS: %d", mods);
 	CFrontend::Print8(tmp, m_fBoxPositionX, m_fBoxPositionY - 0.10f, 1.0, 1.0, 0.0, FONT_FRONTEND);
 	CFrontend::DrawMenuCameraCounter(L"MODIFICATIONS");
 
@@ -293,6 +310,7 @@ void eNewFrontend::ProcessModsMenu()
 {
 	if (CInputManager::FrontendPressedEscape())
 		CFrontend::SetCurrentMenu(MENU_19);
+
 }
 
 void eNewFrontend::NewLevelSelect()
@@ -425,6 +443,46 @@ void eNewFrontend::ProcessNewSettingMenu()
 	}
 }
 
+void eNewFrontend::Skins()
+{
+
+	CFrontend::DrawMenuCameraCounter(L"SKINS");
+	CFrontend::Print8("Cash", 0.5, 0.5, 1.0, 1.0, 0.0, FONT_TYPE_DEFAULT);
+
+	if (eSkinLoader::ms_pPlayerClump)
+	{
+		static float rotation = 0.0f;
+		static unsigned int LastFlash = 0;
+
+		const RwV3d pos = { 1.15f, -1.45f, 3.225f };
+		const RwV3d axis2 = { 0.0f, 1.0f, 0.0f };
+		RwRGBAReal AmbientColor = { 0.65f, 0.65f, 0.65f, 1.0f };
+		if (GetTickCount() - LastFlash > 7) {
+			rotation += 1.0f;
+			if (rotation > 360.0f)
+				rotation -= 360.0f;
+			LastFlash = GetTickCount();
+		}
+
+		RwFrame *frame = RpClumpGetFrame(eSkinLoader::ms_pPlayerClump);
+		RwFrameTransform(frame, RwFrameGetMatrix(RwCameraGetFrame(CFrontend::GetFrontendCamera())), rwCOMBINEREPLACE);
+		RwFrameTranslate(frame, &pos, rwCOMBINEPRECONCAT);
+		RwFrameRotate(frame, &axis2, rotation, rwCOMBINEPRECONCAT);
+		RwFrameUpdateObjects(frame);
+		RpLightSetColor(ms_pMenuLight, &AmbientColor);
+		RpClumpRender(eSkinLoader::ms_pPlayerClump);
+	}
+
+
+}
+
+void eNewFrontend::ProcessSkins()
+{
+	eSkinLoader::LoadPlayerDff();
+	if (CInputManager::FrontendPressedEscape())
+		CFrontend::SetCurrentMenu(MENU_19);
+}
+
 void eNewFrontend::DrawStatText(int id)
 {
 	if (eStatsManager::GetStatName(id))
@@ -470,7 +528,10 @@ void __declspec(naked) eNewFrontend::HookSelectMenuBackground()
 	{
 		CFrontend::SetMenuBackground(CFileNames::ms_MainEpPath.str);
 	}
-
+	else if (CFrontend::ms_currentMenu == MENU_SKINS)
+	{
+		CFrontend::SetMenuBackground(CFileNames::ms_SceneEpPath.str);
+	}
 
 	_asm
 	{
@@ -503,13 +564,33 @@ void __declspec(naked) eNewFrontend::HookExecuteMenuProcess()
 	else if (CFrontend::ms_currentMenu == MENU_NEW_SETTINGS)
 	{
 		ProcessNewSettingMenu();
-		NewSettingMenu();
-		
+		NewSettingMenu();		
 	}
+	else if (CFrontend::ms_currentMenu == MENU_SKINS)
+	{
+		ProcessSkins();
+		Skins();
 
+	}
 	_asm
 	{
 		mov eax, ds:0x7C86F8
 		jmp originalSwitchExec
 	}
+}
+
+void eNewFrontend::HookDrawRasterLineFX(int a1, int a2, int a3, int a4)
+{
+	if (CFrontend::ms_currentMenu == MENU_SKINS)
+		return;
+	CRenderer::DrawRasterLineFX(a1, a2, a3, a4);
+}
+
+void eNewFrontend::HookCreateMenuLight()
+{
+	ms_pMenuLight = RpLightCreate(rpLIGHTAMBIENT);
+
+	if (ms_pMenuLight)
+		printf("light ok\n");
+	//RpWorld* world = 
 }

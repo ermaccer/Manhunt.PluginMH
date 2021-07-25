@@ -129,7 +129,7 @@ void CNewCollisionMaterialManager::GetMaterials(int* material)
 		mat_name = (char *)(*material + 16);
 		mat_id = 0;
 		mat_found = 0;
-		while (mat_id < 63 && !mat_found)
+		while (mat_id < TOTAL_MATERIALS_COUNT && !mat_found)
 		{
 			//printf("Mat: %s\n", mat_name);
 			for (int i = 0; i < gNewCollisionMaterialManager.m_aMaterialLists[mat_id].m_numTextures && !mat_found; ++i)

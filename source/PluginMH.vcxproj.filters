@@ -219,6 +219,9 @@
     <ClInclude Include="code\manhunt\Weather.h">
       <Filter>Header Files\manhunt\game</Filter>
     </ClInclude>
+    <ClInclude Include="code\RenderWare.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -364,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="code\manhunt\Weather.cpp">
       <Filter>Header Files\manhunt\game</Filter>
+    </ClCompile>
+    <ClCompile Include="code\RenderWare.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -23,3 +23,8 @@ void CEntityManager::CreateArchetypes()
 {
 	Call<0x4381C0>();
 }
+
+void CEntityManager::LoadCharacterClumpDict(int skinID)
+{
+	Call<0x437FB0, int>(skinID);
+}

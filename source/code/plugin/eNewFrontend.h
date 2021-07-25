@@ -1,11 +1,15 @@
 #pragma once
+#include <rwcore.h>
+#include <rwplcore.h>
+#include <rpworld.h>
 
 enum eNewMenuTypes {
 	// new menus
 	MENU_STATS = 24,
 	MENU_LEVEL_SELECT_DUO,
 	MENU_NEW_SETTINGS,
-	MENU_MODS
+	MENU_MODS,
+	MENU_SKINS
 };
 
 enum eLevelSelectButtons {
@@ -22,6 +26,9 @@ private:
 public:
 	static void InitHooks();
 	static int  ms_lastCustomMenu;
+	static RpLight* ms_pMenuLight;
+
+
 	static void Init();
 	static void MainMenu();
 	static bool ProcessMainMenu();
@@ -45,6 +52,10 @@ public:
 	static void ProcessNewLevelSelect();
 	static void NewSettingMenu();
 	static void ProcessNewSettingMenu();
+
+	static void Skins();
+	static void ProcessSkins();
+
 	static void DrawStatText(int id);
 	static void DrawModText(int id);
 
@@ -52,4 +63,7 @@ public:
 	// hooks 
 	static void HookSelectMenuBackground();
 	static void HookExecuteMenuProcess();
+
+	static void HookDrawRasterLineFX(int a1, int a2, int a3, int a4);
+	static void HookCreateMenuLight();
 };

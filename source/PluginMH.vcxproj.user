@@ -4,6 +4,10 @@
     <LocalDebuggerCommand>Z:\Steam\steamapps\common\Manhunt\manhunt.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RE4|Win32'">
+    <LocalDebuggerCommand>Z:\Steam\steamapps\common\Resident Evil 4 Manhunt\manhunt.exe</LocalDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommand>Z:\Steam\steamapps\common\Manhunt\manhunt.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>

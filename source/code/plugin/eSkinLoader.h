@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <rwcore.h>
+#include <rpworld.h>
+#include <rwplcore.h>
 
 struct eSkinEntry
 {
@@ -20,6 +23,16 @@ public:
 	static int	ReadFile(const char* name);
 	static int  Hook(int skinID);
 	static int	FindSkin(int skinID);
+
+
+	static bool ms_bSkinLoaded;
+	static RpClump* ms_pPlayerClump;
+	static float ms_fPlayerRotation;
+	static unsigned int ms_iRotationTimer;
+
+	static void LoadPlayerDff();
+
 };
 
 void SkinLoader_HookWeapon();
+

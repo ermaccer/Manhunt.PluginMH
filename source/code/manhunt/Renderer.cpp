@@ -41,3 +41,8 @@ void CRenderer::DrawQuad2dSet(float posX, float posY, float scaleX, float scaleY
 {
 	Call<0x5F8470, float, float, float, float, int, int, int, int>(posX, posY, scaleX, scaleY, r1, r2, r3, r4);
 }
+
+void CRenderer::DrawRasterLineFX(int a1, int a2, int a3, int a4)
+{
+	Call<0x5FA6F0, int,int,int,int>(a1,a2,a3,a4);
+}

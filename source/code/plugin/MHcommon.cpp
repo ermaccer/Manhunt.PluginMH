@@ -31,7 +31,6 @@ void CreateEntity(char * name, CVector* pos)
 			TheConsole.m_messages.push_back(tmp);
 			entity->SetFrozen(0);
 			entity->Spawn(pos, 0);
-
 			TheConsole.m_entityID++;
 		}
 	}

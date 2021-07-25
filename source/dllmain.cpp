@@ -26,6 +26,8 @@
 
 
 
+
+
 using namespace Memory::VP;
 
 int GenericTrueReturn() { return 1; }
@@ -33,10 +35,10 @@ int GenericFalseReturn() { return 0; }
 void  GenericDummy() { }
 void Init()
 {
-	//AllocConsole();
-	//freopen("CONIN$", "r", stdin);
-	//freopen("CONOUT$", "w", stdout);
-	//freopen("CONOUT$", "w", stderr);
+	AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 
 	eSettingsManager::Init();
 

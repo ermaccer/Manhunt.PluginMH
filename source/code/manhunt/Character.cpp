@@ -5,3 +5,8 @@ void CCharacter::CreateInventoryItem(CEntity * entity, int collectable, bool set
 {
 	CallMethod<0x49A5C0, CEntity*, int, bool>(entity, collectable, settoactive);
 }
+
+CWeapon * CCharacter::GetCurrentWeapon()
+{
+	return CallMethodAndReturn<CWeapon*,0x49A360, CCharacter*>(this);
+}

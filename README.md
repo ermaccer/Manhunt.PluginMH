@@ -213,6 +213,18 @@ Map material limit was increased from 300 to 2500.
 
 Additionally, TOC (Table Of Contents) no longer needs to be updated!
 
+# Configuration
+Open .ini file to see available options, comments explain what is doing what.
+
+b
+- option can be true or false
+
+i
+- option can be any number in decimal (1) or hex format (0x1)
+
+sz
+- option can be text
+
 
 # Credits
 **Fire_Head** - big help with RenderWare research.

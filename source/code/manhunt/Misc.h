@@ -1,6 +1,8 @@
 #pragma once
 // unknown file functions
-
+#include <rwcore.h>
+#include <rpworld.h>
+#include <rwplcore.h>
 struct CFile {
 	int m_nLastMode;
 	int m_nLastFileMode;
@@ -14,5 +16,4 @@ struct CFile {
 };
 
 
-CFile* Rockstar_fopen(int mode, int fMode, char* extraParam);
-int    ReadFileBytes(CFile* src, int dst, int size);
+RwTexDictionary* TexDictLoad(const char *path);

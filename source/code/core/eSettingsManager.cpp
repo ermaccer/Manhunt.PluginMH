@@ -3,7 +3,7 @@
 #include "..\manhunt\core.h"
 
 bool eSettingsManager::bEnableLog;
-bool eSettingsManager::bUseEmptyPAKFile;
+bool eSettingsManager::bHideVersionInfo;
 bool eSettingsManager::bHookSkinLoader;
 
 bool eSettingsManager::bIncreaseMapLimits;
@@ -39,9 +39,9 @@ void eSettingsManager::Init()
 {
 	CIniReader reader("");
 	bEnableLog = reader.ReadBoolean("Settings", "bEnableLog", false);
-
+	bHideVersionInfo = reader.ReadBoolean("Settings", "bHideVersionInfo", false);
 	bEnableStatsManager = reader.ReadBoolean("Settings.Features", "bEnableStatsManager", false);
-	bHookSkinLoader = reader.ReadBoolean("Settings.Features", "bHookSkinLoader", false);
+
 
 	bIncreaseMapLimits = reader.ReadBoolean("Settings", "bIncreaseMapLimits", false);
 	bForceStaticExecutionCamera = reader.ReadBoolean("Settings", "bForceStaticExecutionCamera", false);

@@ -7,78 +7,64 @@
 #include <filesystem>
 #include <rwcore.h>
 #include <rwplcore.h>
-
+#include <filesystem>
+#include "..\manhunt\Misc.h"
 #include "eLog.h"
+#include "..\..\IniReader.h"
+#include "..\manhunt\Clump.h"
+#include "..\manhunt\ClumpDict.h"
+#include "..\manhunt\Filenames.h"
+#include <Windows.h>
 
 std::vector<eSkinEntry> eSkinLoader::vSkins;
 bool eSkinLoader::ms_bSkinLoaded;
+int eSkinLoader::ms_iCurrentSkin;
+int eSkinLoader::ms_iCurrentSkinAdjust;
+int eSkinLoader::ms_iCurrentSkinPos;
 RpClump* eSkinLoader::ms_pPlayerClump;
 
 void eSkinLoader::InitHooks()
 {
 	ms_bSkinLoaded = false;
-	if (eSettingsManager::bHookSkinLoader)
-	{
-		if (eSkinLoader::ReadFile("data\\skinLoader.dat"))
-		{
-			InjectHook(0x437FB0, eSkinLoader::Hook, PATCH_JUMP);
-			//InjectHook(0x45FD86, eSkinLoader::HookWeapon, PATCH_JUMP);
-		}
-	}
+	ms_pPlayerClump = NULL;
+	ms_iCurrentSkin = 0;
+	ms_iCurrentSkinPos = 0;
+	ms_iCurrentSkinAdjust = 0;
+	eSkinLoader::ReadFolder("data\\skins");
+
+	InjectHook(0x437FB0, eSkinLoader::Hook, PATCH_JUMP);
+	InjectHook(0x45FD86, SkinLoader_HookWeapon, PATCH_JUMP);
+
 }
 
-int eSkinLoader::ReadFile(const char * name)
+int eSkinLoader::ReadFolder(const char * folder)
 {
 	std::filesystem::current_path(getExecutablePath());
 
-	FILE* pFile = fopen(name, "rb");
-	if (!pFile)
+	printf("folder: %s\n", folder);
+	if (!std::filesystem::exists(folder))
 	{
-		eLog::Message(__FUNCTION__, "ERROR: Could not open %s!", name);
-		return 0;
+		MessageBoxA(0, "Folder does not exist!", folder, 0);
 	}
-	if (pFile)
+
+	std::vector<std::string> skinFiles;
+
+	for (const auto & file : std::filesystem::recursive_directory_iterator(folder))
 	{
-		eLog::Message(__FUNCTION__, "Reading %s!", name);
-		char line[1536];
-		while (fgets(line, sizeof(line), pFile))
+		if (file.path().has_extension())
 		{
-			// check if comment
-			if (line[0] == ';' || line[0] == '#' || line[0] == '\n')
-				continue;
-
-			int id = 0;
-			if (sscanf(line, "%d", &id) == 1)
+			if (file.path().extension().string() == ".ini")
 			{
-				char t_dffname[128];
-				char t_txdename[128];
-				char t_rootname[128];
-				int  bDisplayWeapons;
-				int  flag;
-
-				sscanf(line, "%d %s %s %s %d %d", &id, &t_txdename, &t_dffname, &t_rootname, &bDisplayWeapons, &flag);
-
-				// convert to strings
-				std::string strDff(t_dffname, strlen(t_dffname));
-				std::string strTxd(t_txdename, strlen(t_txdename));
-				std::string strRoot(t_rootname, strlen(t_rootname));
-
-
-				// create skin
-				eSkinEntry skin;
-				skin.iID = id;
-				skin.iShowWeapons = bDisplayWeapons;
-				skin.sModelFile = strDff;
-				skin.sRootName = strRoot;
-				skin.sTxdFile = strTxd;
-				skin.iFlag = flag;
-				vSkins.push_back(skin);
+				skinFiles.push_back(file.path().string());
 			}
-
 		}
-		eLog::Message(__FUNCTION__, "Read %d entries!", vSkins.size());
-		fclose(pFile);
 	}
+
+	for (int i = 0; i < skinFiles.size(); i++)
+		LoadSkin((char*)skinFiles[i].c_str());
+
+	printf("%d\n", vSkins.size());
+	
 	return 1;
 }
 
@@ -91,37 +77,78 @@ int eSkinLoader::Hook(int skinID)
 	char dffFile[260];
 
 
-	sprintf(txdFile, "%s", vSkins[FindSkin(skinID)].sTxdFile.c_str());
-	sprintf(dffFile, "%s", vSkins[FindSkin(skinID)].sModelFile.c_str());
-	strcpy((char*)0x6A94A0, vSkins[FindSkin(skinID)].sRootName.c_str());
-	*(int*)0x7AE94C = vSkins[FindSkin(skinID)].iFlag;
+	sprintf(txdFile, "%s", vSkins[ms_iCurrentSkin].sTxdFile.c_str());
+	sprintf(dffFile, "%s", vSkins[ms_iCurrentSkin].sModelFile.c_str());
+	strcpy((char*)0x6A94A0, vSkins[ms_iCurrentSkin].sRootName.c_str());
+	*(int*)0x7AE94C = vSkins[ms_iCurrentSkin].iFlag;
 
 
-	sprintf(fullTxdPath, "%s%s", "./levels", txdFile);
-	sprintf(fullDffPath, "%s%s", "./levels", dffFile);
+	sprintf(fullTxdPath, "%s%s", "./", txdFile);
+	sprintf(fullDffPath, "%s%s", "./", dffFile);
 
 	// TODO: update with proper functions?
 
-	printf("Loading %s\n", fullDffPath);
 
 	result = CallMethodAndReturn<char*, 0x4BDDC0, int, char*>(*(int*)0x736DB8, fullTxdPath);
+
 	CallMethod<0x59B3F0, int*, char*, char*>(&(*(int*)0x69BC90), result, fullDffPath);
 	return CallMethodAndReturn<int, 0x4BDDE0, int, char*>(*(int*)0x736DB8, result);
 }
 
-int eSkinLoader::FindSkin(int skinID)
-{
-	int iFind = 0;
 
-	for (int i = 0; i < vSkins.size(); i++)
+void eSkinLoader::LoadSkin(char * file)
+{
+
+	std::wstring pth = getExecutablePath();
+	pth += L"\\";
+	std::filesystem::current_path(pth);
+
+	CIniReader ini(file, true);
+
+	eSkinEntry skin;
+	skin.sName = ini.ReadString("Skin", "Name", 0);
+	skin.sModelFile = ini.ReadString("Skin", "Model", 0);
+	skin.sTxdFile = ini.ReadString("Skin", "TXD", 0);
+	skin.sRootName = ini.ReadString("Skin", "RootName", 0);
+	skin.iShowWeapons = ini.ReadBoolean("Skin", "DisplayWeapons", false);
+	skin.iFlag = ini.ReadBoolean("Skin", "DisplayBlood", false);
+	vSkins.push_back(skin);
+}
+
+void eSkinLoader::SaveFile(int pos, int adj)
+{
+	std::string pth = CFileNames::GetMyDocumentsDirectory();
+	pth += "\\";
+	pth += "PluginMH.ini";
+
+	CIniReader pmh((char*)pth.c_str(), true);
+	pmh.WriteInteger("Skins","ms_iCurrentSkin",ms_iCurrentSkin);
+	pmh.WriteInteger("Skins", "ms_iCurrentSkinPos", pos);
+	pmh.WriteInteger("Skins", "ms_iCurrentSkinAdjust", adj);
+}
+
+void eSkinLoader::ReadFile()
+{
+	std::string pth = CFileNames::GetMyDocumentsDirectory();
+	pth += "\\";
+	pth += "PluginMH.ini";
+
+	if (std::filesystem::exists(pth))
 	{
-		if (vSkins[i].iID == skinID)
+
+		CIniReader pmh((char*)pth.c_str(), true);
+		ms_iCurrentSkin = pmh.ReadInteger("Skins", "ms_iCurrentSkin", 0);
+		ms_iCurrentSkinAdjust = pmh.ReadInteger("Skins", "ms_iCurrentSkinAdjust", 0);
+		ms_iCurrentSkinPos = pmh.ReadInteger("Skins", "ms_iCurrentSkinPos", 0);
+
+		if (ms_iCurrentSkin > vSkins.size() - 1)
 		{
-			iFind = i;
-			break;
+			ms_iCurrentSkin = 0;
+			ms_iCurrentSkinAdjust = 0;
+			ms_iCurrentSkinPos = 0;
 		}
 	}
-	return iFind;
+
 }
 
 void __declspec(naked) SkinLoader_HookWeapon()
@@ -130,7 +157,7 @@ void __declspec(naked) SkinLoader_HookWeapon()
 	static int jmpFalse = 0x45FDA0;
 
 
-	if (eSkinLoader::vSkins[eSkinLoader::FindSkin(CEntityManager::ms_playerCharacterID)].iShowWeapons == 1)
+	if (eSkinLoader::vSkins[eSkinLoader::ms_iCurrentSkin].iShowWeapons)
 		_asm jmp jmpTrue
 	else
 		_asm jmp jmpFalse
@@ -138,16 +165,43 @@ void __declspec(naked) SkinLoader_HookWeapon()
 
 void eSkinLoader::LoadPlayerDff()
 {
+
 	if (!ms_bSkinLoaded)
 	{
 		RwStream *stream;
+		RwTexDictionary* tex;
+		std::wstring pth = getExecutablePath();
+		pth += L"\\";
+		std::filesystem::current_path(pth);
 
-		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "levels\\GLOBAL\\CHARPAK\\pig_pc.dff");
-		printf("stream: %x\n", stream);
+		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, vSkins[ms_iCurrentSkin].sModelFile.c_str());
+
+		if (!stream)
+		{
+			MessageBoxA(0, "Failed to open DFF file", vSkins[ms_iCurrentSkin].sModelFile.c_str(), MB_ICONERROR);
+			exit(0);
+			return;
+		}
+		tex = TexDictLoad(vSkins[ms_iCurrentSkin].sTxdFile.c_str());
+
+		if (!tex)
+		{
+			MessageBoxA(0, "Failed to open TXD file", vSkins[ms_iCurrentSkin].sTxdFile.c_str(), MB_ICONERROR);
+			exit(0);
+			return;
+		}
+
+		RwTexDictionarySetCurrent(tex);
 
 		if (RwStreamFindChunk(stream, rwID_CLUMP, NULL, NULL))
 			ms_pPlayerClump = RpClumpStreamRead(stream);
-		printf("clump %x\n", ms_pPlayerClump);
+
+		if (!tex)
+		{
+			MessageBoxA(0, "Could not read Clump from DFF", vSkins[ms_iCurrentSkin].sModelFile.c_str(), MB_ICONERROR);
+			exit(0);
+			return;
+		}
 		if (ms_pPlayerClump)
 			ms_bSkinLoaded = true;
 
@@ -155,5 +209,25 @@ void eSkinLoader::LoadPlayerDff()
 	}
 
 
+
+}
+
+void eSkinLoader::ReloadPlayerDff(int id)
+{
+	ms_bSkinLoaded = false;
+	RpClumpDestroy(ms_pPlayerClump);
+	ms_pPlayerClump = NULL;
+	ms_iCurrentSkin = id;
+	LoadPlayerDff();
+}
+
+void eSkinLoader::Shutdown()
+{
+	if (ms_pPlayerClump)
+	{
+		RpClumpDestroy(ms_pPlayerClump);
+		ms_pPlayerClump = NULL;
+		ms_bSkinLoaded = false;
+	}
 
 }

@@ -6,30 +6,40 @@ using namespace std;
 #pragma warning(disable:4996)
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
-CIniReader::CIniReader(char* szFileName)
+CIniReader::CIniReader(char* szFileName, bool path)
 {
-	char			moduleName[MAX_PATH];
-	char			dllPath[MAX_PATH];
-	char			iniName[MAX_PATH];
-	char*			tempPointer;
-
-	GetModuleFileName((HINSTANCE)&__ImageBase, moduleName, MAX_PATH);
-	tempPointer = strrchr(moduleName, '.');
-	*tempPointer = '\0';
-	tempPointer = strrchr(moduleName, '\\');
-	strncpy(iniName, tempPointer + 1, 255);
-	strcat(iniName, ".ini");
-	strncpy(dllPath, moduleName, (tempPointer - moduleName + 1));
-	dllPath[tempPointer - moduleName + 1] = '\0';
-	if (strcmp(szFileName, "") == 0) //if (szFileName == "")
+	if (!path)
 	{
-	strcat(dllPath, iniName);
-	} else {
-	strcat(dllPath, szFileName);
-	}
+		char			moduleName[MAX_PATH];
+		char			dllPath[MAX_PATH];
+		char			iniName[MAX_PATH];
+		char*			tempPointer;
 
- memset(m_szFileName, 0x00, 255);
- memcpy(m_szFileName, dllPath, strlen(dllPath));
+		GetModuleFileName((HINSTANCE)&__ImageBase, moduleName, MAX_PATH);
+		tempPointer = strrchr(moduleName, '.');
+		*tempPointer = '\0';
+		tempPointer = strrchr(moduleName, '\\');
+		strncpy(iniName, tempPointer + 1, 255);
+		strcat(iniName, ".ini");
+		strncpy(dllPath, moduleName, (tempPointer - moduleName + 1));
+		dllPath[tempPointer - moduleName + 1] = '\0';
+		if (strcmp(szFileName, "") == 0) //if (szFileName == "")
+		{
+			strcat(dllPath, iniName);
+		}
+		else {
+			strcat(dllPath, szFileName);
+		}
+
+		memset(m_szFileName, 0x00, 255);
+		memcpy(m_szFileName, dllPath, strlen(dllPath));
+	}
+	else
+	{
+		memset(m_szFileName, 0x00, 255);
+		memcpy(m_szFileName, szFileName, strlen(szFileName));
+	}
+	
 }
 int CIniReader::ReadInteger(char* szSection, char* szKey, int iDefaultValue)
 {

@@ -1,9 +1,88 @@
 #include "RenderWare.h"
 #include "manhunt/core.h"
 
+RwBool RpWorldDestroy(RpWorld * world)
+{
+	return CallAndReturn<RwBool, 0x616290, RpWorld *>(world);
+}
+
+RpWorld* RpWorldCreate(RwBBox * boundingBox)
+{
+	return CallAndReturn<RpWorld*, 0x6163E0, RwBBox *>(boundingBox);
+}
+
+RwTexDictionary *RwTexDictionarySetCurrent(RwTexDictionary * dict)
+{
+	return CallAndReturn<RwTexDictionary*, 0x62F6E0, RwTexDictionary*>(dict);
+}
+
 RpClump* RpClumpRender(RpClump * clump)
 {
 	return CallAndReturn<RpClump*, 0x61ABF0, RpClump*>(clump);
+}
+
+void CameraSize(RwCamera * camera, RwRect * rect, RwReal viewWindow, RwReal aspectRatio)
+{
+	RwVideoMode         videoMode;
+	RwRect              r;
+	RwRect              origSize = { 0, 0, 0, 0 };	// FIX just to make the compier happy
+	RwV2d               vw;
+
+	viewWindow *= aspectRatio;
+
+	RwEngineGetVideoModeInfo(&videoMode,RwEngineGetCurrentVideoMode());
+
+	origSize.w = RwRasterGetWidth(RwCameraGetRaster(camera));
+	origSize.h = RwRasterGetHeight(RwCameraGetRaster(camera));
+
+
+	if (!rect)
+	{
+		if (videoMode.flags & rwVIDEOMODEEXCLUSIVE)
+		{
+			/* For full screen applications, resizing the camera just doesn't
+			 * make sense, use the video mode size.
+			 */
+
+			r.x = r.y = 0;
+			r.w = videoMode.width;
+			r.h = videoMode.height;
+			rect = &r;
+		}
+		else
+		{
+			/*
+			rect not specified - reuse current values
+			*/
+			r.w = RwRasterGetWidth(RwCameraGetRaster(camera));
+			r.h = RwRasterGetHeight(RwCameraGetRaster(camera));
+			r.x = r.y = 0;
+			rect = &r;
+		}
+	}
+
+	if (videoMode.flags & rwVIDEOMODEEXCLUSIVE)
+	{
+		/* derive ratio from aspect ratio */
+		vw.x = viewWindow;
+		vw.y = viewWindow / aspectRatio;
+	}
+	else
+	{
+		/* derive from pixel ratios */
+		if (rect->w > rect->h)
+		{
+			vw.x = viewWindow;
+			vw.y = (rect->h * viewWindow) / rect->w;
+		}
+		else
+		{
+			vw.x = (rect->w * viewWindow) / rect->h;
+			vw.y = viewWindow;
+		}
+	}
+
+	RwCameraSetViewWindow(camera, &vw);
 }
 
 RwStream* RwStreamOpen(RwStreamType type, RwStreamAccessType accessType,	const void *pData)
@@ -63,5 +142,30 @@ RpLight *RpLightSetColor(RpLight *light, const RwRGBAReal *color)
 }
 RpWorld *RpWorldAddLight(RpWorld *world, RpLight *light)
 {
-	return CallAndReturn<RpWorld*, 0x6211B0, RpWorld*, RpLight*>(world,light);
+	return CallAndReturn<RpWorld*, 0x61FFA0, RpWorld*, RpLight*>(world,light);
+}
+
+RpWorld *RpWorldRemoveLight(RpWorld *world, RpLight *light)
+{
+	return CallAndReturn<RpWorld*, 0x61FFF0, RpWorld*, RpLight*>(world,light);
+}
+
+RwCamera    *RwCameraSetViewWindow(RwCamera *camera, const RwV2d *viewWindow)
+{
+	return CallAndReturn<RwCamera*, 0x626360, RwCamera*, const RwV2d*>(camera,viewWindow);
+}
+
+RwInt32 RwEngineGetCurrentVideoMode()
+{
+	return CallAndReturn<RwInt32, 0x612740>();
+}
+
+RwVideoMode *RwEngineGetVideoModeInfo(RwVideoMode *modeinfo, RwInt32 modeIndex)
+{
+	return CallAndReturn<RwVideoMode*, 0x612710, RwVideoMode *, RwInt32>(modeinfo,modeIndex);
+}
+
+RwBool RpClumpDestroy(RpClump * clump)
+{
+	return CallAndReturn<RwBool, 0x61B380, RpClump*>(clump);
 }

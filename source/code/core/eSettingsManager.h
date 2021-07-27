@@ -7,7 +7,7 @@ public:
 	
 	static bool	bEnableStatsManager;
 	static bool bHookSkinLoader;
-	static bool bUseEmptyPAKFile;
+	static bool bHideVersionInfo;
 
 	static bool bIncreaseMapLimits;
 	static bool bForceStaticExecutionCamera;

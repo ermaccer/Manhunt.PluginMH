@@ -7,30 +7,39 @@
 
 struct eSkinEntry
 {
-	int    iID;
+	std::string sName;
 	std::string sModelFile;
 	std::string sTxdFile;
 	std::string sRootName;
-	int  iShowWeapons;
+	bool  iShowWeapons;
 	int  iFlag;
 };
 
 class eSkinLoader {
 public:
 	static std::vector<eSkinEntry> vSkins;
-
-	static void InitHooks();
-	static int	ReadFile(const char* name);
-	static int  Hook(int skinID);
-	static int	FindSkin(int skinID);
-
-
 	static bool ms_bSkinLoaded;
 	static RpClump* ms_pPlayerClump;
 	static float ms_fPlayerRotation;
-	static unsigned int ms_iRotationTimer;
+	static int ms_iCurrentSkin;
+	static int ms_iCurrentSkinAdjust;
+	static int ms_iCurrentSkinPos;
+
+	static void InitHooks();
+	static int	ReadFolder(const char* folder);
+	static int  Hook(int skinID);
+
+	static void LoadSkin(char* file);
+
+	static void SaveFile(int pos, int adj);
+	static void ReadFile();
+
+
 
 	static void LoadPlayerDff();
+	static void ReloadPlayerDff(int id);
+
+	static void Shutdown();
 
 };
 

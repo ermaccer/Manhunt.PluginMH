@@ -18,23 +18,31 @@
 #include "..\manhunt\Entity.h";
 #include "..\RenderWare.h"
 #include "eSkinLoader.h"
+#include "..\core\eSettingsManager.h"
 #include <iostream>
 
 int eNewFrontend::m_pStatsMenu[2] = { (int)eNewFrontend::ProcessStatsMenu, (int)eNewFrontend::StatsMenu };
 int eNewFrontend::ms_lastCustomMenu;
 float eNewFrontend::m_fBoxPositionX;
 float eNewFrontend::m_fBoxPositionY;
+float eNewFrontend::m_fSkinsBoxPositionX;
+float eNewFrontend::m_fSkinsBoxPositionY;
 char eNewFrontend::statsBuffer[256];
 wchar_t eNewFrontend::m_szStatsBuffer[128];
 int eNewFrontend::m_allStatsPages;
 int eNewFrontend::m_leftoverStatsPage;
 int eNewFrontend::m_nCurrentStatsPage;
 int eNewFrontend::m_nCurrentModsPage;
+int eNewFrontend::m_nCurrentSkinPos;
+int eNewFrontend::m_nSkinAdjustID;
 wchar_t* eNewFrontend::m_szCheatText = (wchar_t*)0x7D6360;
+RpWorld * eNewFrontend::ms_pMenuWorld;
 RpLight * eNewFrontend::ms_pMenuLight;
 
+	
 void eNewFrontend::InitHooks()
 {
+
 	InjectHook(0x600C20, eNewFrontend::MainMenu, PATCH_JUMP);
 	InjectHook(0x600B34, eNewFrontend::ProcessMainMenu, PATCH_JUMP);
 	InjectHook(0x5D70F9, eNewFrontend::HookSelectMenuBackground, PATCH_JUMP);
@@ -52,10 +60,18 @@ void eNewFrontend::Init()
 {
 	m_fBoxPositionX = 0.155f;
 	m_fBoxPositionY = 0.277f;
+	m_fSkinsBoxPositionX = 0.50f;
+	m_fSkinsBoxPositionY = 0.277f;
 	m_nCurrentStatsPage = 0;
 	m_nCurrentModsPage = 0;
 	m_allStatsPages = 3;
 
+	eSkinLoader::ReadFile();
+
+
+
+	m_nCurrentSkinPos = eSkinLoader::ms_iCurrentSkinPos;
+	m_nSkinAdjustID = eSkinLoader::ms_iCurrentSkinAdjust;
 }
 
 
@@ -244,10 +260,14 @@ bool eNewFrontend::IsCustomMenu(int menu)
 
 void eNewFrontend::DrawEVisionMark()
 {
-	CFrontend::SetDrawRGBA(255, 255, 255, 48);
-	char tmp[128] = {};
-	sprintf(tmp, "PluginMH %d.%d.%d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
-	CFrontend::Print8(tmp, 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
+	if (!eSettingsManager::bHideVersionInfo)
+	{
+		CFrontend::SetDrawRGBA(255, 255, 255, 48);
+		char tmp[128] = {};
+		sprintf(tmp, "PluginMH %d.%d.%d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
+		CFrontend::Print8(tmp, 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
+	}
+
 }
 
 void eNewFrontend::StatsMenu()
@@ -447,16 +467,16 @@ void eNewFrontend::Skins()
 {
 
 	CFrontend::DrawMenuCameraCounter(L"SKINS");
-	CFrontend::Print8("Cash", 0.5, 0.5, 1.0, 1.0, 0.0, FONT_TYPE_DEFAULT);
 
-	if (eSkinLoader::ms_pPlayerClump)
+
+	if (eSkinLoader::ms_pPlayerClump && eSkinLoader::ms_bSkinLoaded)
 	{
 		static float rotation = 0.0f;
 		static unsigned int LastFlash = 0;
 
-		const RwV3d pos = { 1.15f, -1.45f, 3.225f };
+		const RwV3d pos = { 1.15f, -1.25f, 4.05f };
 		const RwV3d axis2 = { 0.0f, 1.0f, 0.0f };
-		RwRGBAReal AmbientColor = { 0.65f, 0.65f, 0.65f, 1.0f };
+		RwRGBAReal AmbientColor = { 0.80, 0.80, 0.80, 1.0f };
 		if (GetTickCount() - LastFlash > 7) {
 			rotation += 1.0f;
 			if (rotation > 360.0f)
@@ -469,8 +489,159 @@ void eNewFrontend::Skins()
 		RwFrameTranslate(frame, &pos, rwCOMBINEPRECONCAT);
 		RwFrameRotate(frame, &axis2, rotation, rwCOMBINEPRECONCAT);
 		RwFrameUpdateObjects(frame);
+
+		CRenderer::SetIngameInfoRenderStates(1);
+
+		RpWorld *oldWorld = (RpWorld *)RWSRCGLOBAL(curWorld);
+
+		RWSRCGLOBAL(curWorld) = ms_pMenuWorld;
 		RpLightSetColor(ms_pMenuLight, &AmbientColor);
 		RpClumpRender(eSkinLoader::ms_pPlayerClump);
+		RWSRCGLOBAL(curWorld) = oldWorld;
+
+		CRenderer::SetIngameInfoRenderStates(0);
+	}
+
+	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX, m_fSkinsBoxPositionY, 0.40f, 0.6f, 180, 180, 180, 90, 0);
+
+	const char* skinsHelp = "Press ~up~ or ~down~ to change skin. ESC to save & quit.";
+	CFrontend::SetDrawRGBA(0, 0, 0, 255);
+	CFrontend::Print8(skinsHelp, 0.05f + 0.004f, 0.90f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+	CFrontend::SetDrawRGBA(255, 255, 255, 255);
+	CFrontend::Print8(skinsHelp, 0.05f, 0.90f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+
+	char skinNo[128] = {};
+	sprintf(skinNo, "Skins: %d", eSkinLoader::vSkins.size());
+	CFrontend::SetDrawRGBA(0, 0, 0, 255);
+	CFrontend::Print8(skinNo, m_fSkinsBoxPositionX + 0.30f + 0.004f, m_fSkinsBoxPositionY + 0.60f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+	CFrontend::SetDrawRGBA(255, 255, 255, 255);
+	CFrontend::Print8(skinNo, m_fSkinsBoxPositionX + 0.30f, m_fSkinsBoxPositionY + 0.60f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+
+
+	int skins = eSkinLoader::vSkins.size();
+
+	float arrowX = m_fSkinsBoxPositionX + 0.37f;
+	float downY = m_fSkinsBoxPositionY + 0.52f;
+	float upY = m_fSkinsBoxPositionY;
+	float arrow_x = 0.05f;
+	float arrow_y = 0.055f;
+	bool isDown = false;
+	bool isUp = false;
+
+	FEMouse mouse = CInputManager::GetFrontendMouse();
+
+	if (mouse.X >= arrowX && mouse.X < arrowX + arrow_x && mouse.Y >= downY && mouse.Y < downY + arrow_y)
+		isDown = true;
+
+	if (mouse.X >= arrowX && mouse.X < arrowX + arrow_x && mouse.Y >= upY && mouse.Y < upY + arrow_y)
+		isUp = true;
+
+
+
+	static unsigned int lastMScroll = 0;
+	if (GetTickCount() - lastMScroll > 25)
+	{
+		if (CPad::NewMouseControllerState.wheelUp)
+		{
+			isUp = true;
+			if (m_nCurrentSkinPos == 0)
+			{
+				if (eSkinLoader::vSkins.size() >= 11)
+					m_nSkinAdjustID--;
+				if (m_nSkinAdjustID < 0)
+					m_nSkinAdjustID = 0;
+			}
+
+			m_nCurrentSkinPos--;
+			if (m_nCurrentSkinPos < 0)
+				m_nCurrentSkinPos = 0;
+
+			eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+		}
+		if (CPad::NewMouseControllerState.wheelDown)
+		{
+			isDown = true;
+			if (m_nCurrentSkinPos == 10)
+			{
+				if (eSkinLoader::vSkins.size() > 10)
+					m_nSkinAdjustID++;
+				if (m_nSkinAdjustID > eSkinLoader::vSkins.size() - 11)
+					m_nSkinAdjustID = eSkinLoader::vSkins.size() - 11;
+			}
+			m_nCurrentSkinPos++;
+
+			if (eSkinLoader::vSkins.size() >= 11)
+			{
+				if (m_nCurrentSkinPos > 10)
+					m_nCurrentSkinPos = 10;
+			}
+			else
+				if (m_nCurrentSkinPos > eSkinLoader::vSkins.size() - 1)
+					m_nCurrentSkinPos = eSkinLoader::vSkins.size() - 1;
+
+			eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+		}
+		lastMScroll = GetTickCount();
+	}
+
+	if (eSkinLoader::vSkins.size() >= 11)
+	{
+		skins = 11;
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::Print8("~down~", arrowX + 0.004f, downY + 0.004, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+		if (isDown)
+			CFrontend::SetDrawRGBA(180, 180, 255, 255);
+		else
+			CFrontend::SetDrawRGBA(120, 120, 170, 255);
+		CFrontend::Print8("~down~", arrowX, downY, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+
+		CFrontend::SetDrawRGBA(0, 0, 0, 255);
+		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37 + 0.004f, upY + 0.004, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+		if (isUp)
+			CFrontend::SetDrawRGBA(180, 180, 255, 255);
+		else
+			CFrontend::SetDrawRGBA(120, 120, 170, 255);
+		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37, upY, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+
+	}
+
+
+
+
+	if (CPad::NewMouseControllerState.lmb)
+	{
+		static unsigned int lastScroll = 0;
+		if (GetTickCount() - lastScroll > 100)
+		{
+			if (isUp)
+			{
+				if (eSkinLoader::vSkins.size() > 10)
+					m_nSkinAdjustID--;
+				if (m_nSkinAdjustID < 0)
+					m_nSkinAdjustID = 0;
+				eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+			}
+			if (isDown)
+			{
+				if (eSkinLoader::vSkins.size() > 10)
+					m_nSkinAdjustID++;
+				if (m_nSkinAdjustID > eSkinLoader::vSkins.size() - 11)
+					m_nSkinAdjustID = eSkinLoader::vSkins.size() - 11;
+				eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+			}
+			lastScroll = GetTickCount();
+		}
+
+
+	}
+
+
+
+
+
+	for (int i = 0; i < skins; i++)
+	{
+		AddSkinButton(i + m_nSkinAdjustID, i);
 	}
 
 
@@ -479,8 +650,97 @@ void eNewFrontend::Skins()
 void eNewFrontend::ProcessSkins()
 {
 	eSkinLoader::LoadPlayerDff();
+
 	if (CInputManager::FrontendPressedEscape())
+	{
+		eSkinLoader::SaveFile(m_nCurrentSkinPos,m_nSkinAdjustID);
 		CFrontend::SetCurrentMenu(MENU_19);
+	}
+
+
+	if (CInputManager::FrontendPressedUp())
+	{
+		if (m_nCurrentSkinPos == 0)
+		{
+			if (eSkinLoader::vSkins.size() > 10)
+				m_nSkinAdjustID--;
+			if (m_nSkinAdjustID < 0)
+				m_nSkinAdjustID = 0;
+		}
+
+		m_nCurrentSkinPos--;
+		if (m_nCurrentSkinPos < 0)
+			m_nCurrentSkinPos = 0;
+
+		eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+	}
+
+
+	if (CInputManager::FrontendPressedDown())
+	{
+		if (m_nCurrentSkinPos == 10)
+		{
+			if (eSkinLoader::vSkins.size() >= 11)
+				m_nSkinAdjustID++;
+			if (m_nSkinAdjustID > eSkinLoader::vSkins.size() - 11)
+				m_nSkinAdjustID = eSkinLoader::vSkins.size() - 11;
+		}
+		m_nCurrentSkinPos++;
+
+		if (eSkinLoader::vSkins.size() >= 11)
+		{
+			if (m_nCurrentSkinPos > 10)
+				m_nCurrentSkinPos = 10;
+		}
+		else
+			if (m_nCurrentSkinPos > eSkinLoader::vSkins.size() - 1)
+				m_nCurrentSkinPos = eSkinLoader::vSkins.size() - 1;
+
+
+
+		eSkinLoader::ReloadPlayerDff(m_nCurrentSkinPos + m_nSkinAdjustID);
+	}
+
+
+
+}
+
+void eNewFrontend::AddSkinButton(int id, int pos)
+{
+	int len = eSkinLoader::vSkins[id].sName.length();
+
+	float x = m_fSkinsBoxPositionX + 0.01f;
+	float y = m_fSkinsBoxPositionY + 0.03f + 0.05f* pos;
+	float x_size = len * 0.0097f;
+	float y_size = 0.045f;
+
+	
+	FEMouse mouse = CInputManager::GetFrontendMouse();
+
+	bool isInside = false;
+
+	if (mouse.X >= x && mouse.X < x + x_size && mouse.Y >= y && mouse.Y < y + y_size)
+		isInside = true;
+
+
+	if (isInside)
+	{
+		if (CPad::NewMouseControllerState.lmb)
+		{
+			m_nCurrentSkinPos = pos;
+			eSkinLoader::ReloadPlayerDff(id);
+		}
+	}
+
+	CFrontend::SetDrawRGBA(0, 0, 0, 255);
+	CFrontend::Print8(eSkinLoader::vSkins[id].sName.c_str(), x + 0.002f, y + 0.004f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+
+	if (pos == m_nCurrentSkinPos)
+		CFrontend::SetDrawRGBA(255, 255, 255, 255);
+	else
+		CFrontend::SetDrawRGBA(130, 130, 130, 255);
+
+	CFrontend::Print8(eSkinLoader::vSkins[id].sName.c_str(), x, y, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 }
 
 void eNewFrontend::DrawStatText(int id)
@@ -509,7 +769,6 @@ void eNewFrontend::DrawStatText(int id)
 void eNewFrontend::DrawModText(int id)
 {
 
-
 }
 
 void __declspec(naked) eNewFrontend::HookSelectMenuBackground()
@@ -530,7 +789,7 @@ void __declspec(naked) eNewFrontend::HookSelectMenuBackground()
 	}
 	else if (CFrontend::ms_currentMenu == MENU_SKINS)
 	{
-		CFrontend::SetMenuBackground(CFileNames::ms_SceneEpPath.str);
+		CFrontend::SetMenuBackground(CFileNames::ms_BonusEpPath.str);
 	}
 
 	_asm
@@ -588,9 +847,31 @@ void eNewFrontend::HookDrawRasterLineFX(int a1, int a2, int a3, int a4)
 
 void eNewFrontend::HookCreateMenuLight()
 {
-	ms_pMenuLight = RpLightCreate(rpLIGHTAMBIENT);
+	RwBBox bb;
 
-	if (ms_pMenuLight)
-		printf("light ok\n");
-	//RpWorld* world = 
+    bb.inf.x = bb.inf.y = bb.inf.z = -100.0f;
+    bb.sup.x = bb.sup.y = bb.sup.z = 100.f;
+
+	RpWorld *oldWorld = (RpWorld *)RWSRCGLOBAL(curWorld);
+	{
+		ms_pMenuWorld = RpWorldCreate(&bb);
+	}
+	RWSRCGLOBAL(curWorld) = oldWorld;
+	
+	ms_pMenuLight = RpLightCreate(rpLIGHTAMBIENT);
+	RpLightSetFlags(ms_pMenuLight, rpLIGHTLIGHTATOMICS);
+	
+	RpWorldAddLight(ms_pMenuWorld, ms_pMenuLight);
+
+
+	// 3d aspect ratio calculation
+	float X = *(float*)0x829584;
+	float Y = *(float*)0x829588;
+	float unk = *(float*)0x7D3450;
+
+	float ratio = X / Y;
+
+	CameraSize(CFrontend::GetFrontendCamera(), NULL, SCREEN_VIEWWINDOW, ratio);
+
+	//RwCameraSetViewWindow(CFrontend::GetFrontendCamera(), &aspectRatio);
 }

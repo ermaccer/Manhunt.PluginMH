@@ -26,6 +26,7 @@ private:
 public:
 	static void InitHooks();
 	static int  ms_lastCustomMenu;
+	static RpWorld* ms_pMenuWorld;
 	static RpLight* ms_pMenuLight;
 
 
@@ -38,6 +39,9 @@ public:
 
 	static float m_fBoxPositionX;
 	static float m_fBoxPositionY;
+	static float m_fSkinsBoxPositionX;
+	static float m_fSkinsBoxPositionY;
+
 	static int   m_pStatsMenu[2];
 	static int   m_allStatsPages;
 	static int   m_leftoverStatsPage;
@@ -53,8 +57,14 @@ public:
 	static void NewSettingMenu();
 	static void ProcessNewSettingMenu();
 
+	static int m_nCurrentSkinPos;
+	static int m_nSkinAdjustID;
+
 	static void Skins();
 	static void ProcessSkins();
+
+	static void AddSkinButton(int id, int pos);
+
 
 	static void DrawStatText(int id);
 	static void DrawModText(int id);

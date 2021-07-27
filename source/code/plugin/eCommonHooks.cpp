@@ -13,11 +13,12 @@
 #include "..\core\FileFunctions.h"
 #include "..\manhunt\Scene.h"
 #include "..\manhunt\Player.h"
+#include "..\plugin\eSkinLoader.h"
 
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
-
+	eSkinLoader::Shutdown();
 	Call<0x489D50>();
 }
 
@@ -170,6 +171,8 @@ void CommonHooks::GameStartInit()
 	Call<0x5EF510 >();
 	if (eSettingsManager::iForcePlayerSkin > 0)
 		CEntityManager::ms_playerCharacterID = eSettingsManager::iForcePlayerSkin;
+
+	eSkinLoader::Shutdown();
 }
 
 

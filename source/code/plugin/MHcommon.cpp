@@ -43,8 +43,16 @@ void GiveWeaponToEntity(CEntity * ent, int weaponID)
 		CCharacter::CreateInventoryItem(ent, weaponID, true);
 		int inventory_handle = *(int*)((int)ent + 336);
 		int item = CInventory::FindItemWithCollectableType(inventory_handle, weaponID);
-		CAmmoWeapon* weapon = (CAmmoWeapon*)*(int*)(item + 428);
-		weapon->SetAmmo(1000);
+
+		CWeapon* wep = (CWeapon*)*(int*)(item + 428);
+
+		if (wep->m_TypeData->m_eWeaponClass == WC_AMMO)
+		{
+			CAmmoWeapon* ammo = (CAmmoWeapon*)*(int*)(item + 428);
+			ammo->SetAmmo(1000);
+		}
+
+
 
 		char tmp[256];
 		sprintf(tmp, "[%x] - Weapon %d spawned", ent, weaponID);

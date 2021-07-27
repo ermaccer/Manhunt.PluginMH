@@ -214,4 +214,5 @@ Additionally, TOC (Table Of Contents) no longer needs to be updated!
 
 # Credits
 **Fire_Head** - big help with RenderWare research.
+
 https://github.com/GTAmodding/re3 - Skins menu is mostly based on RE3 skins code.

@@ -875,3 +875,10 @@ void eNewFrontend::HookCreateMenuLight()
 
 	//RwCameraSetViewWindow(CFrontend::GetFrontendCamera(), &aspectRatio);
 }
+
+void eNewFrontend::DestroyMenuLightWorld()
+{
+	RpWorldRemoveLight(ms_pMenuWorld, ms_pMenuLight);
+	RpLightDestroy(ms_pMenuLight);
+	RpWorldDestroy(ms_pMenuWorld);
+}

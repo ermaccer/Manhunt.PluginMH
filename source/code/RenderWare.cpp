@@ -169,3 +169,8 @@ RwBool RpClumpDestroy(RpClump * clump)
 {
 	return CallAndReturn<RwBool, 0x61B380, RpClump*>(clump);
 }
+
+RwBool RpLightDestroy(RpLight *light)
+{
+	return CallAndReturn<RwBool, 0x621700, RpLight*>(light);
+}

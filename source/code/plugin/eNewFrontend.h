@@ -76,4 +76,6 @@ public:
 
 	static void HookDrawRasterLineFX(int a1, int a2, int a3, int a4);
 	static void HookCreateMenuLight();
+
+	static void DestroyMenuLightWorld();
 };

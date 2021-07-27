@@ -14,11 +14,13 @@
 #include "..\manhunt\Scene.h"
 #include "..\manhunt\Player.h"
 #include "..\plugin\eSkinLoader.h"
+#include "eNewFrontend.h"
 
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
 	eSkinLoader::Shutdown();
+	eNewFrontend::DestroyMenuLightWorld();
 	Call<0x489D50>();
 }
 

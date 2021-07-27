@@ -6,9 +6,6 @@ A plugin for Manhunt.
 PluginMH requires https://github.com/ThirteenAG/Ultimate-ASI-Loader/releases .
 Extract dinput8.dll to your Manhunt folder, then rename it to ddraw.dll.
 
-
-**NOTE: Releases files have UAL already in the archive!**
-
 Download PluginMH.zip from *Releases* to obtain binary .asi file and .ini, extract it 
 to your Manhunt folder.
 

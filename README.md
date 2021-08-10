@@ -121,6 +121,7 @@ Needless to say, PIGGSUIT, HELLSUIT and BUNYSUIT cheats have no longer any effec
 
 Selected skin is saved to a PluginMH.ini file which will be located in your Manhunt User Files directory.
 
+Download more skins from https://ermaccer.github.io/categories/pluginmh-skins/ .
 
 ### Modifications
 A page used to see mods loaded by Modloader.

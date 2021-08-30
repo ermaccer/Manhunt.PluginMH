@@ -101,6 +101,8 @@ public:
 	void DrawMenu();
 	void ProcessEnter();
 	void Clear();
+
+
 	// menu stuff
 	void AddCategory(std::string name, bool isWeapon = false);
 	void AddAnimsCategory(std::string name);
@@ -125,6 +127,8 @@ std::string GetStatusAsString(int value);
 std::string GetAnimationName(int id);
 void		SavePosition();
 void		LoadPosition();
+void        SetDifficultyEasy();
+void		SetDifficultyHard();
 
 
 extern eMenu TheMenu;

@@ -68,6 +68,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,6 +90,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -137,6 +139,7 @@
     <ClInclude Include="code\plugin\eCommonHooks.h" />
     <ClInclude Include="code\plugin\eCustomAnimManager.h" />
     <ClInclude Include="code\plugin\eCustomTableOfContents.h" />
+    <ClInclude Include="code\plugin\eGUI.h" />
     <ClInclude Include="code\plugin\eLog.h" />
     <ClInclude Include="code\plugin\eMapLimits.h" />
     <ClInclude Include="code\plugin\eModSettings.h" />
@@ -149,6 +152,7 @@
     <ClInclude Include="code\plugin\modloader\eCustomClumpDict.h" />
     <ClInclude Include="code\plugin\modloader\eModLoader.h" />
     <ClInclude Include="code\plugin\script\eScriptExtender.h" />
+    <ClInclude Include="code\plugin\weapon_adjuster\eWeaponAdjuster.h" />
     <ClInclude Include="code\RenderWare.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IniReader.h" />
@@ -189,6 +193,7 @@
     <ClCompile Include="code\plugin\eCommonHooks.cpp" />
     <ClCompile Include="code\plugin\eCustomAnimManager.cpp" />
     <ClCompile Include="code\plugin\eCustomTableOfContents.cpp" />
+    <ClCompile Include="code\plugin\eGUI.cpp" />
     <ClCompile Include="code\plugin\eLog.cpp" />
     <ClCompile Include="code\plugin\eMapLimits.cpp" />
     <ClCompile Include="code\plugin\eModSettings.cpp" />
@@ -201,6 +206,7 @@
     <ClCompile Include="code\plugin\modloader\eCustomClumpDict.cpp" />
     <ClCompile Include="code\plugin\modloader\eModLoader.cpp" />
     <ClCompile Include="code\plugin\script\eScriptExtender.cpp" />
+    <ClCompile Include="code\plugin\weapon_adjuster\eWeaponAdjuster.cpp" />
     <ClCompile Include="code\RenderWare.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IniReader.cpp" />

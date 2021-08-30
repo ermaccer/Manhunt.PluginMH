@@ -33,6 +33,9 @@ public:
 	static void Init();
 	static void MainMenu();
 	static bool ProcessMainMenu();
+
+	static void SettingsMenu();
+
 	static bool IsCustomMenu(int menu);
 
 	static void DrawEVisionMark();
@@ -79,3 +82,4 @@ public:
 
 	static void DestroyMenuLightWorld();
 };
+

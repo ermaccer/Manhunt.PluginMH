@@ -18,3 +18,8 @@ char * CCollectable::FastGetNameStringFromType(int weaponID)
 	Call<0x4C67F0, int, int>(weaponID, (int)&tempBuffer);
 	return tempBuffer;
 }
+
+eCollectableType CCollectable::GetTypeFromNameString(char * string)
+{
+	return CallAndReturn<eCollectableType, 0x4C5A90, char*>(string);
+}

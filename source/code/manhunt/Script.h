@@ -14,7 +14,7 @@ public:
 	char  _pad[1092];
 	int   m_commandID;
 	char  __pad[28];
-	int m_hogProcessorValue;
+	int   m_hogProcessorValue;
 
 	int		PopInt();
 	char*	PopCharStar();

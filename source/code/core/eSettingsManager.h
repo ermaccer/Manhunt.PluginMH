@@ -11,6 +11,10 @@ public:
 
 	static bool bIncreaseMapLimits;
 	static bool bForceStaticExecutionCamera;
+
+
+	static bool bEnableWeaponAdjuster;
+	static bool bEnableExecutionsWithFirearms;
 	
 	// anims
 	static bool bHookCustomAnimManager;

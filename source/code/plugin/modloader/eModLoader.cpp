@@ -14,6 +14,7 @@ std::vector<std::string> eModLoader::ignoredFiles;
 std::vector<std::string> eModLoader::files;
 std::vector<std::string> eModLoader::modFolders;
 std::vector<eModEntry> eModLoader::m_vMods;
+
 void eModLoader::Init()
 {
 	InjectHook(0x4D4FE8, LoadFile, PATCH_CALL);
@@ -22,7 +23,6 @@ void eModLoader::Init()
 	InjectHook(0x4D5326, LoadFile, PATCH_CALL);
 	InjectHook(0x5F6B2D, LoadFile, PATCH_CALL);
 	InjectHook(0x5FC88E, LoadFile, PATCH_CALL);
-
 }
 
 void eModLoader::InitClumpDicts()
@@ -69,9 +69,6 @@ void eModLoader::Refresh()
 void eModLoader::ScanFolderForFiles(const char* folder)
 {
 	std::filesystem::current_path(getExecutablePath());
-
-
-
 
 	if (!std::filesystem::exists(folder))
 	{

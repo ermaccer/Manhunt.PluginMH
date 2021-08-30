@@ -10,6 +10,9 @@ bool eSettingsManager::bIncreaseMapLimits;
 bool eSettingsManager::bForceStaticExecutionCamera;
 bool eSettingsManager::bEnableStatsManager;
 
+bool eSettingsManager::bEnableWeaponAdjuster;
+bool eSettingsManager::bEnableExecutionsWithFirearms;
+
 bool eSettingsManager::bDisableHeartBeat;
 bool eSettingsManager::bDisableBreathing;
 bool eSettingsManager::bHookCustomAnimManager;
@@ -50,6 +53,8 @@ void eSettingsManager::Init()
 	bCustomAnimManagerUseGlobalFile = reader.ReadBoolean("Settings", "bCustomAnimMangerUseGlobalFile", false);
 	iCustomAnimManagerSize = reader.ReadInteger("Limits", "Animations", 1000);
 
+	bEnableWeaponAdjuster = reader.ReadBoolean("Settings", "bEnableWeaponAdjuster", false);
+	bEnableExecutionsWithFirearms = reader.ReadBoolean("Settings", "bEnableExecutionsWithFirearms", false);
 
 	bHookCustomTableOfContents = reader.ReadBoolean("Settings", "bHookCustomTableOfContents", false);
 	iCustomTableOfContentsBufferSize = reader.ReadInteger("Settings", "iCustomTableOfContentsBufferSize", 25);

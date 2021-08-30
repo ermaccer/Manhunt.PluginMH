@@ -23,6 +23,8 @@
 #include "code/plugin/eMapLimits.h"
 #include "code/core/FileFunctions.h"
 #include "code/plugin/eLog.h"
+#include "code/plugin/weapon_adjuster/eWeaponAdjuster.h"
+#include <Shlwapi.h>
 
 
 
@@ -35,16 +37,17 @@ int GenericFalseReturn() { return 0; }
 void  GenericDummy() { }
 void Init()
 {
-	//AllocConsole();
-	//freopen("CONIN$", "r", stdin);
-	//freopen("CONOUT$", "w", stdout);
-	//freopen("CONOUT$", "w", stderr);
+	AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 
 	eSettingsManager::Init();
 
 	if (eSettingsManager::bEnableLog)
 		eLog::Initialise();
-
+	if (eSettingsManager::bEnableWeaponAdjuster)
+		eWeaponAdjuster::InitHooks();
 	eModLoader::Init();
 
 	if (eSettingsManager::bSkipIntroSequence) eQoLChanges::SkipIntro();
@@ -67,6 +70,7 @@ void Init()
 	DoCommonPatches();
 	eStatsManager::Initialize();
 	eNewFrontend::Init();
+
     eCustomTableOfContents::InitHooks();
 	if (eSettingsManager::bHookCustomAnimManager)
       CCustomAnimManager::InitHooks();
@@ -98,6 +102,8 @@ void Init()
 
 	InjectHook(0x5E279F, MainHooks::HookWndProc, PATCH_CALL);
 
+
+
 	eLog::Message(__FUNCTION__, "PluginMH initialized!");
 
 }
@@ -113,3 +119,4 @@ extern "C"
 		else Init();
 	}
 }
+

@@ -19,6 +19,16 @@ enum eFrontendMainMenuButtons {
 };
 
 
+enum eFrontendSettingsButtons {
+	MB_DIFF,
+	MB_CONTR,
+	MB_LANGUA,
+	MB_AUDIO,
+	MB_VIDEO,
+	MB_BRIGHTN,
+	MB_DEFSET
+};
+
 
 enum eMenuTypes {
 	MENU_EMPTY,
@@ -116,6 +126,7 @@ public:
 	static void DrawDisc2D(CVector* pos, float scale, int red, int green, int blue, float a6);
 	static void DrawDisc3D(CVector* pos, float scale, int red, int green, int blue, float a6);
 
+	static void Set_Difficulty(int difficulty);
 
 	static RwCamera* GetFrontendCamera();
 };

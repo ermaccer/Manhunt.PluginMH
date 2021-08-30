@@ -1,6 +1,6 @@
 #pragma once
 
-enum eCollectableTypes {
+enum eCollectableType {
 	CT_TRIPWIRE = 1,
 	CT_GASOLINE,
 	CT_WATER,
@@ -106,9 +106,29 @@ enum eCollectableTypes {
 	CT_AMMO_SNIPER,
 	CT_CHAINSAW_PLAYER,
 	CT_DVTAPE,
-	CT_HANDYCAM
-
+	CT_HANDYCAM,
+	TOTAL_COLLECTABLES
 };
+
+enum eExecutions {
+	EXEC_BAG,
+	EXEC_KNIFE,
+	EXEC_CROWBAR,
+	EXEC_BAT,
+	EXEC_SICKLE,
+	EXEC_WIRE,
+	EXEC_CLEAVER,
+	EXEC_AXE,
+	EXEC_NIGHTSTICK,
+	EXEC_HAMMER,
+	EXEC_CHAINSAW,
+	EXEC_PIGSHARD,
+	EXEC_PIGWIRE,
+	EXEC_PIGSPIK,
+	EXEC_RAMIREZ,
+	EXEC_DEFAULT
+};
+
 
 struct CCollectableTypeData {
 public:
@@ -121,4 +141,5 @@ public:
 	static wchar_t* GetNameKey16(int id);
 	static void     GetNameStringFromType(int weaponID, char *dest);
 	static char*    FastGetNameStringFromType(int weaponID);
+	static eCollectableType     GetTypeFromNameString(char* string);
 };

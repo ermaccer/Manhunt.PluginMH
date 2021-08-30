@@ -19,6 +19,7 @@
 #include "..\RenderWare.h"
 #include "eSkinLoader.h"
 #include "..\core\eSettingsManager.h"
+#include "eGUI.h"
 #include <iostream>
 
 int eNewFrontend::m_pStatsMenu[2] = { (int)eNewFrontend::ProcessStatsMenu, (int)eNewFrontend::StatsMenu };
@@ -132,6 +133,7 @@ void eNewFrontend::MainMenu()
 	y_temp += CFrontend::ms_fMenuPositionY;
 	CFrontend::AddOption(CText::GetFromKey16("QUITPRG"), CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_QUITPRG);
+
 }
 
 bool __declspec(naked) eNewFrontend::ProcessMainMenu()
@@ -247,6 +249,18 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 		CFrontend::PrintInfo(m_szCheatText, (wchar_t*)0x7D6360, (wchar_t*)0x7D6360, (wchar_t*)0x7D6360);
 
 	_asm jmp jmpPoint
+
+}
+
+void eNewFrontend::SettingsMenu()
+{
+	float x_pos = *(float*)0x7C8718;
+	float y_pos = *(float*)0x7C871C;
+	float y_temp = 0.0f;
+	float y_adjust = 0.30000001f;
+
+
+	CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
 
 }
 
@@ -413,7 +427,7 @@ void eNewFrontend::NewSettingMenu()
 	CFrontend::AddOption(CText::GetFromKey16("SETT"), CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == LS_ORIGINAL);
 	y_temp = y_pos + y_adjust;
-	CFrontend::AddOption(L"MOD SETTINGS", CFrontend::ms_fMenuPositionX, y_temp
+	CFrontend::AddOption(L"PLUGINMH SETTINGS", CFrontend::ms_fMenuPositionX, y_temp
 		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == LS_NEW);
 	y_temp += CFrontend::ms_fMenuPositionY;
 	CFrontend::AddOption(L"BACK", CFrontend::ms_fMenuPositionX, y_temp

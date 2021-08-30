@@ -33,8 +33,6 @@ void eLog::Message(char* function, char* format, ...)
 	if (!eSettingsManager::bEnableLog)
 		return;
 
-
-
 	char msg[2048];
 
 	va_list args;

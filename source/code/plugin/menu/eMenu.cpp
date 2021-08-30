@@ -41,7 +41,7 @@ int bPlayerInfiniteHealth = 0;
 int bHideMoon = 0;
 int bHideStars = 0;
 int bFallDamage = 1;
-
+int bLevelTimer = 0;
 int bSilenceWeapons = 0;
 
 char& bTimer = *(char*)0x7D5A08;
@@ -162,6 +162,8 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Log Gamepad",&bControllerDebug);
 	AddToggleIntEntry("Silence Firearms", &bSilenceWeapons);
 	AddToggleIntEntry("Infinite Ammo", &bInfiniteAmmo);
+	AddFunctionEntry("Set Difficulty To Fetish", SetDifficultyEasy);
+	AddFunctionEntry("Set Difficulty To Hardcore", SetDifficultyHard);
 	AddCategory("Misc.");
 
 
@@ -275,6 +277,25 @@ void eMenu::ProcessMenu()
 		sprintf(buffer, "Materials = %d/%d Missing Materials = %d", gNewCollisionMaterialManager.m_numWorldMaterials, AMOUNT_OF_MATERIALS, gNewCollisionMaterialManager.m_numMissingMaterials);
 		CFrontend::SetDrawRGBA(255, 255,255, 255);
 		CFrontend::Print8(buffer, 0.1f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+	}
+
+	if (bLevelTimer)
+	{
+		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+		if (plr)
+		{
+			plr->AccumulateTime();
+			Call<0x5DB4C0, int>(*(int*)0x7108F0 + *(int*)(CScene::ms_pPlayer + 2112) - *(int*)(CScene::ms_pPlayer + 2108));
+
+			int minutes = *(int*)0x7C9604 % 60;
+			int seconds = *(int*)0x7C9608;
+			char timer[256];
+			sprintf(timer,"%02d:%02d", minutes, seconds);
+			CFrontend::SetDrawRGBA(255, 255, 255, 255);
+			CFrontend::Print8(timer, 0.45f, 0.04f, 1.0f, 1.0f, 0, FONT_TYPE_DEFAULT);
+
+		}
+
 	}
 
 	if (IsWindowFocused())
@@ -799,6 +820,16 @@ void LoadPosition()
 {
 	CEntity* plr = CScene::FindPlayer();
 	plr->SetLocation(&TheMenu.savedPosition);
+}
+
+void SetDifficultyEasy()
+{
+	CFrontend::Set_Difficulty(0);
+}
+
+void SetDifficultyHard()
+{
+	CFrontend::Set_Difficulty(1);
 }
 
 bool KeyHit(unsigned int keyCode)

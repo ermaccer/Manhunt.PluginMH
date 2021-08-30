@@ -6,4 +6,5 @@ public:
 	void StartLookAround();
 	void ForcePlayAnim(const char* name);
 	void ForcePlayFullBodyAnim(const char* name);
+	void AccumulateTime();
 };

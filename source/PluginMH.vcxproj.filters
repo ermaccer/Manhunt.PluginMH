@@ -46,6 +46,9 @@
     <Filter Include="Header Files\manhunt\game\core">
       <UniqueIdentifier>{16845170-a99b-49b9-bb35-12e48f94822c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\plugin\weapon_adjuster">
+      <UniqueIdentifier>{3337f3f3-bb55-4f55-b89d-4c039014b684}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -222,6 +225,12 @@
     <ClInclude Include="code\RenderWare.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="code\plugin\eGUI.h">
+      <Filter>Header Files\plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="code\plugin\weapon_adjuster\eWeaponAdjuster.h">
+      <Filter>Header Files\plugin\weapon_adjuster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -370,6 +379,12 @@
     </ClCompile>
     <ClCompile Include="code\RenderWare.cpp">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\eGUI.cpp">
+      <Filter>Header Files\plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\weapon_adjuster\eWeaponAdjuster.cpp">
+      <Filter>Header Files\plugin\weapon_adjuster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

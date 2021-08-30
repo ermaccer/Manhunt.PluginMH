@@ -41,7 +41,6 @@ int eSkinLoader::ReadFolder(const char * folder)
 {
 	std::filesystem::current_path(getExecutablePath());
 
-	printf("folder: %s\n", folder);
 	if (!std::filesystem::exists(folder))
 	{
 		MessageBoxA(0, "Folder does not exist!", folder, 0);
@@ -63,8 +62,6 @@ int eSkinLoader::ReadFolder(const char * folder)
 	for (int i = 0; i < skinFiles.size(); i++)
 		LoadSkin((char*)skinFiles[i].c_str());
 
-	printf("%d\n", vSkins.size());
-	
 	return 1;
 }
 

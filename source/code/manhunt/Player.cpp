@@ -15,3 +15,8 @@ void CPlayer::ForcePlayFullBodyAnim(const char * name)
 {
 	CallMethod<0x46E260, CEntity*, const char*>(this, name);
 }
+
+void CPlayer::AccumulateTime()
+{
+	CallMethod<0x45BB10,CPlayer*>(this);
+}

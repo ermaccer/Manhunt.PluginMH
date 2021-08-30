@@ -10,6 +10,7 @@
 eWeaponEntry  eWeaponAdjuster::m_vWeapons[TOTAL_COLLECTABLES];
 void eWeaponAdjuster::InitHooks()
 {
+
 	if (ReadFile("data\\weapons.dat"))
 	{
 		InjectHook(0x470F82, CCollectable_IsSniperRifle, PATCH_CALL);
@@ -74,8 +75,6 @@ bool eWeaponAdjuster::ReadFile(const char * path)
 			sprintf(wep.m_szExecution, execution);
 
 			m_vWeapons[GetTypeFromStr(collectableType)] = wep;
-
-			printf("%d %d %s\n", wep.m_nType, wep.m_iFlags, wep.m_szExecution);
 		}
 
 	}

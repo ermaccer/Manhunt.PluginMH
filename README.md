@@ -141,7 +141,11 @@ Allows to play the game in first person perspective.
 
 
 
+# Weapon Adjuster
 
+Allows to change hardcoded flags.
+
+*TODO*
 
 # Modloader
 Modloader is a feature inspired by GTA Modloader by link2012,
@@ -226,5 +230,3 @@ sz
 
 # Credits
 **Fire_Head** - big help with RenderWare research.
-
-https://github.com/GTAmodding/re3 - Skins menu is mostly based on RE3 skins code.

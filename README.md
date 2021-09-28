@@ -145,7 +145,7 @@ Allows to play the game in first person perspective.
 
 Allows to change hardcoded flags.
 
-*TODO*
+https://github.com/ermaccer/Manhunt.PluginMH/wiki/Weapon-Adjuster
 
 # Modloader
 Modloader is a feature inspired by GTA Modloader by link2012,

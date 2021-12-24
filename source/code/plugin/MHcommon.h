@@ -5,3 +5,5 @@ void CreateEntity(char* name, CVector* pos);
 void GiveWeaponToEntity(CEntity* ent, int weaponID);
 
 void GiveWeaponToPlayer(int weaponID);
+
+CEntity* GetHunterAboutToBeExecuted();

@@ -9,6 +9,7 @@
 #include "..\manhunt\Inventory.h"
 #include "..\manhunt\Scene.h"
 #include "..\manhunt\AI.h"
+#include "..\manhunt\Player.h"
 
 void CreateEntity(char * name, CVector* pos)
 {
@@ -64,4 +65,12 @@ void GiveWeaponToEntity(CEntity * ent, int weaponID)
 void GiveWeaponToPlayer(int weaponID)
 {
 	GiveWeaponToEntity(CScene::FindPlayer(), weaponID);
+}
+
+CEntity * GetHunterAboutToBeExecuted()
+{
+	CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+	CEntity* hunt = *(CEntity**)((int)plr + 0x8B4);
+
+	return hunt;
 }

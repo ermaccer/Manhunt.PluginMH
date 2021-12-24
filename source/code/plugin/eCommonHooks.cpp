@@ -19,6 +19,7 @@
 #include "classes/eCustomProjectile.h"
 #include "..\manhunt\String.h"
 #include "..\manhunt\SpecialFX.h"
+#include "MHcommon.h"
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
@@ -288,13 +289,11 @@ void __declspec(naked) CommonHooks::ArmsPosition_PlayerFPS()
 	}
 }
 
-void CommonHooks::DisableExecutionCamera()
+void __declspec(naked) CommonHooks::DisableExecutionCamera()
 {
 	static int jmpContinue = 0x590332;
 	static int jmpFail = 0x590A80;
-
-	// get entity about to be executed by player
-	if (*(CEntity**)((int)CScene::FindPlayer() + 0x8B4))
+	if (GetHunterAboutToBeExecuted())
 	{
 		_asm {
 			jmp jmpFail

@@ -20,3 +20,4 @@ void CPlayer::AccumulateTime()
 {
 	CallMethod<0x45BB10,CPlayer*>(this);
 }
+

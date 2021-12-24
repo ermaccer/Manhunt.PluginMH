@@ -7,5 +7,8 @@ struct CString
 	short cap;
 
 	CString();
+	CString(const char* text);
+	~CString();
+
 	void __as(CString* src, CString* dest);
 };

@@ -17,11 +17,14 @@
 #include "..\..\manhunt\AmmoWeapon.h"
 #include "..\..\manhunt\Player.h"
 #include "..\..\manhunt\Weather.h"
-
+#include "..\..\manhunt\String.h"
+#include "..\..\manhunt\SpecialFX.h"
+#include "..\..\manhunt\AI.h"
 
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
 #include "..\..\plugin\eCustomAnimManager.h"
+#include "..\..\plugin\console\eConsole.h"
 #include "..\..\manhunt\core.h"
 #include "..\..\..\IniReader.h"
 #include "..\eMapLimits.h"
@@ -30,29 +33,11 @@
 
 // custom
 
-int bDisplayPlayerCoords = 0;
-int bDisplayPlayerCoordsReal = 0;
-int bControllerDebug = 0;
-int bNewManagerDebug = 0;
-int bDisableLockonTriangles = 0;
-int bDisplaySavedPositionMarker = 0;
-int bGodMode = 0;
-int bPlayerInfiniteHealth = 0;
-int bHideMoon = 0;
-int bHideStars = 0;
-int bFallDamage = 1;
-int bLevelTimer = 0;
-int bSilenceWeapons = 0;
 
 char& bTimer = *(char*)0x7D5A08;
 char& bActivateTimer = *(char*)0x7D5A0C;
 char& bBodyCount = *(char*)0x7D5A18;
 
-int bEnableKillCounter = 0;
-int bInfiniteAmmo = 0;
-
-
-static unsigned int iTimer = GetTickCount();
 char msgBuffer[256];
 char buffer[256];
 eMenu TheMenu;
@@ -60,7 +45,6 @@ eMenu TheMenu;
 
 void eMenu::PreInitialize()
 {
-
 	CIniReader ini("");
 
 	KeyEnableMenu = ini.ReadInteger("Keys.Menu", "keyMenuEnable", VK_F2);
@@ -77,14 +61,14 @@ void eMenu::Initialize()
 	Clear();
 	savedPosition = { 0,0,0 };
 
-	AddToggleIntEntry("Infinite Health", &bPlayerInfiniteHealth);
-	AddToggleIntEntry("God Mode", &bGodMode);
-	AddToggleIntEntry("Fall Damage", &bFallDamage);
+	AddToggleIntEntry("Infinite Health", &m_infiniteHealth);
+	AddToggleIntEntry("God Mode", &m_godMode);
+	AddToggleIntEntry("Fall Damage", &m_fallDamage);
 	AddFunctionEntry("Save Position", SavePosition);
 	AddFunctionEntry("Load Position", LoadPosition);
-	AddToggleIntEntry("Display Coordinates", &bDisplayPlayerCoords);
-	AddToggleIntEntry("Use INST Coordinates For Display", &bDisplayPlayerCoordsReal);
-	AddToggleIntEntry("Display Saved Position", &bDisplaySavedPositionMarker);
+	AddToggleIntEntry("Display Coordinates", &m_displayCoords);
+	AddToggleIntEntry("Use INST Coordinates For Display", &m_displayRealCoords);
+	AddToggleIntEntry("Display Saved Position", &m_displayPositionMarker);
 	AddCategory("Player");
 
 
@@ -125,12 +109,34 @@ void eMenu::Initialize()
 	AddWeaponEntry(CT_CHAINSAW_PLAYER);
 	AddWeaponEntry(CT_PIGSY_WIRE);
 	AddWeaponEntry(CT_PIGSY_SHARD);
+
 	AddCategory("Weapons", true);
+
+
+	int list = *(int*)0x69BBC4;
+	CEntity* entity = nullptr;
+	do
+	{
+		if (list)
+			entity = *(CEntity**)(list);
+		else
+			entity = 0;
+		if (list)
+			list = *(int*)(list + 8);
+
+		if (entity)
+			AddEntityEntry(entity->m_TypeData->m_szRecordName);
+
+
+	} while (entity);
+
+	AddEntitiesCategory("Entities");
+
 
 	AddToggleCharEntry("Timer", &bTimer);
 	AddToggleCharEntry("Body Count", &bBodyCount);
-	AddToggleIntEntry("Enable Body Count", &bEnableKillCounter);
-	AddToggleIntEntry("Hide Lock-on Triangles (use with free cam)", &bDisableLockonTriangles);
+	AddToggleIntEntry("Enable Body Count", &m_enableKillCounter);
+	AddToggleIntEntry("Hide Lock-on Triangles (use with free cam)", &m_disableLockOnTriangles);
 	AddCategory("HUD");
 
 
@@ -144,9 +150,9 @@ void eMenu::Initialize()
 	AddCategory("Cheats");
 
 	if (eSettingsManager::bIncreaseMapLimits)
-		AddToggleIntEntry("New Material Manager Debug", &bNewManagerDebug);
-	AddToggleIntEntry("Hide Moon", &bHideMoon);
-	AddToggleIntEntry("Hide Stars", &bHideStars);
+		AddToggleIntEntry("New Material Manager Debug", &m_materialManagerDebug);
+	AddToggleIntEntry("Hide Moon", &m_hideMoon);
+	AddToggleIntEntry("Hide Stars", &m_hideStars);
 
 	AddCategory("World");
 
@@ -159,20 +165,21 @@ void eMenu::Initialize()
 	AddFunctionEntry("Windy",	CWeather::SetWeatherWindy);
 	AddCategory("Weather");
 
-	AddToggleIntEntry("Log Gamepad",&bControllerDebug);
-	AddToggleIntEntry("Silence Firearms", &bSilenceWeapons);
-	AddToggleIntEntry("Infinite Ammo", &bInfiniteAmmo);
+	AddToggleIntEntry("Log Gamepad",&m_controllerDebug);
+	AddToggleIntEntry("Silence Firearms", &m_silenceWeapons);
+	AddToggleIntEntry("Infinite Ammo", &m_infiniteAmmo);
 	AddFunctionEntry("Set Difficulty To Fetish", SetDifficultyEasy);
 	AddFunctionEntry("Set Difficulty To Hardcore", SetDifficultyHard);
 	AddCategory("Misc.");
+
+
 
 
 }
 
 void eMenu::ProcessMenu()
 {
-
-	if (bPlayerInfiniteHealth)
+	if (m_infiniteHealth)
 	{
 		if (CScene::FindPlayer())
 		{
@@ -181,14 +188,14 @@ void eMenu::ProcessMenu()
 	}
 
 	if (CScene::FindPlayer())
-		CScene::FindPlayer()->SetFlag(0x100, bGodMode);
+		CScene::FindPlayer()->SetFlag(0x100, m_godMode);
 
 
-	if (bEnableKillCounter)
+	if (m_enableKillCounter)
 		CFrontend::ms_cnt = *(int*)0x7B7D84 + *(int*)0x7B7DA0;
 
 
-	if (!bFallDamage)
+	if (!m_fallDamage)
 	{
 		Patch<float>(0x4313F7 + 3,100.0f);
 		Patch<float>(0x43152B + 3,100.0f);
@@ -199,38 +206,36 @@ void eMenu::ProcessMenu()
 		Patch<float>(0x43152B + 3,-1.0f);
 	}
 
-	if (bSilenceWeapons)
+	if (m_silenceWeapons)
 		Patch<char>(0x4C9C92 + 1, 8);
 	else
 		Patch<char>(0x4C9C92 + 1, 7);
 
 
-	if (bInfiniteAmmo)
+	if (m_infiniteAmmo)
 		Patch<char>(0x4F9073 + 6, 0);
 	else
 		Patch<char>(0x4F9073 + 6, 1);
 
-	if (bDisableLockonTriangles)
+	if (m_disableLockOnTriangles)
 		Patch<float>(0x728138, 0.0f);
 	else
 		Patch<float>(0x728138, 0.5f);
 
-	if (bHideMoon)
+	if (m_hideMoon)
 		Nop(0x5CB59D, 5);
 	else
 		InjectHook(0x5CB59D, CRenderer::DrawQuad2d, PATCH_CALL);
 
-	if (bHideStars)
+	if (m_hideStars)
 		Nop(0x5CB81D, 5);
 	else
 		InjectHook(0x5CB81D, CRenderer::DrawQuad2dSet, PATCH_CALL);
 
-
-	
-	if (bDisplayPlayerCoords)
+	if (m_displayCoords)
 	{
 		CVector* pos = CScene::FindPlayer()->GetLocation();
-		if (bDisplayPlayerCoordsReal)
+		if (m_displayRealCoords)
 			sprintf(buffer, "(INST) X: %.3f Y: %.3f Z: %.3f", pos->x, pos->z * -1.0f, pos->y);
 		else
 			sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", pos->x, pos->y, pos->z);
@@ -240,7 +245,8 @@ void eMenu::ProcessMenu()
 		CFrontend::Print8(buffer, 0.554f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
-	if (bControllerDebug)
+
+	if (m_controllerDebug)
 	{
 		sprintf(buffer, "GAMEPAD BUTTON 0x%X", *(short*)0x725684);
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
@@ -263,7 +269,7 @@ void eMenu::ProcessMenu()
 	}
 
 
-	if (bDisplaySavedPositionMarker)
+	if (m_displayPositionMarker)
 	{
 		sprintf(buffer, "X: %.3f Y: %.3f Z: %.3f", savedPosition.x,savedPosition.y,savedPosition.z);
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
@@ -272,36 +278,15 @@ void eMenu::ProcessMenu()
 		CFrontend::Print8(buffer, 0.554f, 0.1f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
-	if (bNewManagerDebug)
+	if (m_materialManagerDebug)
 	{
 		sprintf(buffer, "Materials = %d/%d Missing Materials = %d", gNewCollisionMaterialManager.m_numWorldMaterials, AMOUNT_OF_MATERIALS, gNewCollisionMaterialManager.m_numMissingMaterials);
 		CFrontend::SetDrawRGBA(255, 255,255, 255);
 		CFrontend::Print8(buffer, 0.1f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
-	if (bLevelTimer)
-	{
-		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
-		if (plr)
-		{
-			plr->AccumulateTime();
-			Call<0x5DB4C0, int>(*(int*)0x7108F0 + *(int*)(CScene::ms_pPlayer + 2112) - *(int*)(CScene::ms_pPlayer + 2108));
 
-			int minutes = *(int*)0x7C9604 % 60;
-			int seconds = *(int*)0x7C9608;
-			char timer[256];
-			sprintf(timer,"%02d:%02d", minutes, seconds);
-			CFrontend::SetDrawRGBA(255, 255, 255, 255);
-			CFrontend::Print8(timer, 0.45f, 0.04f, 1.0f, 1.0f, 0, FONT_TYPE_DEFAULT);
-
-		}
-
-	}
-
-	if (IsWindowFocused())
-	ProcessToggle();
-
-	if (bDisplayMenu)
+	if (m_active)
 	{
 		DrawMenu();
 
@@ -312,106 +297,130 @@ void eMenu::ProcessMenu()
 
 }
 
-void eMenu::ProcessToggle()
-{
-	if (KeyHit(KeyEnableMenu))
-	{
-		if (GetTickCount() - iTimer <= 240) return;
-		iTimer = GetTickCount();
-		bDisplayMenu ^= 1;
-		iCurrentCategory = 0;
-		iCurrentItem = 0;
-		bCategoryOpen = false;
-		bNavigatingInCategory = false;
-		vCategories[iCurrentCategory].vPages.clear();
-		vCategories[iCurrentCategory].vWeapons.clear();
-		vTempPages.clear();
-		vTempWeapons.clear();
-	}
-}
 
 void eMenu::ProcessControls()
 {
-	if (bPressedEnter)
-		ProcessEnter();
 
-	if (KeyHit(KeyMenuItemUP))
+	if (iCurrentPage + 1 > vCategories[iCurrentCategory].vPages.size()) iCurrentPage = 0;
+	if (iCurrentPage < 0) iCurrentPage = vCategories[iCurrentCategory].vPages.size() - 1;
+	if (iCurrentCategory + 1 > vCategories.size()) iCurrentCategory = 0;
+	if (iCurrentCategory < 0) iCurrentCategory = vCategories.size() - 1;
+
+}
+
+void eMenu::OnKeyLeft()
+{
+	iCurrentItem = 0;
+	iCurrentPage--;
+}
+
+void eMenu::OnKeyRight()
+{
+	iCurrentItem = 0;
+	iCurrentPage++;
+}
+
+void eMenu::OnKeyDown()
+{
+	if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
-
-
-		if (GetTickCount() - iTimer <= 100) return;
-		iTimer = GetTickCount();
-		if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
-		{
-
-			iCurrentItem--;
-			if (iCurrentItem < 0)
-				iCurrentItem = iTotalItems - 1;
-		}
-
-		else
-			iCurrentCategory--;
-	}
-
-	if (KeyHit(KeyMenuItemDOWN))
-	{
-
-
-		if (GetTickCount() - iTimer <= 100) return;
-		iTimer = GetTickCount();
-		if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
-		{
-			iCurrentItem++;
-			if (iCurrentItem + 1 > iTotalItems)
-				iCurrentItem = 0;
-
-		}
-		else
-			iCurrentCategory++;
-
+		iCurrentItem++;
+		if (iCurrentItem + 1 > iTotalItems)
+			iCurrentItem = 0;
 
 	}
+	else
+		iCurrentCategory++;
+}
 
-	if (KeyHit(KeyMenuItemLEFT))
+void eMenu::OnKeyUp()
+{
+	if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
-		if (GetTickCount() - iTimer <= 100) return;
-		iTimer = GetTickCount();
-		iCurrentItem = 0;
-		iCurrentPage--;
-	}
-	if (KeyHit(KeyMenuItemRIGHT))
-	{
-		if (GetTickCount() - iTimer <= 140) return;
-		iTimer = GetTickCount();
-		iCurrentItem = 0;
-		iCurrentPage++;
+
+		iCurrentItem--;
+		if (iCurrentItem < 0)
+			iCurrentItem = iTotalItems - 1;
 	}
 
+	else
+		iCurrentCategory--;
+}
+
+void eMenu::OnKeyExecute()
+{
 	if (!bCategoryOpen && !bNavigatingInCategory)
 	{
 		if (vCategories[iCurrentCategory].bHasItems && vCategories[iCurrentCategory].vItems.size() > 0)
 		{
-			if (KeyHit(KeyMenuExecute))
+			if (vCategories[iCurrentCategory].bIsWeapon)
 			{
-				if (GetTickCount() - iTimer <= 140) return;
-				iTimer = GetTickCount();
-				if (vCategories[iCurrentCategory].bIsWeapon)
-				{
-					vCategories[iCurrentCategory].vWeapons.clear();
-					vCategories[iCurrentCategory].bHasBeenWeaponsPopulated = false;
+				vCategories[iCurrentCategory].vWeapons.clear();
+				vCategories[iCurrentCategory].bHasBeenWeaponsPopulated = false;
 
-				}
-				vTempPages.clear();
-				vCategories[iCurrentCategory].vPages.clear();
-				vCategories[iCurrentCategory].bHaveBeenPagesCalculated = false;
-				bCategoryOpen = true;
-				bPressedEnter = true;
-				bNavigatingInCategory = true;
 			}
+			vTempPages.clear();
+			vCategories[iCurrentCategory].vPages.clear();
+			vCategories[iCurrentCategory].bHaveBeenPagesCalculated = false;
+			bCategoryOpen = true;
+			bPressedEnter = true;
+			bNavigatingInCategory = true;
 		}
 
 	}
 
+	else if (bNavigatingInCategory && bCategoryOpen)
+	{
+		if (vCategories[iCurrentCategory].bIsWeapon && vCategories[iCurrentCategory].bHasBeenWeaponsPopulated)
+		{
+			int weapon = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
+			if (vCategories[iCurrentCategory].vWeapons[weapon].bIsWeapon)
+				GiveWeaponToPlayer(vCategories[iCurrentCategory].vWeapons[weapon].iWeaponID);
+
+		}
+		if (vCategories[iCurrentCategory].bIsEntities && vCategories[iCurrentCategory].bHasBeenEntitiesPopulated)
+		{
+			int entity = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
+			if (vCategories[iCurrentCategory].vEntities[entity].bIsEntity)
+			{
+				CEntity* plr = CScene::FindPlayer();
+				RwMatrix* matrix = plr->GetEntityMatrix();
+
+				CVector forward(matrix->at.x, matrix->at.y, matrix->at.z);
+				CVector pos = *plr->GetLocation();
+
+				pos += forward * 1.5f;
+
+				CreateEntity((char*)vCategories[iCurrentCategory].vEntities[entity].strEntity.c_str(), &pos);
+			}
+
+		}
+
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsFunction)
+		{
+			int item = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
+			vCategories[iCurrentCategory].vItems[item].fFunc();
+		}
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsCharToggle || vCategories[iCurrentCategory].vItems[iCurrentItem].bIsShortToggle
+			|| vCategories[iCurrentCategory].vItems[iCurrentItem].bIsIntegerToggle)
+		{
+			int item = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
+
+			if (vCategories[iCurrentCategory].vItems[item].bIsCharToggle)
+			{
+				*vCategories[iCurrentCategory].vItems[item].ptrCharValue ^= 1;
+			}
+			if (vCategories[iCurrentCategory].vItems[item].bIsIntegerToggle)
+			{
+				*vCategories[iCurrentCategory].vItems[item].ptrIntValue ^= 1;
+			}
+		}
+
+	}
+}
+
+void eMenu::OnKeyGoBack()
+{
 	if (bCategoryOpen)
 	{
 		if (KeyHit(KeyMenuGoBack))
@@ -423,9 +432,6 @@ void eMenu::ProcessControls()
 				vCategories[iCurrentCategory].bHasBeenWeaponsPopulated = false;
 
 			}
-
-			if (GetTickCount() - iTimer <= 140) return;
-			iTimer = GetTickCount();
 			bCategoryOpen = false;
 			bNavigatingInCategory = false;
 			vTempPages.clear();
@@ -434,71 +440,29 @@ void eMenu::ProcessControls()
 			iCurrentItem = 0;
 		}
 	}
+}
 
-	if (bNavigatingInCategory && bCategoryOpen && !bPressedEnter)
-	{
-		if (KeyHit(KeyMenuExecute))
-		{
-			if (vCategories[iCurrentCategory].bIsWeapon && vCategories[iCurrentCategory].bHasBeenWeaponsPopulated)
-			{
-				int weapon = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
-				if (vCategories[iCurrentCategory].vWeapons[weapon].bIsWeapon)
-					GiveWeaponToPlayer(vCategories[iCurrentCategory].vWeapons[weapon].iWeaponID);
-
-			}
-			if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsFunction)
-			{
-				int item = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
-				vCategories[iCurrentCategory].vItems[item].fFunc();
-			}
-			if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsCharToggle || vCategories[iCurrentCategory].vItems[iCurrentItem].bIsShortToggle
-				|| vCategories[iCurrentCategory].vItems[iCurrentItem].bIsIntegerToggle)
-			{
-				int item = iCurrentItem + vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
-
-				if (vCategories[iCurrentCategory].vItems[item].bIsCharToggle)
-				{
-					if (GetTickCount() - iTimer <= 140) return;
-					iTimer = GetTickCount();
-					*vCategories[iCurrentCategory].vItems[item].ptrCharValue ^= 1;
-				}
-				if (vCategories[iCurrentCategory].vItems[item].bIsIntegerToggle)
-				{
-					if (GetTickCount() - iTimer <= 140) return;
-					iTimer = GetTickCount();
-					*vCategories[iCurrentCategory].vItems[item].ptrIntValue ^= 1;
-				}
-			}
-		}
-	}
-
-
-
-	if (iCurrentPage + 1 > vCategories[iCurrentCategory].vPages.size()) iCurrentPage = 0;
-	if (iCurrentPage < 0) iCurrentPage = vCategories[iCurrentCategory].vPages.size() - 1;
-	if (iCurrentCategory + 1 > vCategories.size()) iCurrentCategory = 0;
-	if (iCurrentCategory < 0) iCurrentCategory = vCategories.size() - 1;
-
+void eMenu::OnKeyToggle()
+{
+	m_active ^= 1;
+	iCurrentCategory = 0;
+	iCurrentItem = 0;
+	bCategoryOpen = false;
+	bNavigatingInCategory = false;
+	vCategories[iCurrentCategory].vPages.clear();
+	vCategories[iCurrentCategory].vWeapons.clear();
+	vTempPages.clear();
+	vTempWeapons.clear();
 }
 
 void eMenu::DrawMenu()
 {
-	if (bDisplayMenu)
+	if (m_active)
 	{
-		// control execution
-
 		for (int i = 0; i < vCategories.size(); i++)
 		{
-
-			//	sprintf(msgBuffer, "ermaccer / dixmor-hospital.com", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
-			//	CFrontend::SetDrawRGBA(0, 0, 0, 255);
-			//	CFrontend::Print8(msgBuffer, 0.048f, 0.012f, 0.5f, 0.5f, 0.0, FONT_TYPE_DEFAULT);
-			//	CFrontend::SetDrawRGBA(255, 255, 255, 255);
-			//	CFrontend::Print8(msgBuffer, 0.050f, 0.010f, 0.5f, 0.5f, 0.0, FONT_TYPE_DEFAULT);
-
-
 			CFrontend::SetDrawRGBA(0, 0, 0, 255);
-			CFrontend::Print8(vCategories[i].strName.c_str(), 0.048f, 0.102f + 0.04 * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::Print8(vCategories[i].strName.c_str(), 0.052f, 0.102f + 0.04 * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 			if (i == iCurrentCategory)
 				CFrontend::SetDrawRGBA(51, 153, 255, 255);
 			else
@@ -559,18 +523,84 @@ void eMenu::DrawMenu()
 							iActualItemID = j;
 							std::string entry = vCategories[i].vWeapons[j].name.c_str();
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.122f, 0.102f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.124f, 0.10f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 						}
 						if (vCategories[iCurrentCategory].vPages.size() > 1)
 						{
 							sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(msgBuffer, 0.122f, 0.808f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(msgBuffer, 0.126f, 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::SetDrawRGBA(255, 255, 255, 255);
+							CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+						}
+
+					}
+					else if (vCategories[i].bIsEntities)
+					{
+						if (!vCategories[i].bHasBeenEntitiesPopulated)
+						{
+							for (int j = 0; j < vCategories[i].vItems.size(); j++)
+							{
+								if (vCategories[i].vItems[j].bIsEntity)
+								{
+									if (CEntityManager::GetEntityTypeDataFromName((char*)vCategories[i].vItems[j].strEntity.c_str()));
+										vTempEntities.push_back(vCategories[i].vItems[j]);
+								}
+							}
+							vCategories[i].vEntities = vTempEntities;
+							vCategories[i].bHasBeenEntitiesPopulated = true;
+						}
+
+						if (!vCategories[iCurrentCategory].bHaveBeenPagesCalculated)
+						{
+							eMenuPage page;
+							int itemCounter = 0;
+							int fullPages = vCategories[iCurrentCategory].vEntities.size() / 16;
+							int leftOver = vCategories[iCurrentCategory].vEntities.size() % 16;
+							int lastEnd = 0;
+							page.iStart = 0;
+							for (int p = 0; p < vCategories[iCurrentCategory].vEntities.size(); p++)
+							{
+								if (itemCounter >= 16)
+								{
+									page.iEnd = p;
+									page.iStart += lastEnd;
+									lastEnd = page.iEnd - page.iStart;
+									itemCounter = 0;
+									vTempPages.push_back(page);
+								}
+								itemCounter++;
+							}
+							page.iEnd = vCategories[iCurrentCategory].vEntities.size();
+							page.iStart = vCategories[iCurrentCategory].vEntities.size() - leftOver;
+							vTempPages.push_back(page);
+							vCategories[iCurrentCategory].vPages = vTempPages;
+							vCategories[iCurrentCategory].bHaveBeenPagesCalculated = true;
+						}
+						iTotalItems = vCategories[iCurrentCategory].vPages[iCurrentPage].iEnd - vCategories[iCurrentCategory].vPages[iCurrentPage].iStart;
+
+						for (int j = vCategories[iCurrentCategory].vPages[iCurrentPage].iStart; j < vCategories[iCurrentCategory].vPages[iCurrentPage].iEnd; j++)
+						{
+							iActualItemID = j;
+							std::string entry = vCategories[i].vEntities[j].name.c_str();
+							CFrontend::SetDrawRGBA(0, 0, 0, 255);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
+								CFrontend::SetDrawRGBA(51, 153, 255, 255);
+							else
+								CFrontend::SetDrawRGBA(255, 255, 255, 255);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+						}
+						if (vCategories[iCurrentCategory].vPages.size() > 1)
+						{
+							sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
+							CFrontend::SetDrawRGBA(0, 0, 0, 255);
+							CFrontend::Print8(msgBuffer, 0.126f, 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 							CFrontend::SetDrawRGBA(255, 255, 255, 255);
 							CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 						}
@@ -620,17 +650,13 @@ void eMenu::DrawMenu()
 									entry.append(GetStatusAsString(*vCategories[i].vItems[j].ptrIntValue));
 							}
 
-
-
-
-
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.122f, 0.102f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if (j == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.124f, 0.10f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 
 
@@ -638,7 +664,7 @@ void eMenu::DrawMenu()
 							{
 								sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
 								CFrontend::SetDrawRGBA(0, 0, 0, 255);
-								CFrontend::Print8(msgBuffer, 0.122f, 0.808f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+								CFrontend::Print8(msgBuffer, 0.126f, 0.808f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
 								CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							}
@@ -651,12 +677,7 @@ void eMenu::DrawMenu()
 		}
 
 	}
-}
-void eMenu::ProcessEnter()
-{
-	if (GetTickCount() - iTimer <= 155)  return;
-	iTimer = GetTickCount();
-	bPressedEnter = false;
+
 }
 
 void eMenu::Clear()
@@ -665,8 +686,8 @@ void eMenu::Clear()
 	vTempItems.clear();
 	vTempPages.clear();
 	vTempWeapons.clear();
-	vTempAnims.clear();
-	bDisplayMenu = false;
+	vTempEntities.clear();
+	m_active = false;
 	iCurrentItem = 0;
 	iActualItemID = 0;
 	iCurrentPage = 0;
@@ -687,9 +708,10 @@ void eMenu::AddCategory(std::string name, bool isWeap)
 	eMenuCategory newCat;
 	newCat.strName = name;
 	newCat.bIsWeapon = isWeap;
+	newCat.bIsEntities = false;
 	newCat.iID = iBaseCategoryID;
 	newCat.bHasBeenWeaponsPopulated = false;
-	newCat.bHasBeenAnimsPopulated = false;
+	newCat.bHasBeenEntitiesPopulated = false;
 	newCat.bHaveBeenPagesCalculated = false;
 	newCat.iPages = 0;
 	if (vTempItems.size() > 0)
@@ -703,15 +725,15 @@ void eMenu::AddCategory(std::string name, bool isWeap)
 	vTempItems.clear();
 }
 
-void eMenu::AddAnimsCategory(std::string name)
+void eMenu::AddEntitiesCategory(std::string name)
 {
 	eMenuCategory newCat;
 	newCat.strName = name;
 	newCat.bIsWeapon = false;
-	newCat.bIsAnims = true;
+	newCat.bIsEntities = true;
 	newCat.iID = iBaseCategoryID;
 	newCat.bHasBeenWeaponsPopulated = false;
-	newCat.bHasBeenAnimsPopulated = false;
+	newCat.bHasBeenEntitiesPopulated = false;
 	newCat.bHaveBeenPagesCalculated = false;
 	newCat.iPages = 0;
 	if (vTempItems.size() > 0)
@@ -748,8 +770,8 @@ void eMenu::AddItem(std::string name, bool isChar, bool isShort, bool isInt, boo
 	item.fStep = fAdjStep;
 	item.fAdjustMax = fAdjMax;
 	item.fAdjustMin = fAdjMin;
-	item.bIsAnim = isAnim;
-	item.strAnim = strAnim;
+	item.bIsEntity = isAnim;
+	item.strEntity = strAnim;
 
 	vTempItems.push_back(item);
 }
@@ -765,7 +787,7 @@ void eMenu::AddWeaponEntry(int weaponID)
 	AddItem(str, false, false, false, false, true, weaponID, nullptr, nullptr, nullptr, dummy, 0, 0, 0, 0, 0, 0, 0, 0, 0, "");
 }
 
-void eMenu::AddAnimEntry(std::string str)
+void eMenu::AddEntityEntry(std::string str)
 {
 	std::function<void()> dummy;
 	AddItem(str, false, false, false, false, false, false, nullptr, nullptr, nullptr, dummy, 0, 0, 0, 0, 0, 0, 0, 0, true, str);
@@ -832,10 +854,50 @@ void SetDifficultyHard()
 	CFrontend::Set_Difficulty(1);
 }
 
+void PrintEntities()
+{
+	int list = *(int*)0x69BBC4;
+	CEntity* entity;
+	do
+	{
+		if (list)
+			entity = *(CEntity**)(list);
+		else
+			entity = 0;
+		if (list)
+			list = *(int*)(list + 8);
+
+		if (entity)
+		{
+				TheConsole.m_messages.push_back(entity->m_TypeData->m_szRecordName);
+		}
+
+	} while (entity);
+
+}
+
+void PrintExecuteHunter()
+{
+	CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+	CEntity* hunt = *(CEntity**)((int)plr + 0x8B4);
+	if (hunt)
+		printf("%x %s\n", hunt, hunt->m_TypeData->m_szRecordName);
+	else
+		printf("no execute\n");
+}
+
 bool KeyHit(unsigned int keyCode)
 {
 	if (IsWindowFocused() && CFrontend::m_gameIsRunning)
 		return (GetKeyState(keyCode) & 0x8000) != 0;
+	else
+		return false;
+}
+
+bool KeyHitOnce(unsigned int keyCode)
+{
+	if (IsWindowFocused() && CFrontend::m_gameIsRunning)
+		return (GetAsyncKeyState(keyCode) & 1);
 	else
 		return false;
 }

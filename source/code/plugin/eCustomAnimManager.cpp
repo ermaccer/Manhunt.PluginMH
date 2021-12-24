@@ -4,6 +4,7 @@
 #include "..\manhunt\String.h"
 #include "..\manhunt\Filenames.h"
 #include "..\manhunt\App.h"
+#include "eLevelsLoader.h"
 #include "eLog.h"
 #include <memory>
 
@@ -38,7 +39,13 @@ bool CCustomAnimManager::Initialise()
 	if (eSettingsManager::bCustomAnimManagerUseGlobalFile)
     	sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, "GLOBAL");
 	else
-		sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, (char*)(0x756034 + 20 * CApp::ms_currLevelNum)); 
+	{
+		if (eSettingsManager::bCustomLevelsLoader)
+			sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, eLevelsLoader::m_levelNames[CApp::ms_currLevelNum]);
+		else
+			sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, (char*)(0x756034 + 20 * CApp::ms_currLevelNum));
+	}
+
 
 	strcat(tmpPath, CFileNames::ms_filenameAllAnims.str);
 	strcat(tmpPath, CFileNames::ms_filenameAnimFileType.str);

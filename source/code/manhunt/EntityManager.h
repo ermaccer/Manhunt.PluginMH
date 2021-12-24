@@ -11,4 +11,6 @@ public:
 
 	static void		LoadCharacterClumpDict(int skinID);
 
+	static void     CreateEntityTypesFromIni();
+
 };

@@ -34,8 +34,12 @@ void eModLoader::InitClumpDicts()
 		{
 
 			std::string file = splitString(m_vMods[i].files[a], true);
+			std::string extension = getExtension(m_vMods[i].files[a]);
 
-			if (getExtension(m_vMods[i].files[a]) == "dff")
+			for (unsigned int i = 0; i < extension.length(); i++)
+				extension[i] = tolower(extension.c_str()[i]);
+
+			if (extension == "dff")
 			{
 				if (!IsFileIgnored(file))
 				{
@@ -246,7 +250,6 @@ bool eModLoader::CustomFileExists(char * input)
 	{
 		for (int a = 0; a < m_vMods[i].files.size(); a++)
 		{
-
 			if (strcmp(m_vMods[i].files_game[a].c_str(), result) == 0)
 			{
 				return true;

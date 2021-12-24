@@ -8,6 +8,8 @@ public:
 	static bool	bEnableStatsManager;
 	static bool bHookSkinLoader;
 	static bool bHideVersionInfo;
+	static bool bCustomLevelsLoader;
+
 
 	static bool bIncreaseMapLimits;
 	static bool bForceStaticExecutionCamera;
@@ -15,7 +17,11 @@ public:
 
 	static bool bEnableWeaponAdjuster;
 	static bool bEnableExecutionsWithFirearms;
-	
+	static bool bHookExtraWeapons;
+	static bool bHookExtraScriptCommands;
+	static bool bRestoreDamageDirectionIndicator;
+	static bool bDisableExecutionCamera;
+	static bool bUseExclamationMarkForConfirmationIcon;
 	// anims
 	static bool bHookCustomAnimManager;
 	static bool bCustomAnimManagerUseGlobalFile;

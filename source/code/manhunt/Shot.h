@@ -77,8 +77,14 @@ public:
 
 
 class CShot {
+public:
 	void* vTable;
 	CShotTypeData* m_TypeData;
 	CWeapon * m_pWeapon;
+};
+
+class CProjectileShot : public CShot {
+public:
+	void Destroy(bool create_weapon);
 };
 

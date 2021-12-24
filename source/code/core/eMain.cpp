@@ -21,6 +21,7 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 	case WM_KEYDOWN:
 		if (wParam == eSettingsManager::keyToggleDebugMenu)
 			CFrontend::ms_devMenu ^= 1;
+	
 		if (CFrontend::m_gameIsRunning)
 		{
 			if (wParam == VK_OEM_3)
@@ -35,6 +36,31 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 			
 			if (wParam == eSettingsManager::keyToggleHUD)
 				CFrontend::ms_draw2d ^= 1;
+
+
+			if (wParam == TheMenu.KeyEnableMenu)
+				TheMenu.OnKeyToggle();
+
+			if (TheMenu.m_active)
+			{
+				if (wParam == TheMenu.KeyMenuItemDOWN)
+					TheMenu.OnKeyDown();
+
+				if (wParam == TheMenu.KeyMenuItemUP)
+					TheMenu.OnKeyUp();
+
+				if (wParam == TheMenu.KeyMenuItemLEFT)
+					TheMenu.OnKeyLeft();
+
+				if (wParam == TheMenu.KeyMenuItemRIGHT)
+					TheMenu.OnKeyRight();
+
+				if (wParam == TheMenu.KeyMenuExecute)
+					TheMenu.OnKeyExecute();
+
+				if (wParam == TheMenu.KeyMenuGoBack)
+					TheMenu.OnKeyGoBack();
+			}
 			
 		}
 		break;

@@ -24,10 +24,11 @@ void CreateEntity(char * name, CVector* pos)
 		CEntity* entity = CCreationManager::CreateEntity(typeData);
 		if (entity)
 		{
+			char ent[256];
 			char tmp[256];
-			sprintf(tmp, "entity%d", TheConsole.m_entityID);
-			entity->SetName(tmp);
-			sprintf(tmp, "Created - %s [%x] [entity%d]", name, entity, TheConsole.m_entityID);
+			sprintf(ent, "%s%d",name,TheConsole.m_entityID);
+			entity->SetName(ent);
+			sprintf(tmp, "Created - %s [%x] [%s]", name, entity, ent);
 			TheConsole.m_messages.push_back(tmp);
 			entity->SetFrozen(0);
 			entity->Spawn(pos, 0);

@@ -1,7 +1,7 @@
 #include "eScriptExtender.h"
 #include "..\..\manhunt\core.h"
 #include <filesystem>
-
+#include "..\eLog.h"
 void eScriptExtender::Init()
 {
 	InitHooks();
@@ -26,7 +26,7 @@ void __declspec(naked) eScriptExtender::HookExtraCommands()
 		jmp jmpPoint_last
 
 		next:
-		cmp edx, no
+		cmp edx, 1004
 		jg jump
 		mov ecx, ebx
 		call ProcessNewCommands
@@ -37,22 +37,61 @@ void __declspec(naked) eScriptExtender::HookExtraCommands()
 	}
 }
 
-void eScriptExtender::ProcessNewCommands(CScriptVM * vm)
+void eScriptExtender::ProcessNewCommands()
 {
-	printf("executing new\n");
-	switch (vm->m_commandID)
+	int value, size, addr, retn;
+	switch (m_commandID)
 	{
 	case PushMessage:
-		MessageBoxA(0, "command test", 0, 0);
+		PopInt();
+		printf("%s\n", PopCharStar());
 		break;
 	case WriteMemory:
-		MessageBoxA(0, "command test", 0, 0);
+		value =PopInt();
+		size = PopInt();
+		addr = PopInt();
+		switch (size)
+		{
+		case 1:
+			Memory::VP::Patch<char>(addr, value);
+			break;
+		case 2:
+			Memory::VP::Patch<short>(addr, value);
+			break;
+		case 4:
+			Memory::VP::Patch<int>(addr, value);
+			break;
+		default:
+			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)! ", WriteMemory, size);
+			break;
+		}
 		break;
 	case ReadMemory:
-		MessageBoxA(0, "command test", 0, 0);
+		size = PopInt();
+		addr = PopInt();
+
+		switch (size)
+		{
+		case 1:
+			retn = *(char*)(addr);
+			break;
+		case 2:
+			retn = *(short*)(addr);
+			break;
+		case 4:
+			retn = *(int*)(addr);
+			break;
+		default:
+			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)!  Returning 0", ReadMemory, size);
+			retn = 0;
+			break;
+		}
+		m_returnValue = retn;
 		break;
 	case KeyHit:
-		MessageBoxA(0, "command test", 0, 0);
+		int key;
+		key = PopInt();
+		m_returnValue = GetAsyncKeyState(key);
 		break;
 	default:
 		return;

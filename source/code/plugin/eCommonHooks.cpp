@@ -15,7 +15,10 @@
 #include "..\manhunt\Player.h"
 #include "..\plugin\eSkinLoader.h"
 #include "eNewFrontend.h"
-
+#include "..\manhunt\Weapon.h"
+#include "classes/eCustomProjectile.h"
+#include "..\manhunt\String.h"
+#include "..\manhunt\SpecialFX.h"
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
@@ -50,7 +53,27 @@ void InitCommonHooks()
 	InjectHook(0x4375D6, CommonHooks::CEntityManager_CreateArchetypes, PATCH_CALL);
 	InjectHook(0x47444D, CommonHooks::GameStartInit, PATCH_CALL);
 
+	if (eSettingsManager::bRestoreDamageDirectionIndicator)
+		InjectHook(0x5DB570, CommonHooks::CGameInfo_RenderDamageDirections, PATCH_JUMP);
+
+	if (eSettingsManager::bDisableExecutionCamera)
+	{
+		Nop(0x59032B, 7);
+		InjectHook(0x59032B, CommonHooks::DisableExecutionCamera, PATCH_JUMP);
+	}
+	InjectHook(0x47610E, CommonHooks::CFrontend_DrawStoredHalos, PATCH_CALL);
+
+	if (eSettingsManager::bHookExtraWeapons)
+	{
+		InjectHook(0x443F95, &CCustomProjectileShot::NewDestroy, PATCH_CALL);
+		InjectHook(0x4F7806, &CCustomProjectile::Spawn, PATCH_CALL);
+		InjectHook(0x4375AA, CommonHooks::Hook_LoadEntityTypeData, PATCH_CALL);
+
+	}
+
 }
+
+
 
 void DoCommonPatches()
 {
@@ -112,9 +135,9 @@ void CommonHooks::HookLoadSFX()
 
 void CommonHooks::CCheatHandler_SetupForLevel()
 {
-	TheMenu.Initialize();
 	CCheatHandler::SetupForLevel();
 
+	TheMenu.Initialize();
 
 	if (eSettingsManager::bEnableFirstPersonMode)
 	{
@@ -168,6 +191,21 @@ void CommonHooks::CEntityManager_CreateArchetypes()
 	CEntityManager::CreateArchetypes();
 }
 
+void CommonHooks::CGameInfo_RenderDamageDirections(int id)
+{
+	int* m_damageDirActive = (int*)0x7C9AC0;
+	float* m_damageDirTime = (float*)0x7C9B00;
+	if (id >= 0 && id < 8)
+	{
+		if (!m_damageDirActive[id])
+		{
+			m_damageDirActive[id] = true;
+			m_damageDirTime[id] = 50.0f; // fading speed 
+		}
+
+	}
+}
+
 void CommonHooks::GameStartInit()
 {
 	Call<0x5EF510 >();
@@ -183,8 +221,45 @@ void CommonHooks::HookManTriIcon(float x, float y, float scaleX, float scaleY, i
 {
 	CRenderer::DrawQuad2d(x, y, scaleX, scaleY, red, green, blue, alpha, pTexture);
 	// ps2 values
-	if (*(int*)0x7D343C)
-		CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049, /*yoff+0.406*/0.902999989, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
+	 if (*(int*)0x7D343C)
+	 {
+		 if (eSettingsManager::bUseExclamationMarkForConfirmationIcon)
+			 CFrontend::Print8("!", 0.796000049, 0.902999989, 0.9f, 0.9f, 0.0, FONT_TYPE_DEFAULT);
+		 else
+			 CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049, /*yoff+0.406*/0.902999989, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
+	 }
+
+}
+
+
+void CommonHooks::CFrontend_DrawStoredHalos()
+{
+	int texture = *(int*)(*(int*)0x7D37CC);
+
+	CRenderer::PushRenderStateBlend();
+	CRenderer::RenderStateSetBlend(rwBLENDONE, rwBLENDONE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATESTENCILZFAIL, FALSE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATEZWRITEENABLE, FALSE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATEZTESTENABLE, (void*)TRUE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREADDRESS, (void*)rwTEXTUREADDRESSWRAP);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERMIPLINEAR);
+	CRenderer::RenderStateSetBlend(rwBLENDSRCALPHA, rwBLENDONE);
+	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTURERASTER, (void*)texture);
+
+
+	CStoredHalo* halos = (CStoredHalo*)0x7D5A30;
+
+	for (int i = 0; i < CFrontend::NumStoredHalos; i++)
+	{
+		CFrontend::DrawDisc2D(&halos[i].position, halos[i].scale, halos[i].r, halos[i].g, halos[i].b, halos[i].radius);
+		CFrontend::DrawDisc3D(&halos[i].position, halos[i].scale, halos[i].r, halos[i].g, halos[i].b, halos[i].radius);
+	}
+
+	CRenderer::PopRenderStateBlend();
+	CRenderer::PopRenderStateAll();
+
+	CFrontend::NumStoredHalos = 0;
 }
 
 void __declspec(naked) CommonHooks::ArmsPosition_PlayerFPS()
@@ -211,4 +286,39 @@ void __declspec(naked) CommonHooks::ArmsPosition_PlayerFPS()
 	_asm {
 		jmp jmp_continue
 	}
+}
+
+void CommonHooks::DisableExecutionCamera()
+{
+	static int jmpContinue = 0x590332;
+	static int jmpFail = 0x590A80;
+
+	// get entity about to be executed by player
+	if (*(CEntity**)((int)CScene::FindPlayer() + 0x8B4))
+	{
+		_asm {
+			jmp jmpFail
+		}
+	}
+	else
+	{
+		_asm {
+			cmp ds : 0x755E4C, 4
+			jmp jmpContinue
+		}
+	}
+}
+
+void CommonHooks::Hook_LoadEntityTypeData()
+{
+	CEntityManager::CreateEntityTypesFromIni();
+	// load extraTypeData
+	CString newPath("./data/extraTypeData.ini");
+	Patch<int>(0x4395B0 + 1,(int)&newPath);
+	Patch<int>(0x439435 + 1,(int)&newPath);
+
+	CEntityManager::CreateEntityTypesFromIni();
+	// patch back
+	Patch<int>(0x4395B0 + 1, 0x69BC7C);
+	Patch<int>(0x439435 + 1, 0x69BC7C);
 }

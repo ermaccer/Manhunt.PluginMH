@@ -1,4 +1,5 @@
 #pragma once
+#include "Entity.h"
 
 enum eCollectableType {
 	CT_TRIPWIRE = 1,
@@ -136,10 +137,41 @@ public:
 
 };
 
-class CCollectable {
+class CCollectable: public CEntity {
 public:
+	int m_collectableFlags;
+	CEntity *pOwner;
+	int field_8;
+	int field_C;
+	int field_10;
+	CVector m_collectablePos;
+	float field_20;
+	float m_fTimeToDelete;
+	int field_28;
+	int field_2C;
+	int field_30;
+	int *field_34;
+	int field_38;
+	int field_3C;
+	int field_40;
+	int field_44;
+	int field_48;
+	int field_4C;
+	int field_50;
+	int field_54;
+	int field_58;
+	int m_pAnimBlendAssociation;
+	int field_60;
+	int field_64;
+	int field_68;
+
 	static wchar_t* GetNameKey16(int id);
 	static void     GetNameStringFromType(int weaponID, char *dest);
 	static char*    FastGetNameStringFromType(int weaponID);
 	static eCollectableType     GetTypeFromNameString(char* string);
+};
+
+class CWeaponCollectable : public CCollectable {
+public:
+	void Spawn(RwMatrix* mat);
 };

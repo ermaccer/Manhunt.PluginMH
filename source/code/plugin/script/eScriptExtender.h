@@ -11,12 +11,12 @@ enum eNewCommands {
 		TOTAL_NEW_SCRIPT_COMMANDS
 };
 
-class eScriptExtender {
+class eScriptExtender : public CScriptVM {
 public:
 	static void Init();
 	static void InitHooks();
 
 	static void HookExtraCommands();
 
-	void ProcessNewCommands(CScriptVM* vm);
+	void ProcessNewCommands();
 };

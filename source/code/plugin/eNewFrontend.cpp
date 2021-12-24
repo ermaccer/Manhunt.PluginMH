@@ -39,7 +39,7 @@ int eNewFrontend::m_nSkinAdjustID;
 wchar_t* eNewFrontend::m_szCheatText = (wchar_t*)0x7D6360;
 RpWorld * eNewFrontend::ms_pMenuWorld;
 RpLight * eNewFrontend::ms_pMenuLight;
-
+bool eNewFrontend::m_bNewLevels;
 	
 void eNewFrontend::InitHooks()
 {
@@ -78,15 +78,16 @@ void eNewFrontend::Init()
 
 void eNewFrontend::MainMenu()
 {
-
 	CFrontend::ms_fMenuPositionX = 0.15f;
 	float y_pos = CFrontend::ms_fMenuPositionY;
 	float y_temp = 0.0f;
 	float y_adjust = 0.30000001f;
 
 
-	CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
-
+	if (!m_bNewLevels)
+		CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
+	else
+		CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("SELSCE"));
 
 	float m_fHudStretch = *(float*)0x7D3458;
 	float m_fLogoScale = *(float*)0x7D63FC;
@@ -97,42 +98,58 @@ void eNewFrontend::MainMenu()
 
 	CRenderer::DrawQuad2d(*(float*)0x7D6408 + 0.45f, *(float*)0x7D6404, logoX, *(float*)0x7D6400, 180, 180, 180, 255, logoTexture);
 
+	if (!m_bNewLevels)
+	{
+		y_temp = y_pos + y_adjust - CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(CText::GetFromKey16("PLAY"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_PLAY);
 
-	y_temp = y_pos + y_adjust - CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(CText::GetFromKey16("PLAY"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_PLAY);
+		y_temp = y_pos + y_adjust;
+		CFrontend::AddOption(CText::GetFromKey16("SELSCE"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SELSCE);
 
-	y_temp = y_pos + y_adjust;
-	CFrontend::AddOption(CText::GetFromKey16("SELSCE"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SELSCE);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(CText::GetFromKey16("LOADG"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_LOADG);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(CText::GetFromKey16("LOADG"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_LOADG);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(CText::GetFromKey16("SETT"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SETT);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(CText::GetFromKey16("SETT"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SETT);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(CText::GetFromKey16("BONFEA"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_BONFEA);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(CText::GetFromKey16("BONFEA"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_BONFEA);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(L"STATS", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_STATS);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(L"STATS", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_STATS);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(L"MODIFICATIONS", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_MODIFICATIONS);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(L"MODIFICATIONS", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_MODIFICATIONS);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(L"SKINS", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SKINS);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(L"SKINS", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SKINS);
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(CText::GetFromKey16("QUITPRG"), CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_QUITPRG);
+	}
+	else
+	{
+		y_temp = y_pos + y_adjust - CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(L"ORIGINAL", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_PLAY);
 
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(CText::GetFromKey16("QUITPRG"), CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_QUITPRG);
+		y_temp = y_pos + y_adjust;
+		CFrontend::AddOption(L"CUSTOM", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_SELSCE);
+
+		y_temp += CFrontend::ms_fMenuPositionY;
+		CFrontend::AddOption(L"BACK", CFrontend::ms_fMenuPositionX, y_temp
+			, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == MB_LOADG);
+	}
 
 }
 
@@ -140,16 +157,33 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 {
 	static int lastLevel = 0;
 	static int jmpPoint = 0x6025B6;
+
+	static int maxButton = MB_QUITPRG;
+	static int totalButton = MB_TOTAL_MENUS;
+
+
+	if (m_bNewLevels)
+	{
+		maxButton = MB_LOADG;
+		totalButton = MB_LOADG + 1;
+	}
+	else
+	{
+		maxButton = MB_QUITPRG;
+		totalButton = MB_TOTAL_MENUS;
+	}
+
+
 	
 	if (CInputManager::FrontendPressedUp())
 	{
 		if (--CFrontend::ms_menuButton < 0)
-			CFrontend::ms_menuButton = MB_QUITPRG;
+			CFrontend::ms_menuButton = maxButton;
 	}
 
 	if (CInputManager::FrontendPressedDown())
 	{
-		if (++CFrontend::ms_menuButton >= MB_TOTAL_MENUS)
+		if (++CFrontend::ms_menuButton >= totalButton)
 			CFrontend::ms_menuButton = 0;
 	}
 
@@ -157,52 +191,78 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 		CFrontend::ms_menuButton = CFrontend::GetHoveredItem();
 
 	if (CInputManager::FrontendPressedEscape())
+	{
+		if (m_bNewLevels)
+			m_bNewLevels = false;
+		else
 			CFrontend::SetCurrentMenu(MENU_QUIT);
+	}
+
 
 
 
 	if (CInputManager::FrontendButtonEnter())
 	{
-		switch (CFrontend::ms_menuButton)
+		if (!m_bNewLevels)
 		{
-		case MB_PLAY:
-			lastLevel = CFrontend::GetLastPlayedLevel();
-			if (lastLevel == -1)
+			switch (CFrontend::ms_menuButton)
 			{
-				Call<0x5D6A60>(); // resets something
-				CFrontend::m_bNewGame = 0;
-				*(int*)0x7C86F4 = 0;
-				CFrontend::SetCurrentMenu(MENU_GAMMA_SETTINGS);
+			case MB_PLAY:
+				lastLevel = CFrontend::GetLastPlayedLevel();
+				if (lastLevel == -1)
+				{
+					Call<0x5D6A60>(); // resets something
+					CFrontend::m_bNewGame = 0;
+					*(int*)0x7C86F4 = 0;
+					CFrontend::SetCurrentMenu(MENU_GAMMA_SETTINGS);
+				}
+				else
+					CFrontend::ForceAndPlayLevel(lastLevel, 1);
+				break;
+			case MB_SELSCE:
+				//m_bNewLevels = true;
+				*(int*)0x7C89E4 = 7;
+				CFrontend::SetCurrentMenu(MENU_LEVEL_SELECT);
+				break;
+			case MB_LOADG:
+				CFrontend::SetCurrentMenu(MENU_START_LOAD_GAME);
+				break;
+			case MB_SETT:
+				CFrontend::SetCurrentMenu(MENU_SETTINGS);
+				break;
+			case MB_BONFEA:
+				CFrontend::SetCurrentMenu(MENU_BONUS_FEATURES);
+				break;
+			case MB_STATS:
+				CFrontend::SetCurrentMenu(MENU_STATS);
+				break;
+			case MB_MODIFICATIONS:
+				CFrontend::SetCurrentMenu(MENU_MODS);
+				break;
+			case MB_SKINS:
+				CFrontend::SetCurrentMenu(MENU_SKINS);
+				break;
+			case MB_QUITPRG:
+				CFrontend::SetCurrentMenu(MENU_QUIT);
+				break;
 			}
-			else
-				CFrontend::ForceAndPlayLevel(lastLevel, 1);
-			break;
-		case MB_SELSCE:
-			*(int*)0x7C89E4 = 7;
-			CFrontend::SetCurrentMenu(MENU_LEVEL_SELECT);
-			break;
-		case MB_LOADG:
-	     	CFrontend::SetCurrentMenu(MENU_START_LOAD_GAME);
-			break;
-		case MB_SETT:
-			CFrontend::SetCurrentMenu(MENU_SETTINGS);
-			break;
-		case MB_BONFEA:
-			CFrontend::SetCurrentMenu(MENU_BONUS_FEATURES);
-			break;
-		case MB_STATS:
-			CFrontend::SetCurrentMenu(MENU_STATS);
-			break;
-		case MB_MODIFICATIONS:
-			CFrontend::SetCurrentMenu(MENU_MODS);
-			break;
-		case MB_SKINS:
-			CFrontend::SetCurrentMenu(MENU_SKINS);
-			break;
-		case MB_QUITPRG:
-			CFrontend::SetCurrentMenu(MENU_QUIT);
-			break;
 		}
+		else
+		{
+			switch (CFrontend::ms_menuButton)
+			{
+			case MB_PLAY:
+				*(int*)0x7C89E4 = 7;
+				CFrontend::SetCurrentMenu(MENU_LEVEL_SELECT);
+				break;
+			case MB_SELSCE:
+				CFrontend::SetCurrentMenu(MENU_LEVEL_SELECT_DUO);
+				break;
+			case MB_LOADG:
+				m_bNewLevels = false;
+				break;
+			}
+		}			
 	}
 
 	if (CCheatHandler::m_lastCheat)
@@ -281,7 +341,6 @@ void eNewFrontend::DrawEVisionMark()
 		sprintf(tmp, "PluginMH %d.%d.%d by ermaccer", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
 		CFrontend::Print8(tmp, 0.0, 0.0, 0.28f, 0.28f, 0.0f, FONT_TYPE_DEFAULT);
 	}
-
 }
 
 void eNewFrontend::StatsMenu()
@@ -349,69 +408,19 @@ void eNewFrontend::ProcessModsMenu()
 
 void eNewFrontend::NewLevelSelect()
 {
-	//CFrontend::ms_fMenuPositionX = 0.15f;
-	float y_pos = CFrontend::ms_fMenuPositionY;
-	float y_temp = 0.0f;
-	float y_adjust = 0.30000001f;
-
-	CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
-
-
-	y_temp = y_pos + y_adjust - CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(L"ORIGINAL", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == LS_ORIGINAL);
-	y_temp = y_pos + y_adjust;
-	CFrontend::AddOption(L"CUSTOM", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == LS_NEW);
-	y_temp += CFrontend::ms_fMenuPositionY;
-	CFrontend::AddOption(L"BACK", CFrontend::ms_fMenuPositionX, y_temp
-		, CFrontend::ms_fTextXScale, CFrontend::ms_fTextYScale, CFrontend::ms_menuButton == LS_BACK);
-
+	if (eGUI::Button("play level 24", 0.5f, 0.5f))
+		CFrontend::ForceAndPlayLevel(24, 1);
+	if (eGUI::Button("play level 25", 0.5f, 0.6f))
+		CFrontend::ForceAndPlayLevel(25, 1);
+	if (eGUI::Button("play weasel", 0.5f, 0.7f))
+		CFrontend::ForceAndPlayLevel(weasel, 1);
 }
 
 void eNewFrontend::ProcessNewLevelSelect()
 {
-	if (CInputManager::FrontendPressedUp())
-	{
-		if (CFrontend::ms_menuButton-- < 0)
-			CFrontend::ms_menuButton = LS_BACK;
-	}
-
-	if (CInputManager::FrontendPressedDown())
-	{
-		if (CFrontend::ms_menuButton++ >= LS_BACK)
-			CFrontend::ms_menuButton = LS_ORIGINAL;
-	}
-
-	if (CInputManager::FrontedMouseHovered())
-		CFrontend::ms_menuButton = CFrontend::GetHoveredItem();
-
 	if (CInputManager::FrontendPressedEscape())
 		CFrontend::SetCurrentMenu(MENU_19);
 
-
-
-	if (CInputManager::FrontendButtonEnter())
-	{
-		switch (CFrontend::ms_menuButton)
-		{
-		case LS_ORIGINAL:
-			//*(int*)0x7C89E4 = 7;
-			CFrontend::ms_menuButton = -1;
-			*(int*)0x7C8FAC = -1;
-			Sleep(250);
-			CFrontend::SetCurrentMenu(MENU_LEVEL_SELECT);
-
-			break;
-		case LS_NEW:
-			//*(int*)0x7C89E4 = 7;
-			CFrontend::SetCurrentMenu(MENU_19);
-			break;
-		case LS_BACK:
-			CFrontend::SetCurrentMenu(MENU_FRONTEND);
-			break;
-		}
-	}
 }
 
 void eNewFrontend::NewSettingMenu()
@@ -419,6 +428,8 @@ void eNewFrontend::NewSettingMenu()
 	float y_pos = CFrontend::ms_fMenuPositionY;
 	float y_temp = 0.0f;
 	float y_adjust = 0.30000001f;
+
+
 
 	CFrontend::DrawMenuCameraCounter(CText::GetFromKey16("MAINM"));
 
@@ -648,9 +659,6 @@ void eNewFrontend::Skins()
 
 
 	}
-
-
-
 
 
 	for (int i = 0; i < skins; i++)
@@ -886,8 +894,6 @@ void eNewFrontend::HookCreateMenuLight()
 	float ratio = X / Y;
 
 	CameraSize(CFrontend::GetFrontendCamera(), NULL, SCREEN_VIEWWINDOW, ratio);
-
-	//RwCameraSetViewWindow(CFrontend::GetFrontendCamera(), &aspectRatio);
 }
 
 void eNewFrontend::DestroyMenuLightWorld()

@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector.h"
+#include "..\RenderWare.h"
 
 struct CParticleEffect
 {
@@ -187,3 +188,8 @@ public:
 	static void				SetPosition(CParticleEffect* effect, CVector* position);
 	static CParticleEffect* NewSFX(int archetype);
 };
+
+
+
+// wrapper
+int FXSystem_Play(const char* name, CVector* pos, RwMatrix* matrix, bool once = true);

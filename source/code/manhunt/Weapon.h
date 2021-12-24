@@ -75,3 +75,8 @@ struct CWeapon
 	int field_88;
 	int field_8C;
 };
+
+class CWeaponManager {
+public:
+	static void CreateAndFireAWeapon(const char* name, CVector *pos, CVector *dir);
+};

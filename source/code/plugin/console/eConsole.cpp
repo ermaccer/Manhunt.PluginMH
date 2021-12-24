@@ -183,14 +183,17 @@ void ConsoleCommands::create(char * args)
 	float x, y, z;
 	char entityName[256];
 	int arg = sscanf(args, "%s %f %f %f",&entityName, &x, &y, &z);
+
 	CEntity* plr = CScene::FindPlayer();
-	CVector* pos = plr->GetLocation();
-	pos->x += 1.0f;
+	CVector pos;
+	pos.x = plr->GetLocation()->x + 1.0f;
+	pos.y = plr->GetLocation()->y;
+	pos.z = plr->GetLocation()->z;
 	if (arg == 4)
-		*pos = { x,y,z };
+		pos = { x,y,z };
 
 
-	CreateEntity(entityName, pos);
+	CreateEntity(entityName, &pos);
 }
 
 void ConsoleCommands::giveweapon(char * args)
@@ -317,7 +320,7 @@ void __declspec(naked) HookConsoleInputPause()
 {
 	static int input_jump = 0x590E9F;
 
-	if (TheConsole.m_consoleActive || TheMenu.bDisplayMenu)
+	if (TheConsole.m_consoleActive || TheMenu.m_active)
 		CInputManager::m_bInputEnabled = 0;
 	else
 		CInputManager::m_bInputEnabled = 1;

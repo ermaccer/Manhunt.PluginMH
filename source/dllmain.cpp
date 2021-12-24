@@ -24,10 +24,8 @@
 #include "code/core/FileFunctions.h"
 #include "code/plugin/eLog.h"
 #include "code/plugin/weapon_adjuster/eWeaponAdjuster.h"
-#include <Shlwapi.h>
-
-
-
+#include "code/plugin/eLevelsLoader.h"
+#include "code/plugin/script/eScriptExtender.h"
 
 
 using namespace Memory::VP;
@@ -37,21 +35,27 @@ int GenericFalseReturn() { return 0; }
 void  GenericDummy() { }
 void Init()
 {
-	//AllocConsole();
-	//freopen("CONIN$", "r", stdin);
-	//freopen("CONOUT$", "w", stdout);
-	//freopen("CONOUT$", "w", stderr);
-
 	eSettingsManager::Init();
+
+	if (eSettingsManager::bEnableLog)
+	{
+		AllocConsole();
+		freopen("CONIN$", "r", stdin);
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+	}
+
 
 	if (eSettingsManager::bEnableLog)
 		eLog::Initialise();
 	if (eSettingsManager::bEnableWeaponAdjuster)
 		eWeaponAdjuster::InitHooks();
+
+	//eLevelsLoader::InitHooks();
 	eModLoader::Init();
 
 	if (eSettingsManager::bSkipIntroSequence) eQoLChanges::SkipIntro();
-    if (eSettingsManager::bDisableAutoAim)	Nop(0x46A300, 7);
+	if (eSettingsManager::bDisableAutoAim)	Nop(0x46A300, 7);
 	if (eSettingsManager::bEnableCheatsInBonusLevels) InjectHook(0x5D4A50, GenericDummy, PATCH_JUMP);
 	if (eSettingsManager::bAllowAllWeaponsExplodeCheat) Patch<char>(0x49D6DE + 2, -1);
 	if (eSettingsManager::bRestoreConfirmationIcon)	InjectHook(0x5F085E, CommonHooks::HookManTriIcon, PATCH_CALL);
@@ -59,7 +63,7 @@ void Init()
 	eModLoader::ScanFolderForFiles("modloader");
 	eSkinLoader::InitHooks();
 	if (eSettingsManager::bIncreaseMapLimits)
-	eMapLimits::InitHooks();
+		eMapLimits::InitHooks();
 
 	if (eSettingsManager::bForceStaticExecutionCamera)
 		InjectHook(0x4D7942, GenericTrueReturn, PATCH_CALL);
@@ -71,9 +75,9 @@ void Init()
 	eStatsManager::Initialize();
 	eNewFrontend::Init();
 
-    eCustomTableOfContents::InitHooks();
+	eCustomTableOfContents::InitHooks();
 	if (eSettingsManager::bHookCustomAnimManager)
-      CCustomAnimManager::InitHooks();
+		CCustomAnimManager::InitHooks();
 
 	if (eSettingsManager::bForceFXMode)
 		Nop(0x5E9180, 10);
@@ -84,7 +88,7 @@ void Init()
 		InjectHook(0x4622DC, GenericDummy, PATCH_CALL);
 		Patch<int>(0x46053D, 0x00000000);
 		Patch<int>(0x460545, 0x00000000);
-	
+
 		// lock arms for player only
 		// filtering only player fixes a bug where peds 
 		// wouldn't move torso while aiming
@@ -92,18 +96,16 @@ void Init()
 
 		// disable resetting camera on x press
 		Nop(0x4628B2, 5);
-		
 	}
 
 	eNewFrontend::InitHooks();
 	eStatsManager::InitHooks();
 	eCustomClumpDictManager::InitHooks();
 
-
+	if (eSettingsManager::bHookExtraScriptCommands)
+		eScriptExtender::InitHooks();
+	
 	InjectHook(0x5E279F, MainHooks::HookWndProc, PATCH_CALL);
-
-
-
 	eLog::Message(__FUNCTION__, "PluginMH initialized!");
 
 }

@@ -1,11 +1,12 @@
 #include "Collectable.h"
 #include "core.h"
 
-char tempBuffer[256];
+char tempBuffer[256] = {};
 
 wchar_t * CCollectable::GetNameKey16(int id)
 {
-	return CallAndReturn<wchar_t*, 0x4C5870, int>(id);
+	wchar_t* result = CallAndReturn<wchar_t*, 0x4C5870, int>(id);
+	return result;
 }
 
 void CCollectable::GetNameStringFromType(int weaponID, char * dest)
@@ -22,4 +23,9 @@ char * CCollectable::FastGetNameStringFromType(int weaponID)
 eCollectableType CCollectable::GetTypeFromNameString(char * string)
 {
 	return CallAndReturn<eCollectableType, 0x4C5A90, char*>(string);
+}
+
+void CWeaponCollectable::Spawn(RwMatrix * mat)
+{
+	CallMethod<0x4CAEA0, CEntity*, RwMatrix*>(this, mat);
 }

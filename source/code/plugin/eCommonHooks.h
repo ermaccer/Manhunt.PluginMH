@@ -1,7 +1,9 @@
 #pragma once
+#include "..\manhunt\Shot.h"
 
 void HookCommonShutdown();
 void InitCommonHooks();
+
 namespace ClassHooks {
 	void __fastcall CPlayer_Kill(int ptr);
 	void __fastcall CPlayer_Kick(int ptr);
@@ -16,10 +18,16 @@ namespace CommonHooks {
 	void  HookRenderMenu();
 	char* GetMyDocumentsDirectory();
 	void  CEntityManager_CreateArchetypes();
+	void  CGameInfo_RenderDamageDirections(int id);
 	void  GameStartInit();
-	void HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture);
+	void  HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture);
+
+	void CFrontend_DrawStoredHalos();
 
 	void ArmsPosition_PlayerFPS();
+	void DisableExecutionCamera();
+
+	void Hook_LoadEntityTypeData();
 }
 
 void DoCommonPatches();

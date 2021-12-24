@@ -10,9 +10,9 @@ struct eMenuPage {
 
 struct eMenuItem {
 	std::string                      name;
-	std::string                      strAnim;
+	std::string                      strEntity;
 	bool                             bIsWeapon;
-	bool                             bIsAnim;
+	bool                             bIsEntity;
 	bool                             bIsFunction;
 	bool                             bIsCharToggle;
 	bool                             bIsShortToggle;
@@ -23,7 +23,6 @@ struct eMenuItem {
 	char*                            ptrCharValue;
 	short*                           ptrShortValue;
 	int*                             ptrIntValue;
-
 
 	// GEN2: Adjustables
 	int                              iStep;
@@ -43,13 +42,13 @@ struct eMenuCategory {
 	int                    iID;
 	bool                   bHasItems;
 	bool                   bIsWeapon;
-	bool                   bIsAnims;
+	bool                   bIsEntities;
 	std::vector<eMenuItem> vItems;
 	std::vector<eMenuItem> vWeapons;
-	std::vector<eMenuItem> vAnims;
+	std::vector<eMenuItem> vEntities;
 	std::vector<eMenuPage> vPages;
 	bool                   bHasBeenWeaponsPopulated;
-	bool                   bHasBeenAnimsPopulated;
+	bool                   bHasBeenEntitiesPopulated;
 	bool                   bHaveBeenPagesCalculated;
 	int                    iPages;
 };
@@ -71,18 +70,34 @@ private:
 	std::vector<eMenuItem>     vTempItems;
 	std::vector<eMenuPage>     vTempPages;
 	std::vector<eMenuItem>     vTempWeapons;
-	std::vector<eMenuItem>     vTempAnims;
+	std::vector<eMenuItem>     vTempEntities;
 	std::vector<eMenuCategory> vCategories;
 public:
-	bool bDisplayMenu;
+
+	int m_displayCoords = 0;
+	int m_displayRealCoords = 0;
+	int m_controllerDebug = 0;
+	int m_materialManagerDebug = 0;
+	int m_disableLockOnTriangles = 0;
+	int m_displayPositionMarker = 0;
+	int m_godMode = 0;
+	int m_infiniteHealth = 0;
+	int m_hideMoon = 0;
+	int m_hideStars = 0;
+	int m_fallDamage = 1;
+	int m_levelTimer = 0;
+	int m_silenceWeapons = 0;
+
+	int m_enableKillCounter = 0;
+	int m_infiniteAmmo = 0;
+
+
+	bool m_active;
 	CVector savedPosition;
 
 
 	// settings
 	int  KeyEnableMenu;
-	int  KeyQuickCameraMain;
-	int  KeyQuickCameraSub;
-	int  KeyQuickCameraTeleport;
 	int  KeyMenuExecute;
 	int  KeyMenuGoBack;
 	int  KeyMenuItemUP;
@@ -95,22 +110,30 @@ public:
 	void PreInitialize();
 	void Initialize();
 	void ProcessMenu();
-	void ProcessToggle();
 	void ProcessControls();
 
+	// events
+
+	void OnKeyLeft();
+	void OnKeyRight();
+	void OnKeyDown();
+	void OnKeyUp();
+	void OnKeyExecute();
+	void OnKeyGoBack();
+	void OnKeyToggle();
+
 	void DrawMenu();
-	void ProcessEnter();
 	void Clear();
 
 
 	// menu stuff
 	void AddCategory(std::string name, bool isWeapon = false);
-	void AddAnimsCategory(std::string name);
+	void AddEntitiesCategory(std::string name);
 	void AddItem(std::string name, bool isChar, bool isShort, bool isInt, bool isFunc, bool isWeapon, int weapID, char* ptrChar, short* ptrShort, int* ptrInt, std::function<void()> func,
 		bool adjInt, int adjStep, int adjMin, int adjMax, bool adjFloat, float fAdjStep, float fAdjMin, float fAdjMax, bool isAnim, std::string strAnim); // gen 2 menu
 
 	void AddWeaponEntry(int weaponID);
-	void AddAnimEntry(std::string name);
+	void AddEntityEntry(std::string name);
 	void AddToggleCharEntry(std::string name, char* ptr);
 	void AddToggleIntEntry(std::string name, int* ptr);
 	void AddFunctionEntry(std::string name, std::function<void()> func);
@@ -130,8 +153,12 @@ void		LoadPosition();
 void        SetDifficultyEasy();
 void		SetDifficultyHard();
 
+void		PrintEntities();
+void		PrintExecuteHunter();
+
 
 extern eMenu TheMenu;
 
 
 bool KeyHit(unsigned int keyCode);
+bool KeyHitOnce(unsigned int keyCode);

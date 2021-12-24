@@ -5,17 +5,21 @@
 bool eSettingsManager::bEnableLog;
 bool eSettingsManager::bHideVersionInfo;
 bool eSettingsManager::bHookSkinLoader;
-
+bool eSettingsManager::bCustomLevelsLoader;
 bool eSettingsManager::bIncreaseMapLimits;
 bool eSettingsManager::bForceStaticExecutionCamera;
 bool eSettingsManager::bEnableStatsManager;
-
+bool eSettingsManager::bHookExtraWeapons;
+bool eSettingsManager::bHookExtraScriptCommands;
 bool eSettingsManager::bEnableWeaponAdjuster;
 bool eSettingsManager::bEnableExecutionsWithFirearms;
 
 bool eSettingsManager::bDisableHeartBeat;
 bool eSettingsManager::bDisableBreathing;
 bool eSettingsManager::bHookCustomAnimManager;
+bool eSettingsManager::bRestoreDamageDirectionIndicator;
+bool eSettingsManager::bDisableExecutionCamera;
+bool eSettingsManager::bUseExclamationMarkForConfirmationIcon;
 int  eSettingsManager::iCustomAnimManagerSize;
 
 bool eSettingsManager::bCustomAnimManagerUseGlobalFile;
@@ -40,6 +44,7 @@ int  eSettingsManager::keyToggleHUD;
 int  eSettingsManager::keyToggleScreenshotMode;
 void eSettingsManager::Init()
 {
+	bCustomLevelsLoader = false;
 	CIniReader reader("");
 	bEnableLog = reader.ReadBoolean("Settings", "bEnableLog", false);
 	bHideVersionInfo = reader.ReadBoolean("Settings", "bHideVersionInfo", false);
@@ -60,6 +65,8 @@ void eSettingsManager::Init()
 	iCustomTableOfContentsBufferSize = reader.ReadInteger("Settings", "iCustomTableOfContentsBufferSize", 25);
 
 	szCustomUserFilesDirectory = reader.ReadString("Settings", "szCustomUserFilesDirectory", 0);
+	bHookExtraWeapons = reader.ReadBoolean("Settings", "bHookExtraWeapons", false);
+	bHookExtraScriptCommands = reader.ReadBoolean("Settings", "bHookExtraScriptCommands", false);
 
 
 	bDisableBreathing = reader.ReadBoolean("Settings.Game", "bDisableBreathingSound", false);
@@ -72,8 +79,12 @@ void eSettingsManager::Init()
 	bHideBSPWarnings = reader.ReadBoolean("Settings.Game", "bHideBSPWarnings", false);
 	bForceFXMode = reader.ReadBoolean("Settings.Game", "bForceFXMode", false);
 	bEnableFirstPersonMode = reader.ReadBoolean("Settings.Game", "bEnableFirstPersonMode", false);
+
 	iForcePlayerSkin = reader.ReadInteger("Settings.Game", "iForcePlayerSkin", 0);
 
+	bRestoreDamageDirectionIndicator = reader.ReadBoolean("Settings.Game", "bRestoreDamageDirectionIndicator", false);
+	bDisableExecutionCamera = reader.ReadBoolean("Settings", "bDisableExecutionCamera", false);
+	bUseExclamationMarkForConfirmationIcon = reader.ReadBoolean("Settings.Game", "bUseExclamationMarkForConfirmationIcon", false);
 	keyToggleDebugMenu = reader.ReadInteger("Keys", "keyToggleDevMenu", VK_F1);
 	keyToggleConsole = reader.ReadInteger("Keys", "keyToggleConsole", VK_OEM_3);
 	keyToggleScreenshotMode = reader.ReadInteger("Keys", "keyToggleScreenshotMode", VK_F3);

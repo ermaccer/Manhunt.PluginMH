@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector.h"
 #include "TypeData.h"
-
+#include <rwcore.h>
 
 struct CEntityAnim
 {
@@ -168,9 +168,13 @@ public:
 
 
 	void Spawn(CVector* pos, float arg);
+	void Spawn(RwMatrix* matrix);
 	void SetFrozen(int state);
 	void SetName(char* name);
 	void SetLocation(CVector* pos);
 	void SetFlag(int flag, int status);
+	void ResolveCollision();
+	void Destroy();
 	CVector* GetLocation();
+	RwMatrix* GetEntityMatrix();
 };

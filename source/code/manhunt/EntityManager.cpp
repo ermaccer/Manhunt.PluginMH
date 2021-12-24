@@ -28,3 +28,8 @@ void CEntityManager::LoadCharacterClumpDict(int skinID)
 {
 	Call<0x437FB0, int>(skinID);
 }
+
+void CEntityManager::CreateEntityTypesFromIni()
+{
+	Call<0x439540>();
+}

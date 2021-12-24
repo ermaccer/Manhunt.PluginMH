@@ -76,6 +76,17 @@ struct CRGB3 {
 	int r, g, b;
 };
 
+struct CStoredHalo {
+	CVector position;
+	float scale;
+	int r;
+	int g;
+	int b;
+	float radius;
+};
+
+
+
 
 class CFrontend {
 public:

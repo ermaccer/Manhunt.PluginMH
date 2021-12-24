@@ -55,6 +55,9 @@ public:
 	static void ProcessStatsMenu();
 	static void ModsMenu();
 	static void ProcessModsMenu();
+
+	static bool m_bNewLevels;
+
 	static void NewLevelSelect();
 	static void ProcessNewLevelSelect();
 	static void NewSettingMenu();

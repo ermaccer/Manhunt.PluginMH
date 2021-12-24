@@ -379,7 +379,8 @@ bool __fastcall eWeaponAdjuster::CPed__HoldingMeleeWeapon_Firearm(int ptr)
 			v3 = *(int*)(v2 + 428);
 
 			// added 3 - if firearm check
-			if ((*(int*)(*(int*)(v3 + 4) + 4)) == WC_MELEE || (*(int*)(*(int*)(v3 + 4) + 4)) == WC_MELEE_KICK || (*(int*)(*(int*)(v3 + 4) + 4)) == WC_AMMO)
+			if ((*(int*)(*(int*)(v3 + 4) + 4)) == WC_MELEE || (*(int*)(*(int*)(v3 + 4) + 4)) == WC_MELEE_KICK || (*(int*)(*(int*)(v3 + 4) + 4)) == WC_AMMO
+				|| (*(int*)(*(int*)(v3 + 4) + 4)) == WC_THROWING)
 				return true;
 		}
 

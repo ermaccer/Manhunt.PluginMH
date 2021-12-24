@@ -40,7 +40,7 @@ public:
 	void *vTable;
 	eEntityClass m_ecEntityClass;
 	int m_nEntityFlags;
-	int field_C;
+	char* m_szRecordName;
 	__int16 field_10;
 	char field_12;
 	char field_13;

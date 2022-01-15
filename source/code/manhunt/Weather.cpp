@@ -1,5 +1,7 @@
 #include "Weather.h"
 #include "core.h"
+
+
 void CWeather::SetWeatherCloudy()
 {
 	Call<0x5B0AC0>();

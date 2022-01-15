@@ -32,6 +32,7 @@ struct eMenuItem {
 	float                            fStep;
 	float                            fAdjustMax;
 	float                            fAdjustMin;
+	float*							 ptrFloatValue;
 
 	std::function<void()>            fFunc;
 	// todo: add value items
@@ -55,10 +56,11 @@ struct eMenuCategory {
 
 class eMenu {
 private:
-	bool bCategoryOpen;
-	bool bNavigatingInCategory;
-	bool bPressedEnter;
-	bool bIsHoldingMenu;
+	bool m_bCategoryOpen;
+	bool m_bNavigatingCategory;
+	bool m_bPressedEnter;
+	bool m_bIsHolding;
+	bool m_bSelectedOption;
 
 	int  iCurrentItem;
 	int  iActualItemID;
@@ -87,6 +89,8 @@ public:
 	int m_fallDamage = 1;
 	int m_levelTimer = 0;
 	int m_silenceWeapons = 0;
+	int m_obstructTest = 0;
+	int m_displayHunter = 0;
 
 	int m_enableKillCounter = 0;
 	int m_infiniteAmmo = 0;
@@ -130,7 +134,7 @@ public:
 	void AddCategory(std::string name, bool isWeapon = false);
 	void AddEntitiesCategory(std::string name);
 	void AddItem(std::string name, bool isChar, bool isShort, bool isInt, bool isFunc, bool isWeapon, int weapID, char* ptrChar, short* ptrShort, int* ptrInt, std::function<void()> func,
-		bool adjInt, int adjStep, int adjMin, int adjMax, bool adjFloat, float fAdjStep, float fAdjMin, float fAdjMax, bool isAnim, std::string strAnim); // gen 2 menu
+		bool adjInt, int adjStep, int adjMin, int adjMax, bool adjFloat, float fAdjStep, float fAdjMin, float fAdjMax, bool isAnim, std::string strAnim, float* ptrFloat = nullptr); // gen 2 menu
 
 	void AddWeaponEntry(int weaponID);
 	void AddEntityEntry(std::string name);
@@ -141,7 +145,7 @@ public:
 	// GEN2
 
 	void AddSliderIntEntry(std::string name, int* ptr, int min, int max, int step = 1);
-
+	void AddSliderFloatEntry(std::string name, float* ptr, float min, float max, float step = 0.1f);
 };
 
 
@@ -152,7 +156,8 @@ void		SavePosition();
 void		LoadPosition();
 void        SetDifficultyEasy();
 void		SetDifficultyHard();
-
+void		PutBagOnPlayerHead();
+void		PlayerDropAllWeapons();
 void		PrintEntities();
 void		PrintExecuteHunter();
 

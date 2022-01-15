@@ -15,7 +15,7 @@
     <ProjectGuid>{DF58B4F9-5FA8-4A06-95A5-8ED91DD1A4AC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>PluginMH</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -105,6 +105,7 @@
     <ClInclude Include="code\manhunt\AmmoWeapon.h" />
     <ClInclude Include="code\manhunt\Anim.h" />
     <ClInclude Include="code\manhunt\App.h" />
+    <ClInclude Include="code\manhunt\Camera.h" />
     <ClInclude Include="code\manhunt\Character.h" />
     <ClInclude Include="code\manhunt\Cheats.h" />
     <ClInclude Include="code\manhunt\Clump.h" />
@@ -117,13 +118,19 @@
     <ClInclude Include="code\manhunt\EntityManager.h" />
     <ClInclude Include="code\manhunt\Filenames.h" />
     <ClInclude Include="code\manhunt\Frontend.h" />
+    <ClInclude Include="code\manhunt\Graph.h" />
+    <ClInclude Include="code\manhunt\Hunter.h" />
     <ClInclude Include="code\manhunt\Input.h" />
     <ClInclude Include="code\manhunt\Inventory.h" />
     <ClInclude Include="code\manhunt\MaterialManager.h" />
     <ClInclude Include="code\manhunt\MemoryHeap.h" />
     <ClInclude Include="code\manhunt\Misc.h" />
+    <ClInclude Include="code\manhunt\Ped.h" />
+    <ClInclude Include="code\manhunt\PedHead.h" />
     <ClInclude Include="code\manhunt\Player.h" />
+    <ClInclude Include="code\manhunt\PtrList.h" />
     <ClInclude Include="code\manhunt\Renderer.h" />
+    <ClInclude Include="code\manhunt\SampleIDs.h" />
     <ClInclude Include="code\manhunt\Scene.h" />
     <ClInclude Include="code\manhunt\Script.h" />
     <ClInclude Include="code\manhunt\Shot.h" />
@@ -170,6 +177,7 @@
     <ClCompile Include="code\manhunt\AmmoWeapon.cpp" />
     <ClCompile Include="code\manhunt\Anim.cpp" />
     <ClCompile Include="code\manhunt\App.cpp" />
+    <ClCompile Include="code\manhunt\Camera.cpp" />
     <ClCompile Include="code\manhunt\Character.cpp" />
     <ClCompile Include="code\manhunt\Cheats.cpp" />
     <ClCompile Include="code\manhunt\ClumpDict.cpp" />
@@ -179,10 +187,13 @@
     <ClCompile Include="code\manhunt\EntityManager.cpp" />
     <ClCompile Include="code\manhunt\Filenames.cpp" />
     <ClCompile Include="code\manhunt\Frontend.cpp" />
+    <ClCompile Include="code\manhunt\Graph.cpp" />
+    <ClCompile Include="code\manhunt\Hunter.cpp" />
     <ClCompile Include="code\manhunt\Input.cpp" />
     <ClCompile Include="code\manhunt\Inventory.cpp" />
     <ClCompile Include="code\manhunt\MemoryHeap.cpp" />
     <ClCompile Include="code\manhunt\Misc.cpp" />
+    <ClCompile Include="code\manhunt\Ped.cpp" />
     <ClCompile Include="code\manhunt\Player.cpp" />
     <ClCompile Include="code\manhunt\Renderer.cpp" />
     <ClCompile Include="code\manhunt\Scene.cpp" />

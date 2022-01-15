@@ -8,6 +8,7 @@ enum eWeatherTypes {
 	THUNDER,
 	FOGGY,
 	CLEAR,
+	NUM_WEATHER,
 	FREE = -1
 };
 

@@ -25,7 +25,22 @@ eCollectableType CCollectable::GetTypeFromNameString(char * string)
 	return CallAndReturn<eCollectableType, 0x4C5A90, char*>(string);
 }
 
+void CCollectable::Drop()
+{
+	CallMethod<0x4CABE0, CCollectable*>(this);
+}
+
+eCollectableType CCollectable::GetCollectableType()
+{
+	return CallMethodAndReturn<eCollectableType, 0x4C6F10, CCollectable*>(this);
+}
+
 void CWeaponCollectable::Spawn(RwMatrix * mat)
 {
 	CallMethod<0x4CAEA0, CEntity*, RwMatrix*>(this, mat);
+}
+
+void CWeaponCollectable::Drop()
+{
+	CallMethod<0x4CABE0, CWeaponCollectable*>(this);
 }

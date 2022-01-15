@@ -26,6 +26,12 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 		{
 			if (wParam == VK_OEM_3)
 				TheConsole.m_consoleActive ^= 1;
+
+			if (TheConsole.m_consoleActive)
+			{
+				if (wParam == VK_UP)
+					TheConsole.ScrollMessage();
+			}
 			
 			if (wParam == eSettingsManager::keyToggleScreenshotMode)
 			{
@@ -73,7 +79,7 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 					TheConsole.RemoveLastCharacter();
 				else if (wParam == VK_RETURN)
 					TheConsole.Execute();
-				else
+				else 
 					TheConsole.PushCharacter(wParam);
 				
 			}

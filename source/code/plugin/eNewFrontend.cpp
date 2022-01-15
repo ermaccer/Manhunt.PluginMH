@@ -15,7 +15,7 @@
 #include "..\..\resource.h"
 #include "..\manhunt\Clump.h"
 #include "..\manhunt\ClumpDict.h"
-#include "..\manhunt\Entity.h";
+#include "..\manhunt\Entity.h"
 #include "..\RenderWare.h"
 #include "eSkinLoader.h"
 #include "..\core\eSettingsManager.h"
@@ -36,6 +36,8 @@ int eNewFrontend::m_nCurrentStatsPage;
 int eNewFrontend::m_nCurrentModsPage;
 int eNewFrontend::m_nCurrentSkinPos;
 int eNewFrontend::m_nSkinAdjustID;
+int eNewFrontend::m_nCurrentModPos;
+int eNewFrontend::m_nModAdjustID;
 wchar_t* eNewFrontend::m_szCheatText = (wchar_t*)0x7D6360;
 RpWorld * eNewFrontend::ms_pMenuWorld;
 RpLight * eNewFrontend::ms_pMenuLight;
@@ -73,6 +75,8 @@ void eNewFrontend::Init()
 
 	m_nCurrentSkinPos = eSkinLoader::ms_iCurrentSkinPos;
 	m_nSkinAdjustID = eSkinLoader::ms_iCurrentSkinAdjust;
+	m_nModAdjustID = 0;
+	m_nCurrentModPos = 0;
 }
 
 
@@ -390,12 +394,20 @@ void eNewFrontend::ModsMenu()
 	CFrontend::Print8(tmp, m_fBoxPositionX, m_fBoxPositionY - 0.10f, 1.0, 1.0, 0.0, FONT_FRONTEND);
 	CFrontend::DrawMenuCameraCounter(L"MODIFICATIONS");
 
+	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX - 0.40f, m_fSkinsBoxPositionY, 0.80f, 0.6f, 180, 180, 180, 90, 0);
+
+	/*const char* modHelp = "Press ~up~ or ~down~ or use mouse to select a mod. ESC to quit.";
+	CFrontend::SetDrawRGBA(0, 0, 0, 255);
+	CFrontend::Print8(skinsHelp, 0.05f + 0.004f, 0.90f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+	CFrontend::SetDrawRGBA(255, 255, 255, 255);
+	CFrontend::Print8(skinsHelp, 0.05f, 0.90f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);*/
+
 	for (int i = 0; i < mods; i++)
 	{
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fBoxPositionX + 0.02 + 0.004, m_fBoxPositionY + 0.05 * i + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02 + 0.004, m_fBoxPositionY + 0.05 * i + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(255, 255, 255, 255);
-		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fBoxPositionX + 0.02, m_fBoxPositionY + 0.05 * i, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02, m_fBoxPositionY + 0.05 * i, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 }
 
@@ -535,7 +547,7 @@ void eNewFrontend::Skins()
 	CFrontend::SetDrawRGBA(255, 255, 255, 255);
 	CFrontend::Print8(skinsHelp, 0.05f, 0.90f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 
-	char skinNo[128] = {};
+	static char skinNo[128] = {};
 	sprintf(skinNo, "Skins: %d", eSkinLoader::vSkins.size());
 	CFrontend::SetDrawRGBA(0, 0, 0, 255);
 	CFrontend::Print8(skinNo, m_fSkinsBoxPositionX + 0.30f + 0.004f, m_fSkinsBoxPositionY + 0.60f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);

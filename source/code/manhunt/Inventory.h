@@ -1,4 +1,5 @@
 #pragma once
+#include "Collectable.h"
 
 enum eInventorySlots {
 	BACK = 1,
@@ -18,11 +19,20 @@ public:
 	static int& ms_curThrowableItem;
 
 	static int GetCurrentItem();
+	static int GetIconTexture(eCollectableType type, bool display);
 };
 
 class CInventory {
-private:
-	void* vTable;
 public:
-	static int FindItemWithCollectableType(int ptr, int collectable);
+	int field_0;
+	int m_numSlots;
+	CCollectable** m_inventory;
+
+	CInventory(int slots);
+	CCollectable* FindItemWithCollectableType(int collectable);
+	void RemoveItem(CCollectable* item);
+
+	void RemoveAllItems();
+
+	int GetNumItems();
 };

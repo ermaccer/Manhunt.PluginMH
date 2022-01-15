@@ -4,8 +4,8 @@ struct CVector2D {
 	float x, y;
 };
 
-inline float RecipSqrt(float x, float y) { return x / sqrt(y); }
-inline float RecipSqrt(float x) { return RecipSqrt(1.0f, x); }
+inline float RecipSqrt(float x, float y) { return (float)(x / sqrt(y)); }
+inline float RecipSqrt(float x) { return (float)RecipSqrt(1.0f, x); }
 
 class CVector
 {
@@ -18,10 +18,10 @@ public:
 		y = b;
 		z = c;
 	}
-	float Heading(void) const { return atan2(-x, y); }
-	float Magnitude(void) const { return sqrt(x*x + y * y + z * z); }
+	float Heading(void) const { return (float)atan2(-x, y); }
+	float Magnitude(void) const { return (float)sqrt(x*x + y * y + z * z); }
 	float MagnitudeSqr(void) const { return x * x + y * y + z * z; }
-	float Magnitude2D(void) const { return sqrt(x*x + y * y); }
+	float Magnitude2D(void) const { return (float)sqrt(x*x + y * y); }
 	float MagnitudeSqr2D(void) const { return x * x + y * y; }
 	void Normalise(void) {
 		float sq = MagnitudeSqr();
@@ -136,5 +136,5 @@ Distance2D(const CVector &v1, const CVector &v2)
 {
 	float x = v2.x - v1.x;
 	float y = v2.y - v1.y;
-	return sqrt(x*x + y * y);
+	return (float)sqrt(x*x + y * y);
 }

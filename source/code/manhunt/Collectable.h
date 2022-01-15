@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include <rwcore.h>
 
 enum eCollectableType {
 	CT_TRIPWIRE = 1,
@@ -131,12 +132,6 @@ enum eExecutions {
 };
 
 
-struct CCollectableTypeData {
-public:
-	void* vTable;
-
-};
-
 class CCollectable: public CEntity {
 public:
 	int m_collectableFlags;
@@ -169,9 +164,13 @@ public:
 	static void     GetNameStringFromType(int weaponID, char *dest);
 	static char*    FastGetNameStringFromType(int weaponID);
 	static eCollectableType     GetTypeFromNameString(char* string);
+
+	void	 Drop();
+	eCollectableType GetCollectableType();
 };
 
 class CWeaponCollectable : public CCollectable {
 public:
 	void Spawn(RwMatrix* mat);
+	void Drop();
 };

@@ -17,3 +17,4 @@ struct CFile {
 
 
 RwTexDictionary* TexDictLoad(const char *path);
+

@@ -26,7 +26,38 @@ int CGameInventory::GetCurrentItem()
 	}
 }
 
-int CInventory::FindItemWithCollectableType(int ptr, int collectable)
+int CGameInventory::GetIconTexture(eCollectableType type, bool display)
 {
-	return CallMethodAndReturn<int, 0x4929E0, int, int>(ptr, collectable);
+	return CallAndReturn<int, 0x5DF9A0,eCollectableType, bool>(type, display);
+}
+
+CInventory::CInventory(int slots)
+{
+	CallMethod<0x492740, CInventory*, int>(this, slots);
+}
+
+CCollectable* CInventory::FindItemWithCollectableType(int collectable)
+{
+	return CallMethodAndReturn<CCollectable*, 0x4929E0, CInventory*, int>(this, collectable);
+}
+
+void CInventory::RemoveItem(CCollectable * item)
+{
+	CallMethod<0x492810, CInventory*, CCollectable*>(this, item);
+}
+
+void CInventory::RemoveAllItems()
+{
+	for (int i = 1; i < m_numSlots; i++)
+		m_inventory[i] = 0;
+}
+
+int CInventory::GetNumItems()
+{
+	int items = 0;
+	for (int i = 1; i < m_numSlots; i++)
+		if (m_inventory[i])
+			items++;
+
+	return items;
 }

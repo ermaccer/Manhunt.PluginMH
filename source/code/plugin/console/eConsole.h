@@ -11,15 +11,18 @@ public:
 	std::vector<std::string> m_messages;
 	std::vector<std::string> m_commands;
 	std::string m_currentMessage;
+	std::string m_lastCommand;
 
 	eConsole();
 
 	void Process();
 	void PushCharacter(char chr);
-	void ScrollMessage(int direction);
+	void ScrollMessage();
 	void RemoveLastCharacter();
 	void Execute();
 	void ExecuteCommand(char* command, char* args);
+
+
 
 
 };
@@ -53,4 +56,6 @@ namespace ConsoleCommands {
 	void sp(char* args);
 	void lp(char* args);
 	void tp(char* args);
+	void list(char* args);
+	void kill(char* args);
 };

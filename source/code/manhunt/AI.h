@@ -96,9 +96,17 @@ enum eAISounds {
 int AISCRIPT_EntityAlwaysEnabled(char* instance);
 int AISCRIPT_AddAIEntity(char* entity);
 int AISCRIPT_SetAIEntityAsLeader(char* entity);
+int AISCRIPT_AddLeaderEnemy(char* entity, char* enemy);
 int AISCRIPT_SetEntityVoiceID(char* entity, int voiceID);
 int AIScript_BuddyFollow(char* entity);
 int AISCRIPT_CancelIdle(char* entity, int action);
 int AISCRIPT_AddHunterToLeaderSubpack(char* leader, char* subpack, char* entity);
 int AISCRIPT_DefineGoal_HuntEnemy(char* refName, char* who, bool unk, int unk2);
+// 		AIDefineGoalBeBuddy('gTrampy', 'Tramp','player', 'Timer404', 2);	
+int AISCRIPT_DefineGoal_BeBuddy(char* goalName, char* entityName, char* whoToBeBuddyWith, char* home, float radius);
+
 int modAI_Audio_RegisterAISound(eAISounds sound, CEntity* entity, int unk, int unk2);
+
+
+void AISENSES_IgnorePlayer();
+void AI_MakeHuntersIdle();

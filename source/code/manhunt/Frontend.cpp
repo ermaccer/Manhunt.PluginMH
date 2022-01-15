@@ -85,6 +85,11 @@ void CFrontend::PrintInfo(wchar_t * button1, wchar_t * button2, wchar_t * button
 	Call<0x5D5BB0, wchar_t*, wchar_t*, wchar_t*, wchar_t*>(button1, button2, button3, button4);
 }
 
+void CFrontend::PrintDebugInfo(int lineID, char * format, ...)
+{
+	((void(__cdecl*)(int,char*,...))0x5E5480)(lineID, format);
+}
+
 int CFrontend::GetTextureFromTXD(int txd, const char * texture)
 {
 	return CallAndReturn<int,0x5EA520,int,const char*>(txd, texture);

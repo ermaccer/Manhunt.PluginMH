@@ -126,7 +126,7 @@ public:
 	static void Print8(const char* text, float x, float y, float sizex, float sizey, float unk, eFontType font);
 	static void SetMenuBackground(char* file);
 	static void PrintInfo(wchar_t* button1, wchar_t* button2, wchar_t* button3, wchar_t* button4);
-
+	static void PrintDebugInfo(int lineID, char* format, ...);
 	static int GetTextureFromTXD(int txd, const char* texture);
 
 	static int GetLastPlayedLevel();

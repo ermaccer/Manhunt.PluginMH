@@ -26,6 +26,7 @@
 #include "code/plugin/weapon_adjuster/eWeaponAdjuster.h"
 #include "code/plugin/eLevelsLoader.h"
 #include "code/plugin/script/eScriptExtender.h"
+#include "code/manhunt/Inventory.h"
 
 
 using namespace Memory::VP;
@@ -33,6 +34,8 @@ using namespace Memory::VP;
 int GenericTrueReturn() { return 1; }
 int GenericFalseReturn() { return 0; }
 void  GenericDummy() { }
+
+
 void Init()
 {
 	eSettingsManager::Init();
@@ -104,7 +107,7 @@ void Init()
 
 	if (eSettingsManager::bHookExtraScriptCommands)
 		eScriptExtender::InitHooks();
-	
+
 	InjectHook(0x5E279F, MainHooks::HookWndProc, PATCH_CALL);
 	eLog::Message(__FUNCTION__, "PluginMH initialized!");
 

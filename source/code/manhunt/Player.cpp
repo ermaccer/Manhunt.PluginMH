@@ -21,3 +21,8 @@ void CPlayer::AccumulateTime()
 	CallMethod<0x45BB10,CPlayer*>(this);
 }
 
+int CPlayer::GetExecuteStage()
+{
+	return CallMethodAndReturn<int, 0x46CB80, CPlayer*>(this);
+}
+

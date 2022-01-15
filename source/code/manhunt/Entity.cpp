@@ -47,6 +47,11 @@ void CEntity::Destroy()
 	CallMethod<0x4311C0, CEntity*>(this);
 }
 
+void CEntity::Kill()
+{
+	CallMethod<0x4313E0, CEntity*>(this);
+}
+
 CVector * CEntity::GetLocation()
 {
 	return CallMethodAndReturn<CVector*,0x4317E0, CEntity*>(this);

@@ -3,6 +3,7 @@
 
 
 int& CEntityManager::ms_playerCharacterID = *(int*)0x6A94C0;
+bool& CEntityManager::ms_disableHunters = *(bool*)0x6A94C8;
 
 CTypeData * CEntityManager::GetEntityTypeDataFromName(char * name)
 {
@@ -32,4 +33,9 @@ void CEntityManager::LoadCharacterClumpDict(int skinID)
 void CEntityManager::CreateEntityTypesFromIni()
 {
 	Call<0x439540>();
+}
+
+void CEntityManager::ShutDown()
+{
+	Call<0x437800>();
 }

@@ -175,6 +175,7 @@ public:
 	void SetFlag(int flag, int status);
 	void ResolveCollision();
 	void Destroy();
+	void Kill();
 	CVector* GetLocation();
 	RwMatrix* GetEntityMatrix();
 };

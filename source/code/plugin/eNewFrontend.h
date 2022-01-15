@@ -53,6 +53,9 @@ public:
 	static wchar_t  m_szStatsBuffer[128];
 	static void StatsMenu();
 	static void ProcessStatsMenu();
+	static int m_nCurrentModPos;
+	static int m_nModAdjustID;
+
 	static void ModsMenu();
 	static void ProcessModsMenu();
 

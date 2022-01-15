@@ -10,9 +10,9 @@ void CCustomProjectile::Spawn(RwMatrix * mat)
 	if (strcmp(m_TypeData->m_szModel, "Grenade_(CT)") == 0)
 	{
 		CVector pos = *GetLocation();
-		CWeaponManager::CreateAndFireAWeapon("explodingBarrel", &pos, 0);
 		FXSystem_Play("Drum_Explode", &pos, 0);
-
+		pos.y += 1.25f;
+		CWeaponManager::CreateAndFireAWeapon("explodingBarrel", &pos, 0);
 		Destroy();
 	}
 
@@ -26,8 +26,6 @@ void CCustomProjectileShot::NewDestroy(bool create_weapon)
 	{
 		// use health as timer
 		CEntity* entity = *(CEntity**)((int)this + 32);
-
-
 
 		(int)entity->m_fHealth++;
 

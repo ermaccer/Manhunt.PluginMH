@@ -59,7 +59,7 @@ int eSkinLoader::ReadFolder(const char * folder)
 		}
 	}
 
-	for (int i = 0; i < skinFiles.size(); i++)
+	for (unsigned int i = 0; i < skinFiles.size(); i++)
 		LoadSkin((char*)skinFiles[i].c_str());
 
 	return 1;

@@ -10,6 +10,7 @@
 #include "..\manhunt\Scene.h"
 #include "..\manhunt\AI.h"
 #include "..\manhunt\Player.h"
+#include "..\manhunt\Ped.h"
 
 void CreateEntity(char * name, CVector* pos)
 {
@@ -42,15 +43,16 @@ void GiveWeaponToEntity(CEntity * ent, int weaponID)
 {
 	if (ent)
 	{
-		CCharacter::CreateInventoryItem(ent, weaponID, true);
-		int inventory_handle = *(int*)((int)ent + 336);
-		int item = CInventory::FindItemWithCollectableType(inventory_handle, weaponID);
+		CCharacter* character = (CCharacter*)ent;
+		character->CreateInventoryItem(weaponID, true);
+		CInventory* inv = character->m_pInventory;
+		CCollectable* item = inv->FindItemWithCollectableType(weaponID);
 
-		CWeapon* wep = (CWeapon*)*(int*)(item + 428);
+		CWeapon* wep = (CWeapon*)*(int*)((int)item + 428);
 
 		if (wep->m_TypeData->m_eWeaponClass == WC_AMMO)
 		{
-			CAmmoWeapon* ammo = (CAmmoWeapon*)*(int*)(item + 428);
+			CAmmoWeapon* ammo = (CAmmoWeapon*)*(int*)((int)item + 428);
 			ammo->SetAmmo(1000);
 		}
 
@@ -65,6 +67,21 @@ void GiveWeaponToEntity(CEntity * ent, int weaponID)
 void GiveWeaponToPlayer(int weaponID)
 {
 	GiveWeaponToEntity(CScene::FindPlayer(), weaponID);
+}
+
+void StripAllWeapons(CEntity * ent)
+{
+	CCharacter* character = (CCharacter*)ent;
+
+
+
+	//for (int i = 0; i < TOTAL_COLLECTABLES; i++)
+	//{
+	//	CCollectable* item = inv->FindItemWithCollectableType(i);
+	///	if (item)
+	//		inv->RemoveItem(item);
+	//}
+
 }
 
 CEntity * GetHunterAboutToBeExecuted()

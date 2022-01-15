@@ -20,6 +20,10 @@
 #include "..\..\manhunt\String.h"
 #include "..\..\manhunt\SpecialFX.h"
 #include "..\..\manhunt\AI.h"
+#include "..\..\manhunt\Ped.h"
+#include "..\..\manhunt\PtrList.h"
+#include "..\..\manhunt\Graph.h"
+#include "..\..\manhunt\Camera.h"
 
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
@@ -69,6 +73,8 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Display Coordinates", &m_displayCoords);
 	AddToggleIntEntry("Use INST Coordinates For Display", &m_displayRealCoords);
 	AddToggleIntEntry("Display Saved Position", &m_displayPositionMarker);
+	AddFunctionEntry("Drop All Weapons", PlayerDropAllWeapons);
+	AddFunctionEntry("Make AI Ignore Player", AISENSES_IgnorePlayer);
 	AddCategory("Player");
 
 
@@ -151,10 +157,21 @@ void eMenu::Initialize()
 
 	if (eSettingsManager::bIncreaseMapLimits)
 		AddToggleIntEntry("New Material Manager Debug", &m_materialManagerDebug);
+
 	AddToggleIntEntry("Hide Moon", &m_hideMoon);
 	AddToggleIntEntry("Hide Stars", &m_hideStars);
 
 	AddCategory("World");
+
+	AddSliderFloatEntry("Camera Offset X", &TheCamera.m_vCameraOffsets.x, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Camera Offset Y", &TheCamera.m_vCameraOffsets.y, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Camera Offset Z", &TheCamera.m_vCameraOffsets.z, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Aim Camera Offset X", &TheCamera.m_vAimingCameraOffset.x, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Aim Camera Offset Y", &TheCamera.m_vAimingCameraOffset.y, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Aim Camera Offset Z", &TheCamera.m_vAimingCameraOffset.z, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Free Camera Rotation Speed", &CCam::ms_freeCameraRotationSpeed, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Free Camera Speed", &CCam::ms_freeCameraSpeed, -INT_MAX, INT_MAX);
+	AddCategory("Camera");
 
 	AddFunctionEntry("Free",	CWeather::SetWeatherFree);
 	AddFunctionEntry("Clear",	CWeather::SetWeatherClear);
@@ -170,11 +187,10 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Infinite Ammo", &m_infiniteAmmo);
 	AddFunctionEntry("Set Difficulty To Fetish", SetDifficultyEasy);
 	AddFunctionEntry("Set Difficulty To Hardcore", SetDifficultyHard);
+	AddFunctionEntry("Place Bag On Head", PutBagOnPlayerHead);
+	AddToggleIntEntry("Execution Debug", &m_displayHunter);
+	AddToggleCharEntry("Disable Hunters", (char*)&CEntityManager::ms_disableHunters);
 	AddCategory("Misc.");
-
-
-
-
 }
 
 void eMenu::ProcessMenu()
@@ -186,10 +202,27 @@ void eMenu::ProcessMenu()
 			CScene::FindPlayer()->m_fHealth = 100.0f;
 		}
 	}
-
 	if (CScene::FindPlayer())
 		CScene::FindPlayer()->SetFlag(0x100, m_godMode);
 
+	if (m_displayHunter)
+	{
+		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+		if (plr)
+		{
+			CHunter* hunter = plr->m_pExecuteHunter;
+
+			if (hunter)
+				sprintf(buffer, "Execute: %s Time: %f Stage: %d", hunter->m_TypeData->m_szRecordName, plr->m_fExecuteTime, plr->GetExecuteStage());
+			else
+				sprintf(buffer, "No Entity to execute");
+
+			CFrontend::SetDrawRGBA(0, 0, 0, 255);
+			CFrontend::Print8(buffer, 0.15f + 0.005f, 0.005f, 0.5, 0.5, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::SetDrawRGBA(255, 255, 255, 255);
+			CFrontend::Print8(buffer, 0.15f, 0, 0.5, 0.5, 0.0, FONT_TYPE_DEFAULT);
+		}
+	}
 
 	if (m_enableKillCounter)
 		CFrontend::ms_cnt = *(int*)0x7B7D84 + *(int*)0x7B7DA0;
@@ -300,29 +333,77 @@ void eMenu::ProcessMenu()
 
 void eMenu::ProcessControls()
 {
-
 	if (iCurrentPage + 1 > vCategories[iCurrentCategory].vPages.size()) iCurrentPage = 0;
 	if (iCurrentPage < 0) iCurrentPage = vCategories[iCurrentCategory].vPages.size() - 1;
 	if (iCurrentCategory + 1 > vCategories.size()) iCurrentCategory = 0;
 	if (iCurrentCategory < 0) iCurrentCategory = vCategories.size() - 1;
-
 }
 
 void eMenu::OnKeyLeft()
 {
-	iCurrentItem = 0;
-	iCurrentPage--;
+	if (m_bSelectedOption)
+	{
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustable)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue -= vCategories[iCurrentCategory].vItems[iCurrentItem].iStep;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue < vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMin)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue = vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMin;
+		}
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustableFloat)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue -= vCategories[iCurrentCategory].vItems[iCurrentItem].fStep;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue < vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMin)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue = vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMin;
+		}
+	}
+	else
+	{
+		if (vCategories[iCurrentCategory].vPages.size() > 0)
+		{
+			iCurrentItem = 0;
+			iCurrentPage--;
+		}
+	}
+
 }
 
 void eMenu::OnKeyRight()
 {
-	iCurrentItem = 0;
-	iCurrentPage++;
+	if (m_bSelectedOption)
+	{
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustable)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue += vCategories[iCurrentCategory].vItems[iCurrentItem].iStep;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue > vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMax)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue = vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMax;
+		}
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustableFloat)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue += vCategories[iCurrentCategory].vItems[iCurrentItem].fStep;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue > vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMax)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue = vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMax;
+		}
+	}
+	else
+	{
+		if (vCategories[iCurrentCategory].vPages.size() > 0)
+		{
+			iCurrentItem = 0;
+			iCurrentPage++;
+		}
+	}
 }
 
 void eMenu::OnKeyDown()
 {
-	if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
+	if (m_bSelectedOption)
+		return;
+
+	if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
 		iCurrentItem++;
 		if (iCurrentItem + 1 > iTotalItems)
@@ -335,7 +416,10 @@ void eMenu::OnKeyDown()
 
 void eMenu::OnKeyUp()
 {
-	if (bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
+	if (m_bSelectedOption)
+		return;
+
+	if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
 
 		iCurrentItem--;
@@ -349,7 +433,7 @@ void eMenu::OnKeyUp()
 
 void eMenu::OnKeyExecute()
 {
-	if (!bCategoryOpen && !bNavigatingInCategory)
+	if (!m_bCategoryOpen && !m_bNavigatingCategory)
 	{
 		if (vCategories[iCurrentCategory].bHasItems && vCategories[iCurrentCategory].vItems.size() > 0)
 		{
@@ -362,14 +446,14 @@ void eMenu::OnKeyExecute()
 			vTempPages.clear();
 			vCategories[iCurrentCategory].vPages.clear();
 			vCategories[iCurrentCategory].bHaveBeenPagesCalculated = false;
-			bCategoryOpen = true;
-			bPressedEnter = true;
-			bNavigatingInCategory = true;
+			m_bCategoryOpen = true;
+			m_bPressedEnter = true;
+			m_bNavigatingCategory = true;
 		}
 
 	}
 
-	else if (bNavigatingInCategory && bCategoryOpen)
+	else if (m_bNavigatingCategory && m_bCategoryOpen)
 	{
 		if (vCategories[iCurrentCategory].bIsWeapon && vCategories[iCurrentCategory].bHasBeenWeaponsPopulated)
 		{
@@ -416,30 +500,37 @@ void eMenu::OnKeyExecute()
 			}
 		}
 
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustable || vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustableFloat)
+		{
+			m_bSelectedOption ^= 1;
+		}
+
 	}
 }
 
 void eMenu::OnKeyGoBack()
 {
-	if (bCategoryOpen)
+	if (m_bCategoryOpen)
 	{
-		if (KeyHit(KeyMenuGoBack))
+		if (vCategories[iCurrentCategory].bIsWeapon)
 		{
-			if (vCategories[iCurrentCategory].bIsWeapon)
-			{
-				vCategories[iCurrentCategory].vWeapons.clear();
-				vTempWeapons.clear();
-				vCategories[iCurrentCategory].bHasBeenWeaponsPopulated = false;
+			vCategories[iCurrentCategory].vWeapons.clear();
+			vTempWeapons.clear();
+			vCategories[iCurrentCategory].bHasBeenWeaponsPopulated = false;
 
-			}
-			bCategoryOpen = false;
-			bNavigatingInCategory = false;
-			vTempPages.clear();
-			vCategories[iCurrentCategory].vPages.clear();
-			vCategories[iCurrentCategory].bHaveBeenPagesCalculated = false;
-			iCurrentItem = 0;
 		}
+		m_bCategoryOpen = false;
+		m_bNavigatingCategory = false;
+		vTempPages.clear();
+		vCategories[iCurrentCategory].vPages.clear();
+		vCategories[iCurrentCategory].bHaveBeenPagesCalculated = false;
+		iCurrentItem = 0;
+
+		if (m_bSelectedOption)
+			m_bSelectedOption = false;
 	}
+
+	
 }
 
 void eMenu::OnKeyToggle()
@@ -447,8 +538,9 @@ void eMenu::OnKeyToggle()
 	m_active ^= 1;
 	iCurrentCategory = 0;
 	iCurrentItem = 0;
-	bCategoryOpen = false;
-	bNavigatingInCategory = false;
+	m_bCategoryOpen = false;
+	m_bNavigatingCategory = false;
+	m_bSelectedOption = false;
 	vCategories[iCurrentCategory].vPages.clear();
 	vCategories[iCurrentCategory].vWeapons.clear();
 	vTempPages.clear();
@@ -470,7 +562,7 @@ void eMenu::DrawMenu()
 			CFrontend::Print8(vCategories[i].strName.c_str(), 0.050f, 0.10f + 0.04 * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 			// draw sub items
-			if (vCategories[i].bHasItems && bCategoryOpen)
+			if (vCategories[i].bHasItems && m_bCategoryOpen)
 			{
 				if (i == iCurrentCategory)
 				{
@@ -650,6 +742,24 @@ void eMenu::DrawMenu()
 									entry.append(GetStatusAsString(*vCategories[i].vItems[j].ptrIntValue));
 							}
 
+							if (vCategories[i].vItems[j].bIsAdjustable)
+							{
+								entry.append(" = ");
+								if (m_bSelectedOption && j == iCurrentItem)
+									entry.append("< ");
+								entry.append(std::to_string(*vCategories[i].vItems[j].ptrIntValue));
+								if (m_bSelectedOption && j == iCurrentItem)
+									entry.append(" >");
+							}
+							if (vCategories[i].vItems[j].bIsAdjustableFloat)
+							{
+								entry.append(" = ");
+								if (m_bSelectedOption && j == iCurrentItem)
+									entry.append("< ");
+								entry.append(std::to_string(*vCategories[i].vItems[j].ptrFloatValue));
+								if (m_bSelectedOption && j == iCurrentItem)
+									entry.append(" >");
+							}
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
 							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if (j == iCurrentItem)
@@ -694,10 +804,11 @@ void eMenu::Clear()
 	iCurrentCategory = 0;
 	iBaseCategoryID = 0;
 	iTotalItems = 0;
-	bNavigatingInCategory = false;
-	bCategoryOpen = false;
-	bPressedEnter = false;
-	bIsHoldingMenu = false;
+	m_bNavigatingCategory = false;
+	m_bCategoryOpen = false;
+	m_bPressedEnter = false;
+	m_bIsHolding = false;
+	m_bSelectedOption = false;
 
 }
 
@@ -748,7 +859,7 @@ void eMenu::AddEntitiesCategory(std::string name)
 }
 
 void eMenu::AddItem(std::string name, bool isChar, bool isShort, bool isInt, bool isFunc, bool isWeapon, int weapID, char* ptrChar, short* ptrShort, int* ptrInt, std::function<void()> func,
-	bool adjInt, int adjStep, int adjMin, int adjMax, bool adjFloat, float fAdjStep, float fAdjMin, float fAdjMax, bool isAnim, std::string strAnim)
+	bool adjInt, int adjStep, int adjMin, int adjMax, bool adjFloat, float fAdjStep, float fAdjMin, float fAdjMax, bool isAnim, std::string strAnim, float* ptrFloat)
 {
 	eMenuItem item;
 	item.ptrIntValue = ptrInt;
@@ -772,6 +883,7 @@ void eMenu::AddItem(std::string name, bool isChar, bool isShort, bool isInt, boo
 	item.fAdjustMin = fAdjMin;
 	item.bIsEntity = isAnim;
 	item.strEntity = strAnim;
+	item.ptrFloatValue = ptrFloat;
 
 	vTempItems.push_back(item);
 }
@@ -816,12 +928,16 @@ void eMenu::AddSliderIntEntry(std::string name, int * ptr, int min, int max, int
 	AddItem(name, false, false, false, false, false, false, nullptr, nullptr, ptr, dummy, true, step, min, max, 0, 0, 0, 0, 0, "");
 }
 
+void eMenu::AddSliderFloatEntry(std::string name, float* ptr, float min, float max, float step)
+{
+	std::function<void()> dummy;
+	AddItem(name, false, false, false, false, false, false, nullptr, nullptr, nullptr, dummy, false, 0, 0, 0, true, step, min, max, 0, "", ptr);
+}
 
 
 std::string GetStatusAsString(int value)
 {
-	if (value) return "true";
-	else return "false";
+	return value ? "true" : "false";
 }
 
 std::string GetAnimationName(int id)
@@ -853,6 +969,45 @@ void SetDifficultyHard()
 {
 	CFrontend::Set_Difficulty(1);
 }
+
+void PutBagOnPlayerHead()
+{
+	CPed* ped = (CPed*)CScene::FindPlayer();
+	ped->ChangePedHead("Bag_Head");
+}
+
+void PlayerDropAllWeapons()
+{
+	CPed* ped = (CPed*)CScene::FindPlayer();
+	
+
+
+	if (ped->m_pInventory->GetNumItems() > 1)
+	{
+		// move player
+		CEntity* plr = CScene::FindPlayer();
+		RwMatrix* matrix = plr->GetEntityMatrix();
+
+		CVector forward(matrix->at.x, matrix->at.y, matrix->at.z);
+		CVector pos = *plr->GetLocation();
+
+		pos += forward * 1.25f;
+
+		plr->SetLocation(&pos);
+	}
+
+	// ignore fists
+	for (int i = 1; i < ped->m_pInventory->m_numSlots; i++)
+	{
+		CWeaponCollectable* weapon = (CWeaponCollectable*)ped->m_pInventory->m_inventory[i];
+		if (weapon)
+			weapon->Drop();
+	}
+
+
+
+}
+
 
 void PrintEntities()
 {

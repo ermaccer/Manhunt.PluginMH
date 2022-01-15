@@ -7,7 +7,7 @@
 #include "..\manhunt\Renderer.h"
 #include "menu/eMenu.h"
 #include "..\manhunt\Cheats.h"
-#include "modloader/eModLoader.h";
+#include "modloader/eModLoader.h"
 #include "console/eConsole.h"
 #include "..\manhunt\EntityManager.h"
 #include "..\core\FileFunctions.h"
@@ -25,6 +25,7 @@ void HookCommonShutdown()
 	eStatsManager::SaveToFile();
 	eSkinLoader::Shutdown();
 	eNewFrontend::DestroyMenuLightWorld();
+	TheMenu.Clear();
 	Call<0x489D50>();
 }
 
@@ -225,9 +226,9 @@ void CommonHooks::HookManTriIcon(float x, float y, float scaleX, float scaleY, i
 	 if (*(int*)0x7D343C)
 	 {
 		 if (eSettingsManager::bUseExclamationMarkForConfirmationIcon)
-			 CFrontend::Print8("!", 0.796000049, 0.902999989, 0.9f, 0.9f, 0.0, FONT_TYPE_DEFAULT);
+			 CFrontend::Print8("!", 0.796000049f, 0.902999989f, 0.9f, 0.9f, 0.0, FONT_TYPE_DEFAULT);
 		 else
-			 CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049, /*yoff+0.406*/0.902999989, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
+			 CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049f, /*yoff+0.406*/0.902999989f, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
 	 }
 
 }
@@ -245,7 +246,7 @@ void CommonHooks::CFrontend_DrawStoredHalos()
 	CRenderer::PushAndSetRenderState(rwRENDERSTATEZTESTENABLE, (void*)TRUE);
 	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREADDRESS, (void*)rwTEXTUREADDRESSWRAP);
 	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERMIPLINEAR);
-	CRenderer::RenderStateSetBlend(rwBLENDSRCALPHA, rwBLENDONE);
+	CRenderer::RenderStateSetBlend((RwBlendFunction)(*(unsigned char*)(0x5FB567 + 1)), (RwBlendFunction)(*(unsigned char*)(0x5FB576 + 1)));
 	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTURERASTER, (void*)texture);
 
 

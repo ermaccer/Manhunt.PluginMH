@@ -5,6 +5,8 @@
 #include "..\..\manhunt\EntityManager.h"
 #include "..\..\manhunt\Scene.h"
 #include "..\..\manhunt\SpecialFX.h"
+#include "..\..\manhunt\Ped.h"
+#include "..\..\manhunt\Character.h"
 #include "..\MHcommon.h"
 #include "..\menu\eMenu.h"
 eConsole TheConsole;
@@ -25,7 +27,7 @@ void eConsole::Process()
 	message += m_currentMessage;
 
 	
-	for (int i = 0; i < m_messages.size(); i++)
+	for (unsigned int i = 0; i < m_messages.size(); i++)
 	{
 		CFrontend::SetDrawRGBA(255, 255, 255, 190);
 		CFrontend::Print8(m_messages[i].c_str(), 0.0, 0.85f - (0.025f * i), 0.85f, 0.85f, 0.0f, FONT_TYPE_DEBUG);
@@ -43,16 +45,9 @@ void eConsole::PushCharacter(char chr)
 	m_currentMessage += chr;
 }
 
-void eConsole::ScrollMessage(int direction)
+void eConsole::ScrollMessage()
 {
-	if (m_commands.size() <= 0)
-		return;
-	
-	m_currentCommand--;
-	if (m_currentCommand < 0)
-			m_currentCommand = 0;
-
-	m_currentMessage = m_commands[m_currentCommand];
+	m_currentMessage = m_lastCommand;
 }
 
 void eConsole::RemoveLastCharacter()
@@ -72,6 +67,8 @@ void eConsole::Execute()
 	char* szLine = "";
 
 	szLine = (char*)m_currentMessage.c_str();
+
+	m_lastCommand = m_currentMessage;
 
 	function = strtok(szLine, " ");
 	args = (function + strlen(function) + 1);
@@ -112,6 +109,9 @@ void eConsole::ExecuteCommand(char * command, char * args)
 	else if (cmd == "lp") lp(args);
 	else if (cmd == "sp") sp(args);
 	else if (cmd == "tp") tp(args);
+	else if (cmd == "list") list(args);
+	else if (cmd == "kill") kill(args);
+
 	command[0] = 0;
 	args[0] = 0;
 }
@@ -266,6 +266,8 @@ void ConsoleCommands::help(char * args)
 		TheConsole.m_messages.push_back("sp - Saves position");
 		TheConsole.m_messages.push_back("lp - Loads position");
 		TheConsole.m_messages.push_back("tp <entity> <x> <y> <z> - Teleports entity instance to specified location, if none - close to player");
+		TheConsole.m_messages.push_back("list <type> <entity> - Does something to selected entity. Type - inv, invr, data");
+		TheConsole.m_messages.push_back("kill <entity>");
 	}
 }
 
@@ -304,6 +306,86 @@ void ConsoleCommands::tp(char * args)
 
 	if (entity)
 		entity->SetLocation(pos);
+}
+
+void ConsoleCommands::list(char * args)
+{
+	char entityName[256] = {};
+	char type[5] = {};
+	int argc = sscanf(args, "%s %s", &type, &entityName);
+
+	printf("%s %s\n", entityName, type);
+	CEntity* entity = CEntityManager::FindInstance(entityName);
+
+	if (!entity)
+	{
+		TheConsole.m_messages.push_back("Entity instance does not exist - " + (std::string)entityName);
+		return;
+	}
+
+	if (strcmp(type, "inv") == 0)
+	{
+		printf("listing inv\n");
+		CCharacter* chr = (CCharacter*)entity;
+
+		CFrontend::PrintDebugInfo(1,"~cyan~INVENTORY[%s]", entityName);
+
+		for (int i = 0; i < chr->m_pInventory->m_numSlots; i++)
+		{
+			CCollectable* item = chr->m_pInventory->m_inventory[i];
+			if (item)
+				CFrontend::PrintDebugInfo(2 + i, "Slot %d - %d", i, item->GetCollectableType());
+		}
+	}
+
+	if (strcmp(type, "invr") == 0)
+	{
+		CPed * chr = (CPed*)entity;
+
+		chr->SelectInventoryItem(SLOT_NULL, 0);
+
+		if (chr->m_nCurrentSlot == SLOT_NULL)
+		{
+			CFrontend::PrintDebugInfo(1, "~red~REMOVED INVENTORY [%s]", entityName);
+
+			for (int i = 1; i < chr->m_pInventory->m_numSlots; i++)
+			{
+				CCollectable* item = chr->m_pInventory->m_inventory[i];
+				if (item)
+					chr->m_pInventory->RemoveItem(item);
+			}
+
+		}
+		else
+			CFrontend::PrintDebugInfo(1, "~orange~UNEQUIPED WEAPONS[%s] - RUN AGAIN TO REMOVE", entityName);
+
+	}
+
+	if (strcmp(type, "data") == 0)
+	{
+		CFrontend::PrintDebugInfo(1, "~cyan~DATA[%s]", entityName);
+		CFrontend::PrintDebugInfo(2, "Record = %s", entity->m_TypeData->m_szRecordName);
+		CFrontend::PrintDebugInfo(3, "Class = %d", entity->m_TypeData->m_ecEntityClass);
+		CFrontend::PrintDebugInfo(4, "Health = %f", entity->m_fHealth);
+		CFrontend::PrintDebugInfo(5, "Position = X:%.3f Y:%.3f Z:%.3f", entity->GetLocation()->x, entity->GetLocation()->y, entity->GetLocation()->z);
+		CFrontend::PrintDebugInfo(6, "Flags = 0x%x", entity->m_iEntityFlags);
+	}
+}
+
+void ConsoleCommands::kill(char * args)
+{
+	char entityName[256] = {};
+	int argc = sscanf(args, "%s", &entityName);
+
+	CEntity* entity = CEntityManager::FindInstance(entityName);
+
+	if (!entity)
+	{
+		TheConsole.m_messages.push_back("Entity instance does not exist - " + (std::string)entityName);
+		return;
+	}
+
+	entity->Kill();
 }
 
 void __fastcall HookAddLine(int console, char * line)

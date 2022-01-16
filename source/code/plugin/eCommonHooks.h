@@ -22,7 +22,6 @@ namespace CommonHooks {
 	void  GameStartInit();
 	void  HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture);
 
-	void CFrontend_DrawStoredHalos();
 
 	void ArmsPosition_PlayerFPS();
 	void DisableExecutionCamera();

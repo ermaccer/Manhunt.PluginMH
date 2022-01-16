@@ -63,7 +63,6 @@ void InitCommonHooks()
 		Nop(0x59032B, 7);
 		InjectHook(0x59032B, CommonHooks::DisableExecutionCamera, PATCH_JUMP);
 	}
-	InjectHook(0x47610E, CommonHooks::CFrontend_DrawStoredHalos, PATCH_CALL);
 
 	if (eSettingsManager::bHookExtraWeapons)
 	{
@@ -233,36 +232,6 @@ void CommonHooks::HookManTriIcon(float x, float y, float scaleX, float scaleY, i
 
 }
 
-
-void CommonHooks::CFrontend_DrawStoredHalos()
-{
-	int texture = *(int*)(*(int*)0x7D37CC);
-
-	CRenderer::PushRenderStateBlend();
-	CRenderer::RenderStateSetBlend(rwBLENDONE, rwBLENDONE);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATESTENCILZFAIL, FALSE);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATEZWRITEENABLE, FALSE);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATEZTESTENABLE, (void*)TRUE);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREADDRESS, (void*)rwTEXTUREADDRESSWRAP);
-	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERMIPLINEAR);
-	CRenderer::RenderStateSetBlend((RwBlendFunction)(*(unsigned char*)(0x5FB567 + 1)), (RwBlendFunction)(*(unsigned char*)(0x5FB576 + 1)));
-	CRenderer::PushAndSetRenderState(rwRENDERSTATETEXTURERASTER, (void*)texture);
-
-
-	CStoredHalo* halos = (CStoredHalo*)0x7D5A30;
-
-	for (int i = 0; i < CFrontend::NumStoredHalos; i++)
-	{
-		CFrontend::DrawDisc2D(&halos[i].position, halos[i].scale, halos[i].r, halos[i].g, halos[i].b, halos[i].radius);
-		CFrontend::DrawDisc3D(&halos[i].position, halos[i].scale, halos[i].r, halos[i].g, halos[i].b, halos[i].radius);
-	}
-
-	CRenderer::PopRenderStateBlend();
-	CRenderer::PopRenderStateAll();
-
-	CFrontend::NumStoredHalos = 0;
-}
 
 void __declspec(naked) CommonHooks::ArmsPosition_PlayerFPS()
 {

@@ -125,6 +125,7 @@
     <ClInclude Include="code\manhunt\MaterialManager.h" />
     <ClInclude Include="code\manhunt\MemoryHeap.h" />
     <ClInclude Include="code\manhunt\Misc.h" />
+    <ClInclude Include="code\manhunt\MusicManager.h" />
     <ClInclude Include="code\manhunt\Ped.h" />
     <ClInclude Include="code\manhunt\PedHead.h" />
     <ClInclude Include="code\manhunt\Player.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="code\manhunt\Vector.h" />
     <ClInclude Include="code\manhunt\Weapon.h" />
     <ClInclude Include="code\manhunt\Weather.h" />
+    <ClInclude Include="code\plugin\classes\eCustomPed.h" />
     <ClInclude Include="code\plugin\classes\eCustomProjectile.h" />
     <ClInclude Include="code\plugin\console\eConsole.h" />
     <ClInclude Include="code\plugin\eCommonHooks.h" />
@@ -193,6 +195,7 @@
     <ClCompile Include="code\manhunt\Inventory.cpp" />
     <ClCompile Include="code\manhunt\MemoryHeap.cpp" />
     <ClCompile Include="code\manhunt\Misc.cpp" />
+    <ClCompile Include="code\manhunt\MusicManager.cpp" />
     <ClCompile Include="code\manhunt\Ped.cpp" />
     <ClCompile Include="code\manhunt\Player.cpp" />
     <ClCompile Include="code\manhunt\Renderer.cpp" />
@@ -206,6 +209,7 @@
     <ClCompile Include="code\manhunt\Time.cpp" />
     <ClCompile Include="code\manhunt\Weapon.cpp" />
     <ClCompile Include="code\manhunt\Weather.cpp" />
+    <ClCompile Include="code\plugin\classes\eCustomPed.cpp" />
     <ClCompile Include="code\plugin\classes\eCustomProjectile.cpp" />
     <ClCompile Include="code\plugin\console\eConsole.cpp" />
     <ClCompile Include="code\plugin\eCommonHooks.cpp" />

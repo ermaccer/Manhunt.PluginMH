@@ -27,6 +27,7 @@
 #include "code/plugin/eLevelsLoader.h"
 #include "code/plugin/script/eScriptExtender.h"
 #include "code/manhunt/Inventory.h"
+#include "code/plugin/classes/eCustomPed.h"
 
 
 using namespace Memory::VP;
@@ -57,7 +58,7 @@ void Init()
 	//eLevelsLoader::InitHooks();
 	eModLoader::Init();
 
-	if (eSettingsManager::bSkipIntroSequence) eQoLChanges::SkipIntro();
+	eQoLChanges::Init();
 	if (eSettingsManager::bDisableAutoAim)	Nop(0x46A300, 7);
 	if (eSettingsManager::bEnableCheatsInBonusLevels) InjectHook(0x5D4A50, GenericDummy, PATCH_JUMP);
 	if (eSettingsManager::bAllowAllWeaponsExplodeCheat) Patch<char>(0x49D6DE + 2, -1);

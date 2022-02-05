@@ -76,7 +76,7 @@ public:
 	char field_76;
 	char field_77;
 	int field_78;
-	CTypeData *m_TypeData;
+	CTypeData *m_pTypeData;
 	int field_80;
 	int field_84;
 	int field_88;

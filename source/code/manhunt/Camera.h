@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector.h"
 
-struct CCam {
+struct CCamera {
 	float field_0;
 	char field_4;
 	char field_5;
@@ -1154,5 +1154,5 @@ struct CCam {
 	static float& ms_freeCameraRotationSpeed;
 };
 
-extern CCam& TheCamera;
+extern CCamera& TheCamera;
 

@@ -2,6 +2,8 @@
 
 class eQoLChanges {
 public:
-	static void SkipIntro();
+	static void Init();
 
+	static void SkipIntro();
+	static void FixCerberusExecutionAudio();
 };

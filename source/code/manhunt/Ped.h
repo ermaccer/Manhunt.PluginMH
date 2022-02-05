@@ -1086,6 +1086,14 @@ public:
 	void SeverHead(CVector* pos);
 	void SetHeading(float heading, bool unk);
 	void SelectInventoryItem(eHolsterSlot slot, int unk);
+
+	void UseCollectable(eCollectableType item, bool createIfDoesntExist);
+
+	bool HoldingMeleeWeapon();
+	bool HoldingShooterWeapon();
+	bool HoldingTwoHandedShooterWeapon();
+	bool HoldingThrowingWeapon();
+	bool HoldingClumsyWeapon();
 };
 
 

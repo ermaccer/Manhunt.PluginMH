@@ -24,6 +24,7 @@
 #include "..\..\manhunt\PtrList.h"
 #include "..\..\manhunt\Graph.h"
 #include "..\..\manhunt\Camera.h"
+#include "..\..\manhunt\MusicManager.h"
 
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
@@ -115,6 +116,7 @@ void eMenu::Initialize()
 	AddWeaponEntry(CT_CHAINSAW_PLAYER);
 	AddWeaponEntry(CT_PIGSY_WIRE);
 	AddWeaponEntry(CT_PIGSY_SHARD);
+	AddWeaponEntry(CT_BAG);
 
 	AddCategory("Weapons", true);
 
@@ -131,7 +133,7 @@ void eMenu::Initialize()
 			list = *(int*)(list + 8);
 
 		if (entity)
-			AddEntityEntry(entity->m_TypeData->m_szRecordName);
+			AddEntityEntry(entity->m_pTypeData->m_szRecordName);
 
 
 	} while (entity);
@@ -169,8 +171,8 @@ void eMenu::Initialize()
 	AddSliderFloatEntry("Aim Camera Offset X", &TheCamera.m_vAimingCameraOffset.x, -INT_MAX, INT_MAX);
 	AddSliderFloatEntry("Aim Camera Offset Y", &TheCamera.m_vAimingCameraOffset.y, -INT_MAX, INT_MAX);
 	AddSliderFloatEntry("Aim Camera Offset Z", &TheCamera.m_vAimingCameraOffset.z, -INT_MAX, INT_MAX);
-	AddSliderFloatEntry("Free Camera Rotation Speed", &CCam::ms_freeCameraRotationSpeed, -INT_MAX, INT_MAX);
-	AddSliderFloatEntry("Free Camera Speed", &CCam::ms_freeCameraSpeed, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Free Camera Rotation Speed", &CCamera::ms_freeCameraRotationSpeed, -INT_MAX, INT_MAX);
+	AddSliderFloatEntry("Free Camera Speed", &CCamera::ms_freeCameraSpeed, -INT_MAX, INT_MAX);
 	AddCategory("Camera");
 
 	AddFunctionEntry("Free",	CWeather::SetWeatherFree);
@@ -213,7 +215,7 @@ void eMenu::ProcessMenu()
 			CHunter* hunter = plr->m_pExecuteHunter;
 
 			if (hunter)
-				sprintf(buffer, "Execute: %s Time: %f Stage: %d", hunter->m_TypeData->m_szRecordName, plr->m_fExecuteTime, plr->GetExecuteStage());
+				sprintf(buffer, "Execute: %s Time: %f Stage: %d", hunter->m_pTypeData->m_szRecordName, plr->m_fExecuteTime, plr->GetExecuteStage());
 			else
 				sprintf(buffer, "No Entity to execute");
 
@@ -1024,7 +1026,7 @@ void PrintEntities()
 
 		if (entity)
 		{
-				TheConsole.m_messages.push_back(entity->m_TypeData->m_szRecordName);
+				TheConsole.m_messages.push_back(entity->m_pTypeData->m_szRecordName);
 		}
 
 	} while (entity);
@@ -1036,7 +1038,7 @@ void PrintExecuteHunter()
 	CPlayer* plr = (CPlayer*)CScene::FindPlayer();
 	CEntity* hunt = *(CEntity**)((int)plr + 0x8B4);
 	if (hunt)
-		printf("%x %s\n", hunt, hunt->m_TypeData->m_szRecordName);
+		printf("%x %s\n", hunt, hunt->m_pTypeData->m_szRecordName);
 	else
 		printf("no execute\n");
 }

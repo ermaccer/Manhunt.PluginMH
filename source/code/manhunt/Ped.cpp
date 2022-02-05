@@ -25,3 +25,33 @@ void CPed::SelectInventoryItem(eHolsterSlot slot, int unk)
 {
 	CallMethod<0x4ABE70, CPed*, eHolsterSlot, int>(this,slot, unk);
 }
+
+void CPed::UseCollectable(eCollectableType item, bool createIfDoesntExist)
+{
+	CallMethod<0x4ABB50, CPed*, eCollectableType, bool>(this, item, createIfDoesntExist);
+}
+
+bool CPed::HoldingMeleeWeapon()
+{
+	return CallMethodAndReturn<bool, 0x4ABCF0, CPed*>(this);
+}
+
+bool CPed::HoldingShooterWeapon()
+{
+	return CallMethodAndReturn<bool, 0x4ABD50, CPed*>(this);
+}
+
+bool CPed::HoldingTwoHandedShooterWeapon()
+{
+	return CallMethodAndReturn<bool, 0x4ABDA0, CPed*>(this);
+}
+
+bool CPed::HoldingThrowingWeapon()
+{
+	return CallMethodAndReturn<bool, 0x4ABDE0, CPed*>(this);
+}
+
+bool CPed::HoldingClumsyWeapon()
+{
+	return CallMethodAndReturn<bool, 0x4ABE30, CPed*>(this);
+}

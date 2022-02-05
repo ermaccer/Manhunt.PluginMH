@@ -18,5 +18,6 @@ public:
 class eCustomClumpDict {
 public:
 	CClump* FindClumpDescription(const char* name);
+	CClump* FindClump(const char* name);
 	void	Destroy();
 };

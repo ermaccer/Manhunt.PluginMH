@@ -363,9 +363,10 @@ void ConsoleCommands::list(char * args)
 
 	if (strcmp(type, "data") == 0)
 	{
+		CPed * chr = (CPed*)entity;
 		CFrontend::PrintDebugInfo(1, "~cyan~DATA[%s]", entityName);
-		CFrontend::PrintDebugInfo(2, "Record = %s", entity->m_TypeData->m_szRecordName);
-		CFrontend::PrintDebugInfo(3, "Class = %d", entity->m_TypeData->m_ecEntityClass);
+		CFrontend::PrintDebugInfo(2, "Record = %s", entity->m_pTypeData->m_szRecordName);
+		CFrontend::PrintDebugInfo(3, "Class = %d", entity->m_pTypeData->m_ecEntityClass);
 		CFrontend::PrintDebugInfo(4, "Health = %f", entity->m_fHealth);
 		CFrontend::PrintDebugInfo(5, "Position = X:%.3f Y:%.3f Z:%.3f", entity->GetLocation()->x, entity->GetLocation()->y, entity->GetLocation()->z);
 		CFrontend::PrintDebugInfo(6, "Flags = 0x%x", entity->m_iEntityFlags);

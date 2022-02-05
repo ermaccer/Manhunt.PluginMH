@@ -17,15 +17,44 @@ CClump * eCustomClumpDict::FindClumpDescription(const char * name)
 		clump = eCustomClumpDictManager::m_vecClumps[i]->FindClumpDescription(name);
 		if (clump)
 			break;
+
 	}
 
 
 
 	if (!clump)
 		clump = dict->FindClumpDescription(name);
-	eLog::Message(__FUNCTION__, "Loading model: %s",name);
+
+	if (!clump)
+		eLog::Message(__FUNCTION__, "Could not load model %s!", name);
+
 
 	
+	return clump;
+}
+
+CClump * eCustomClumpDict::FindClump(const char * name)
+{
+	CClump* clump = nullptr;
+	CClumpDict* dict = (CClumpDict*)this;
+
+	// custom dffs first
+	for (int i = 0; i < eCustomClumpDictManager::m_vecClumps.size(); i++)
+	{
+		clump = eCustomClumpDictManager::m_vecClumps[i]->FindClump(name);
+		if (clump)
+			break;
+
+	}
+
+
+
+	if (!clump)
+		clump = dict->FindClump(name);
+
+	if (!clump)
+		eLog::Message(__FUNCTION__, "Could not load model %s!", name);
+
 	return clump;
 }
 
@@ -44,6 +73,13 @@ void eCustomClumpDictManager::InitHooks()
 	InjectHook(0x433A91, &eCustomClumpDict::FindClumpDescription, PATCH_CALL);
 	InjectHook(0x433BFF, &eCustomClumpDict::FindClumpDescription, PATCH_CALL);
 	InjectHook(0x433C10, &eCustomClumpDict::FindClumpDescription, PATCH_CALL);
+//
+	InjectHook(0x4F1239, &eCustomClumpDict::FindClump, PATCH_CALL);
+	//InjectHook(0x4F1269, &eCustomClumpDict::FindClump, PATCH_CALL);
+	//InjectHook(0x5CE2E1, &eCustomClumpDict::FindClump, PATCH_CALL);
+	//InjectHook(0x5D0132, &eCustomClumpDict::FindClump, PATCH_CALL);
+	//InjectHook(0x5D04D3, &eCustomClumpDict::FindClump, PATCH_CALL);
+
 	InjectHook(0x43797B, &eCustomClumpDict::Destroy, PATCH_CALL);
 }
 
@@ -61,7 +97,7 @@ char * eCustomClumpDictManager::TranslateClumpPtr(int ptr)
 		return "Character";
 		break;
 	default:
-		return "Unknown";
+		return "Unknown/Custom";
 		break;
 	}
 	return nullptr;

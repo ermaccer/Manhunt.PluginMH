@@ -43,7 +43,6 @@ LRESULT CALLBACK MainHooks::HookedWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 			if (wParam == eSettingsManager::keyToggleHUD)
 				CFrontend::ms_draw2d ^= 1;
 
-
 			if (wParam == TheMenu.KeyEnableMenu)
 				TheMenu.OnKeyToggle();
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
+#include <string>
 
 #include "..\..\manhunt\Misc.h"
 

@@ -35,6 +35,11 @@ eCollectableType CCollectable::GetCollectableType()
 	return CallMethodAndReturn<eCollectableType, 0x4C6F10, CCollectable*>(this);
 }
 
+eExecuteAnimClass CWeaponCollectable::GetExecuteAnimClass()
+{
+	return CallMethodAndReturn<eExecuteAnimClass, 0x4C93B0, CWeaponCollectable*>(this);
+}
+
 void CWeaponCollectable::Spawn(RwMatrix * mat)
 {
 	CallMethod<0x4CAEA0, CEntity*, RwMatrix*>(this, mat);

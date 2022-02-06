@@ -78,10 +78,10 @@ public:
 
 class CPedBodyAnimFSM {
 public:
-	static void SetRequested(int body, int bodyType, int anim);
-	static void Update(int body, int arg);
-	static void SetStand(int body, int anim);
-	static int  GetIdleAnimIdFromName(int body, const char* name);
+	void SetRequested(int bodyType, int anim);
+	void Update(int arg);
+	void SetStand(int anim);
+	int  GetIdleAnimIdFromName(const char* name);
 };
 
 class CPedTorsoAnimFSM {

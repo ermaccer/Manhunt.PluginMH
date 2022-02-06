@@ -28,7 +28,7 @@ void CScene::PlayerFullBodyAnimDone()
 	if (!player[448])
 		player[440] = 0;
 	player[441] = 0;
-	CPedBodyAnimFSM::SetStand(player[190], 854);
+	//CPedBodyAnimFSM::SetStand(player[190], 854);
 }
 
 RpWorld * CScene::GetWorld()

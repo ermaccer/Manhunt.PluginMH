@@ -40,9 +40,6 @@
     <Filter Include="Header Files\plugin\classes">
       <UniqueIdentifier>{a83135c5-29de-46dc-b832-a1ee90f51791}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\plugin\randomizer">
-      <UniqueIdentifier>{2a0bf08e-6aa4-4123-a594-c15b646fc8cb}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

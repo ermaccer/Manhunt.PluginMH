@@ -26,6 +26,8 @@
 #include "..\..\manhunt\Camera.h"
 #include "..\..\manhunt\MusicManager.h"
 
+
+
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
 #include "..\..\plugin\eCustomAnimManager.h"
@@ -76,6 +78,8 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Display Saved Position", &m_displayPositionMarker);
 	AddFunctionEntry("Drop All Weapons", PlayerDropAllWeapons);
 	AddFunctionEntry("Make AI Ignore Player", AISENSES_IgnorePlayer);
+	AddSliderIntEntry("Animation ID", &m_animationID, 0, eSettingsManager::iCustomAnimManagerSize);
+	AddFunctionEntry("Play Animation", PlayAnim);
 	AddCategory("Player");
 
 
@@ -117,6 +121,7 @@ void eMenu::Initialize()
 	AddWeaponEntry(CT_PIGSY_WIRE);
 	AddWeaponEntry(CT_PIGSY_SHARD);
 	AddWeaponEntry(CT_BAG);
+	//AddWeaponEntry(CT_BAG);
 
 	AddCategory("Weapons", true);
 
@@ -403,34 +408,71 @@ void eMenu::OnKeyRight()
 void eMenu::OnKeyDown()
 {
 	if (m_bSelectedOption)
-		return;
-
-	if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
-		iCurrentItem++;
-		if (iCurrentItem + 1 > iTotalItems)
-			iCurrentItem = 0;
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustable)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue -= vCategories[iCurrentCategory].vItems[iCurrentItem].iStep * 10;
 
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue < vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMin)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue = vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMin;
+		}
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustableFloat)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue -= vCategories[iCurrentCategory].vItems[iCurrentItem].fStep * 10.0f;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue < vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMin)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue = vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMin;
+		}
 	}
 	else
-		iCurrentCategory++;
+	{
+		if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
+		{
+			iCurrentItem++;
+			if (iCurrentItem + 1 > iTotalItems)
+				iCurrentItem = 0;
+
+		}
+		else
+			iCurrentCategory++;
+	}
+
+
 }
 
 void eMenu::OnKeyUp()
 {
 	if (m_bSelectedOption)
-		return;
-
-	if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
 	{
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustable)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue += vCategories[iCurrentCategory].vItems[iCurrentItem].iStep * 10;
 
-		iCurrentItem--;
-		if (iCurrentItem < 0)
-			iCurrentItem = iTotalItems - 1;
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue > vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMax)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrIntValue = vCategories[iCurrentCategory].vItems[iCurrentItem].iAdjustMax;
+		}
+		if (vCategories[iCurrentCategory].vItems[iCurrentItem].bIsAdjustableFloat)
+		{
+			*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue += vCategories[iCurrentCategory].vItems[iCurrentItem].fStep * 10.0f;
+
+			if (*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue > vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMax)
+				*vCategories[iCurrentCategory].vItems[iCurrentItem].ptrFloatValue = vCategories[iCurrentCategory].vItems[iCurrentItem].fAdjustMax;
+		}
+	}
+	else
+	{
+		if (m_bCategoryOpen && vCategories[iCurrentCategory].bHasItems)
+		{
+
+			iCurrentItem--;
+			if (iCurrentItem < 0)
+				iCurrentItem = iTotalItems - 1;
+		}
+
+		else
+			iCurrentCategory--;
 	}
 
-	else
-		iCurrentCategory--;
 }
 
 void eMenu::OnKeyExecute()
@@ -588,13 +630,13 @@ void eMenu::DrawMenu()
 						{
 							eMenuPage page;
 							int itemCounter = 0;
-							int fullPages = vCategories[iCurrentCategory].vWeapons.size() / 16;
-							int leftOver = vCategories[iCurrentCategory].vWeapons.size() % 16;
+							int fullPages = vCategories[iCurrentCategory].vWeapons.size() / 15;
+							int leftOver = vCategories[iCurrentCategory].vWeapons.size() % 15;
 							int lastEnd = 0;
 							page.iStart = 0;
 							for (int p = 0; p < vCategories[iCurrentCategory].vWeapons.size(); p++)
 							{
-								if (itemCounter >= 16)
+								if (itemCounter >= 15)
 								{
 									page.iEnd = p;
 									page.iStart += lastEnd;
@@ -1041,6 +1083,18 @@ void PrintExecuteHunter()
 		printf("%x %s\n", hunt, hunt->m_pTypeData->m_szRecordName);
 	else
 		printf("no execute\n");
+}
+
+void PlayAnim()
+{
+	CFrontend::PrintDebugInfo(4, "Playing %d", TheMenu.m_animationID);
+
+	CPed* plr = (CPed*)CScene::FindPlayer();
+	CPedBodyAnimFSM* body = plr->m_pPedBodyAnimFSM;
+	body->SetRequested(BT_IDLE1, TheMenu.m_animationID);
+	body->Update(0);
+
+
 }
 
 bool KeyHit(unsigned int keyCode)

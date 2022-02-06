@@ -8,24 +8,24 @@ bool CAnimManager::LoadAnimations(char * file)
 	return CallAndReturn<bool,0x4968C0, char*>(file);
 }
 
-void CPedBodyAnimFSM::SetRequested(int body, int bodyType, int anim)
+void CPedBodyAnimFSM::SetRequested(int bodyType, int anim)
 {
-	CallMethod<0x41D970, int, int, int>(body, bodyType, anim);
+	CallMethod<0x41D970, CPedBodyAnimFSM*, int, int>(this, bodyType, anim);
 }
 
-void CPedBodyAnimFSM::Update(int body, int arg)
+void CPedBodyAnimFSM::Update(int arg)
 {
-	CallMethod<0x41F700, int, int>(body, arg);
+	CallMethod<0x41F700, CPedBodyAnimFSM*, int>(this, arg);
 }
 
-void CPedBodyAnimFSM::SetStand(int body, int anim)
+void CPedBodyAnimFSM::SetStand(int anim)
 {
-	CallMethod<0x41DA10, int, int>(body, anim);
+	CallMethod<0x41DA10, CPedBodyAnimFSM*, int>(this, anim);
 }
 
-int CPedBodyAnimFSM::GetIdleAnimIdFromName(int body, const char * name)
+int CPedBodyAnimFSM::GetIdleAnimIdFromName(const char * name)
 {
-	return CallMethodAndReturn<int,0x41D910, int, const char*>(body, name);
+	return CallMethodAndReturn<int,0x41D910, CPedBodyAnimFSM*, const char*>(this, name);
 }
 
 void CPedTorsoAnimFSM::SetRequested(int body, int bodyType, int anim)

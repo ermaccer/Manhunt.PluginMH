@@ -3,6 +3,7 @@
 #include "Collectable.h"
 #include "Character.h"
 #include "PedHead.h"
+#include "Anim.h"
 
 enum ePedFlags {
 	PF_LOCKONABLE = 0x80000000,
@@ -309,7 +310,7 @@ public:
 	char field_131;
 	char field_132;
 	char field_133;
-	int m_pPedBodyAnimFSM;
+	CPedBodyAnimFSM* m_pPedBodyAnimFSM;
 	int field_138;
 	int field_13C;
 	int field_140;

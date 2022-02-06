@@ -112,7 +112,7 @@ enum eCollectableType {
 	TOTAL_COLLECTABLES
 };
 
-enum eExecutions {
+enum eExecuteAnimClass {
 	EXEC_BAG,
 	EXEC_KNIFE,
 	EXEC_CROWBAR,
@@ -171,6 +171,7 @@ public:
 
 class CWeaponCollectable : public CCollectable {
 public:
+	eExecuteAnimClass GetExecuteAnimClass();
 	void Spawn(RwMatrix* mat);
 	void Drop();
 };

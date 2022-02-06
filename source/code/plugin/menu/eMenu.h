@@ -91,6 +91,7 @@ public:
 	int m_silenceWeapons = 0;
 	int m_obstructTest = 0;
 	int m_displayHunter = 0;
+	int m_animationID = 0;
 
 	int m_enableKillCounter = 0;
 	int m_infiniteAmmo = 0;
@@ -160,6 +161,8 @@ void		PutBagOnPlayerHead();
 void		PlayerDropAllWeapons();
 void		PrintEntities();
 void		PrintExecuteHunter();
+
+void		PlayAnim();
 
 
 extern eMenu TheMenu;

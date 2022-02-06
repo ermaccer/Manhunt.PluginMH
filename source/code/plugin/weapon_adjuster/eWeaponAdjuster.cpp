@@ -3,6 +3,8 @@
 #include "..\..\manhunt\core.h"
 #include "..\..\manhunt\Collectable.h"
 #include "..\..\manhunt\Entity.h"
+#include "..\..\manhunt\Player.h"
+#include "..\..\manhunt\Hunter.h"
 #include <Windows.h>
 #include <iostream>
 #include <string>
@@ -29,7 +31,7 @@ void eWeaponAdjuster::InitHooks()
 		Nop(0x4C9C70, 5);
 		InjectHook(0x4C9C6B, CWeaponCollectable_FireWeapon_Audio, PATCH_JUMP);
 
-		InjectHook(0x4C93B0, CWeaponCollectable_GetExecuteAnimClass, PATCH_JUMP);
+		InjectHook(0x4C93B0, &CWeaponCollectableEx::GetExecuteAnimClassEx, PATCH_JUMP);
 
 		InjectHook(0x46C8F6, CCollectable_GetCollectableType_ExecAudio, PATCH_CALL);
 		InjectHook(0x46CB22, CCollectable_GetCollectableType_ExecAudio, PATCH_CALL);
@@ -119,11 +121,11 @@ eCollectableType eWeaponAdjuster::GetTypeFromStr(char * string)
 	return (eCollectableType)0;
 }
 
-eExecutions eWeaponAdjuster::GetExecutionTypeFromString(char * string)
+eExecuteAnimClass eWeaponAdjuster::GetExecutionTypeFromString(char * string)
 {
 	std::string input = string;
 
-	eExecutions exec = EXEC_DEFAULT;
+	eExecuteAnimClass exec = EXEC_DEFAULT;
 	if (input == "BAG")             exec = EXEC_BAG;
 	else if (input == "KNIFE")      exec = EXEC_KNIFE;
 	else if (input == "CROWBAR")    exec = EXEC_CROWBAR;
@@ -283,9 +285,9 @@ void __declspec(naked) eWeaponAdjuster::CWeaponCollectable_FireWeapon_Audio()
 	}
 }
 
-eExecutions __fastcall eWeaponAdjuster::CWeaponCollectable_GetExecuteAnimClass(int* ptr)
+eExecuteAnimClass __fastcall eWeaponAdjuster::CWeaponCollectable_GetExecuteAnimClass(int* ptr)
 {
-	eExecutions execution;
+	eExecuteAnimClass execution;
 
 	if (*(int*)(ptr + 80) && (*(int*)(*(int*)(ptr + 80) + 2228)) != 0 && ((int(__thiscall*)(int*))0x4B2F40)(ptr))
 	{
@@ -304,7 +306,7 @@ eExecutions __fastcall eWeaponAdjuster::CWeaponCollectable_GetExecuteAnimClass(i
 int __fastcall eWeaponAdjuster::CCollectable_GetCollectableType_ExecAudio(int ptr)
 {
 	int ID = (*(int*)(*(int*)(ptr + 124) + 356));
-	eExecutions exec = GetExecutionTypeFromString(m_vWeapons[ID].m_szExecution);
+	eExecuteAnimClass exec = GetExecutionTypeFromString(m_vWeapons[ID].m_szExecution);
 
 	switch (exec)
 	{
@@ -388,4 +390,24 @@ bool __fastcall eWeaponAdjuster::CPed__HoldingMeleeWeapon_Firearm(int ptr)
 
 	}
 	return result;
+}
+
+eExecuteAnimClass CWeaponCollectableEx::GetExecuteAnimClassEx()
+{
+	CPlayer* plr = (CPlayer*)pOwner;
+
+	if (this->m_pTypeData->m_ecEntityClass == EC_PLAYER)
+	{
+		CHunter* hunt = plr->m_pExecuteHunter;
+
+		if (hunt)
+		{
+			if (hunt->AmIRamirez())
+				return EXEC_RAMIREZ;
+		}
+	}
+
+	CCollectableTypeData* typeData = (CCollectableTypeData*)m_pTypeData;
+
+	return 	eWeaponAdjuster::GetExecutionTypeFromString(eWeaponAdjuster::m_vWeapons[typeData->m_nCollectableType].m_szExecution);
 }

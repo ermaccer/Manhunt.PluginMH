@@ -18,6 +18,11 @@ struct eWeaponEntry {
 };
 
 
+class CWeaponCollectableEx : public CWeaponCollectable{
+public:
+	eExecuteAnimClass GetExecuteAnimClassEx();
+};
+
 class eWeaponAdjuster {
 public:
 	static eWeaponEntry m_vWeapons[TOTAL_COLLECTABLES];
@@ -26,7 +31,7 @@ public:
 	static eWeaponEntry		GetWeapon(int type);
 	static eCollectableType GetTypeFromStr(char* string);
 
-	static eExecutions		GetExecutionTypeFromString(char* string);
+	static eExecuteAnimClass		GetExecutionTypeFromString(char* string);
 
 	static int  __fastcall				CCollectable_IsSniperRifle(int ptr);
 	static int  __fastcall				CCollectable_IsSniperRifleLaser(int ptr);
@@ -34,7 +39,7 @@ public:
 	static void							CPed_SetShotDamageStates_ExplodeHead_Shotgun();
 	static void							CPed_SetShotDamageStates_ExplodeHead_Rifle();
 	static void							CWeaponCollectable_FireWeapon_Audio();
-	static eExecutions __fastcall	    CWeaponCollectable_GetExecuteAnimClass(int* ptr);
+	static eExecuteAnimClass __fastcall	    CWeaponCollectable_GetExecuteAnimClass(int* ptr);
 	static int	__fastcall				CCollectable_GetCollectableType_ExecAudio(int ptr);
 	static bool	__fastcall				CPed__HoldingMeleeWeapon_Firearm(int ptr);
 };

@@ -1,5 +1,7 @@
 #pragma once
 #include "..\..\manhunt\Collectable.h"
+#include "..\..\manhunt\Anim.h"
+#include "..\..\manhunt\AnimID.h"
 #include <vector>
 
 enum eWeaponFlags {
@@ -17,6 +19,13 @@ struct eWeaponEntry {
 	char			  m_szExecution[32] = {};
 };
 
+
+class CPedBodyAnimFSMEx : public CPedBodyAnimFSM {
+public:
+	void PlayExecutionUseAnim(eExecuteAnimClass execution, int id);
+	void PlayExecutionDamageAnim(eExecuteAnimClass execution, int id);
+	void PlayExecutionDeathAnim();
+};
 
 class CWeaponCollectableEx : public CWeaponCollectable{
 public:

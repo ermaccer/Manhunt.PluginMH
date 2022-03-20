@@ -4,6 +4,7 @@
 #include "Character.h"
 #include "PedHead.h"
 #include "Anim.h"
+#include "..\RenderWare.h"
 
 enum ePedFlags {
 	PF_LOCKONABLE = 0x80000000,
@@ -1089,6 +1090,8 @@ public:
 	void SelectInventoryItem(eHolsterSlot slot, int unk);
 
 	void UseCollectable(eCollectableType item, bool createIfDoesntExist);
+
+	RwFrame* GetBoneFrame(int id);
 
 	bool HoldingMeleeWeapon();
 	bool HoldingShooterWeapon();

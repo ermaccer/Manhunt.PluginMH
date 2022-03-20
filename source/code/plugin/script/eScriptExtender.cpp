@@ -26,7 +26,7 @@ void __declspec(naked) eScriptExtender::HookExtraCommands()
 		jmp jmpPoint_last
 
 		next:
-		cmp edx, 1004
+		cmp edx, 1005
 		jg jump
 		mov ecx, ebx
 		call ProcessNewCommands
@@ -92,6 +92,20 @@ void eScriptExtender::ProcessNewCommands()
 		int key;
 		key = PopInt();
 		m_returnValue = GetAsyncKeyState(key);
+		break;
+	case SetEntityFlag:
+		CEntity* ent;
+		int flag, status;
+
+		status = PopInt();
+		flag = PopInt();
+		ent = PopEntity();
+
+		if (ent)
+			ent->SetFlag(flag, status);
+		else
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", SetEntityFlag);
+
 		break;
 	default:
 		return;

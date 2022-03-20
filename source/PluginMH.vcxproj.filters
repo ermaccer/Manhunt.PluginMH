@@ -258,6 +258,9 @@
     <ClInclude Include="code\manhunt\MusicManager.h">
       <Filter>Header Files\manhunt</Filter>
     </ClInclude>
+    <ClInclude Include="code\manhunt\AnimID.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

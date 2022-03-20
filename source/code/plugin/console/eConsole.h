@@ -22,6 +22,7 @@ public:
 	void Execute();
 	void ExecuteCommand(char* command, char* args);
 
+	void RunScript(const char* path);
 
 
 
@@ -58,4 +59,5 @@ namespace ConsoleCommands {
 	void tp(char* args);
 	void list(char* args);
 	void kill(char* args);
+	void anim(char* args);
 };

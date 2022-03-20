@@ -31,6 +31,11 @@ void CPed::UseCollectable(eCollectableType item, bool createIfDoesntExist)
 	CallMethod<0x4ABB50, CPed*, eCollectableType, bool>(this, item, createIfDoesntExist);
 }
 
+RwFrame* CPed::GetBoneFrame(int id)
+{
+	return CallMethodAndReturn<RwFrame*, 0x49D070, CPed*, int>(this, id);
+}
+
 bool CPed::HoldingMeleeWeapon()
 {
 	return CallMethodAndReturn<bool, 0x4ABCF0, CPed*>(this);

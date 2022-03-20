@@ -28,6 +28,21 @@ int CPedBodyAnimFSM::GetIdleAnimIdFromName(const char * name)
 	return CallMethodAndReturn<int,0x41D910, CPedBodyAnimFSM*, const char*>(this, name);
 }
 
+void CPedBodyAnimFSM::SetUseExecute(eExecuteAnimClass execution, int level)
+{
+	CallMethod<0x41E480, CPedBodyAnimFSM*, eExecuteAnimClass, int>(this, execution, level);
+}
+
+void CPedBodyAnimFSM::SetDieExecute()
+{
+	CallMethod<0x41DCF0, CPedBodyAnimFSM*>(this);
+}
+
+void CPedBodyAnimFSM::SetDamageExecute(eExecuteAnimClass execution, int level)
+{
+	CallMethod<0x41DCA0, CPedBodyAnimFSM*, eExecuteAnimClass, int>(this, execution, level);
+}
+
 void CPedTorsoAnimFSM::SetRequested(int body, int bodyType, int anim)
 {
 	CallMethod<0x41D970, int, int, int>(body, bodyType, anim);

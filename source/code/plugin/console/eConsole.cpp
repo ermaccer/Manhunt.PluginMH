@@ -111,7 +111,7 @@ void eConsole::ExecuteCommand(char * command, char * args)
 	else if (cmd == "tp") tp(args);
 	else if (cmd == "list") list(args);
 	else if (cmd == "kill") kill(args);
-
+	else if (cmd == "anim") anim(args);
 	command[0] = 0;
 	args[0] = 0;
 }
@@ -387,6 +387,30 @@ void ConsoleCommands::kill(char * args)
 	}
 
 	entity->Kill();
+}
+
+void ConsoleCommands::anim(char* args)
+{
+	char entityName[256] = {};
+	int id = 0;
+
+	int argc = sscanf(args, "%s %d", &entityName, &id);
+	CEntity* entity = CEntityManager::FindInstance(entityName);
+
+	if (!entity)
+	{
+		TheConsole.m_messages.push_back("Entity instance does not exist - " + (std::string)entityName);
+		return;
+	}
+
+	if (entity)
+	{
+		CPed* ped = (CPed*)entity;
+		CPedBodyAnimFSM* body = ped->m_pPedBodyAnimFSM;
+		body->SetRequested(BT_IDLE1, id);
+		body->Update(0);
+	}
+
 }
 
 void __fastcall HookAddLine(int console, char * line)

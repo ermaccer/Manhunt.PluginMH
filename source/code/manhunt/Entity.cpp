@@ -61,3 +61,8 @@ RwMatrix * CEntity::GetEntityMatrix()
 {
 	return CallMethodAndReturn<RwMatrix*, 0x4313B0, CEntity*>(this);
 }
+
+RwMatrix* CEntity::GetClumpMatrix()
+{
+	return CallMethodAndReturn<RwMatrix*, 0x4313C0, CEntity*>(this);
+}

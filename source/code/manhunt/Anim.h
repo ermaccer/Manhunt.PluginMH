@@ -1,4 +1,5 @@
 #pragma once
+#include "Collectable.h"
 
 enum eBodyTypes {
 	BT_STAND1,
@@ -82,6 +83,9 @@ public:
 	void Update(int arg);
 	void SetStand(int anim);
 	int  GetIdleAnimIdFromName(const char* name);
+	void SetUseExecute(eExecuteAnimClass execution, int level);
+	void SetDamageExecute(eExecuteAnimClass execution, int level);
+	void SetDieExecute();
 };
 
 class CPedTorsoAnimFSM {

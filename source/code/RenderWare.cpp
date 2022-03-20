@@ -174,3 +174,30 @@ RwBool RpLightDestroy(RpLight *light)
 {
 	return CallAndReturn<RwBool, 0x621700, RpLight*>(light);
 }
+
+RwMatrix* RwMatrixScale(RwMatrix* matrix, const RwV3d* scale, RwOpCombineType combineOp)
+{
+	return CallAndReturn<RwMatrix*, 0x619AD0, RwMatrix*, const RwV3d*, RwOpCombineType>(matrix, scale, combineOp);
+}
+
+RpClump* RpClumpForAllAtomics(RpClump* clump, RpAtomicCallBack callback, void* pData)
+{
+	return CallAndReturn<RpClump*, 0x61AC40, RpClump*, RpAtomicCallBack, void*>(clump,callback,pData);
+}
+
+int RpSkinAtomicGetHAnimHierarchy(RpAtomic* atomic)
+{
+	return *(int*)(0x824A1C + atomic);
+}
+
+static RpAtomic*
+GetAnimHierarchyCallback(RpAtomic* atomic, void* data)
+{
+	*(RpHAnimHierarchy**)data = (RpHAnimHierarchy * )RpSkinAtomicGetHAnimHierarchy(atomic);
+	return nullptr;
+}
+
+RwInt32 RpHAnimIDGetIndex(RpHAnimHierarchy* hierarchy, RwInt32 ID) 
+{ 
+	return CallAndReturn<RwInt32, 0x617250, RpHAnimHierarchy*, RwInt32>(hierarchy, ID);
+}

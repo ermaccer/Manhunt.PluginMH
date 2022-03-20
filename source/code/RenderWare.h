@@ -2,6 +2,7 @@
 #include <rwcore.h>
 #include <rwplcore.h>
 #include <rpworld.h>
+#include <rphanim.h>
 #include <math.h>
 
 #define PI       3.14159265358979323846 

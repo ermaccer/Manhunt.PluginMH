@@ -5,6 +5,8 @@
 #include "..\..\manhunt\Entity.h"
 #include "..\..\manhunt\Player.h"
 #include "..\..\manhunt\Hunter.h"
+#include "..\..\manhunt\Inventory.h"
+#include "..\..\manhunt\Scene.h"
 #include <Windows.h>
 #include <iostream>
 #include <string>
@@ -32,6 +34,9 @@ void eWeaponAdjuster::InitHooks()
 		InjectHook(0x4C9C6B, CWeaponCollectable_FireWeapon_Audio, PATCH_JUMP);
 
 		InjectHook(0x4C93B0, &CWeaponCollectableEx::GetExecuteAnimClassEx, PATCH_JUMP);
+		//InjectHook(0x46CFF4, &CPedBodyAnimFSMEx::PlayExecutionDamageAnim, PATCH_CALL);
+		//InjectHook(0x46CEE7, &CPedBodyAnimFSMEx::PlayExecutionUseAnim, PATCH_CALL);
+		//InjectHook(0x4A213D, &CPedBodyAnimFSMEx::PlayExecutionDeathAnim, PATCH_CALL);
 
 		InjectHook(0x46C8F6, CCollectable_GetCollectableType_ExecAudio, PATCH_CALL);
 		InjectHook(0x46CB22, CCollectable_GetCollectableType_ExecAudio, PATCH_CALL);
@@ -142,6 +147,7 @@ eExecuteAnimClass eWeaponAdjuster::GetExecutionTypeFromString(char * string)
 	else if (input == "PIGSPIK")    exec = EXEC_PIGSPIK;
 	else if (input == "RAMIREZ")    exec = EXEC_RAMIREZ;
 	else if (input == "DEFAULT")    exec = EXEC_DEFAULT;
+	else if (input == "GUN")    exec = EXEC_GUN;
 	return exec;
 }
 
@@ -410,4 +416,58 @@ eExecuteAnimClass CWeaponCollectableEx::GetExecuteAnimClassEx()
 	CCollectableTypeData* typeData = (CCollectableTypeData*)m_pTypeData;
 
 	return 	eWeaponAdjuster::GetExecutionTypeFromString(eWeaponAdjuster::m_vWeapons[typeData->m_nCollectableType].m_szExecution);
+}
+
+void CPedBodyAnimFSMEx::PlayExecutionUseAnim(eExecuteAnimClass execution, int id)
+{
+	if (CGameInventory::GetCurrentItem() == CT_DESERT_EAGLE)
+	{
+		SetRequested(BT_USE, NULL363);
+		*(int*)(this + 380) = id;
+		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+		CHunter* hunter = plr->m_pExecuteHunter;
+		if (hunter)
+		{
+			hunter->field_148 = 1;
+		}
+	}
+	else
+		SetUseExecute(execution,id);
+}
+
+void CPedBodyAnimFSMEx::PlayExecutionDamageAnim(eExecuteAnimClass execution, int id)
+{
+	if (CGameInventory::GetCurrentItem() == CT_DESERT_EAGLE)
+	{
+		SetRequested(BT_DAMAGE, NULL364);
+		*(int*)(this + 380) = id;
+		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+		CHunter* hunter = plr->m_pExecuteHunter;
+		if (hunter)
+		{
+			hunter->field_148= 1;
+		}
+	}
+	else
+		SetDamageExecute(execution, id);
+}
+
+void CPedBodyAnimFSMEx::PlayExecutionDeathAnim()
+{
+	printf("AM DYING\n");
+	if (CGameInventory::GetCurrentItem() == CT_DESERT_EAGLE)
+	{
+		SetRequested(BT_DIE, A320_Die_Bag_Sneak_Attack2);
+		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+		CHunter* hunter = plr->m_pExecuteHunter;
+
+		if (hunter)
+		{
+			hunter->Kill();
+			SetRequested(BT_DIE, NULL365);
+			hunter->field_120 = 2;
+		}
+	}
+	else
+		SetDieExecute();
 }

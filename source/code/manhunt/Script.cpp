@@ -15,3 +15,8 @@ char* CScriptVM::PopCharStar()
 {
 	return CallMethodAndReturn<char*, 0x4822E0, CScriptVM*>(this);
 }
+
+CEntity* CScriptVM::PopEntity()
+{
+	return CallMethodAndReturn<CEntity*, 0x482200, CScriptVM*>(this);
+}

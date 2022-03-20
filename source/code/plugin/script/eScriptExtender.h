@@ -8,6 +8,7 @@ enum eNewCommands {
 		WriteMemory,
 		ReadMemory,
 		KeyHit,
+		SetEntityFlag,
 		TOTAL_NEW_SCRIPT_COMMANDS
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector.h"
 #include "TypeData.h"
-#include <rwcore.h>
+#include "..\RenderWare.h"
 
 struct CEntityAnim
 {
@@ -77,7 +77,7 @@ public:
 	char field_77;
 	int field_78;
 	CTypeData *m_pTypeData;
-	int field_80;
+	RpClump* m_pClump;
 	int field_84;
 	int field_88;
 	int field_8C;
@@ -178,4 +178,5 @@ public:
 	void Kill();
 	CVector* GetLocation();
 	RwMatrix* GetEntityMatrix();
+	RwMatrix* GetClumpMatrix();
 };

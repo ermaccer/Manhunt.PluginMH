@@ -234,7 +234,6 @@ void eMenu::ProcessMenu()
 	if (m_enableKillCounter)
 		CFrontend::ms_cnt = *(int*)0x7B7D84 + *(int*)0x7B7DA0;
 
-
 	if (!m_fallDamage)
 	{
 		Patch<float>(0x4313F7 + 3,100.0f);
@@ -1017,7 +1016,12 @@ void SetDifficultyHard()
 void PutBagOnPlayerHead()
 {
 	CPed* ped = (CPed*)CScene::FindPlayer();
-	ped->ChangePedHead("Bag_Head");
+	RwFrame* head = ped->GetBoneFrame(1001);
+
+	const RwV3d pos = { 1.15f, -1.25f, 4.05f };
+	RwFrameTranslate(head, &pos, rwCOMBINEPRECONCAT);
+	RwFrameUpdateObjects(head);
+	//ped->ChangePedHead("Bag_Head");
 }
 
 void PlayerDropAllWeapons()

@@ -1,4 +1,5 @@
 #pragma once
+#include "Entity.h"
 
 class CScriptLoader {
 public:
@@ -18,4 +19,6 @@ public:
 
 	int		PopInt();
 	char*	PopCharStar();
+	CEntity* PopEntity();
+
 };

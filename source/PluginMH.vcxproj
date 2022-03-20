@@ -104,6 +104,7 @@
     <ClInclude Include="code\manhunt\AI.h" />
     <ClInclude Include="code\manhunt\AmmoWeapon.h" />
     <ClInclude Include="code\manhunt\Anim.h" />
+    <ClInclude Include="code\manhunt\AnimID.h" />
     <ClInclude Include="code\manhunt\App.h" />
     <ClInclude Include="code\manhunt\Camera.h" />
     <ClInclude Include="code\manhunt\Character.h" />

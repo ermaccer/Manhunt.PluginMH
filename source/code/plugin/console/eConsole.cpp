@@ -247,8 +247,9 @@ void ConsoleCommands::help(char * args)
 	if (strlen(args) <= 0)
 		TheConsole.m_messages.push_back("Usage: help <1-2>");
 
-	if (pageID == 1)
+	switch (pageID)
 	{
+	case 1:
 		TheConsole.m_messages.push_back("cls - Clears console");
 		TheConsole.m_messages.push_back("pos <x> <y> <z> - Displays player position, teleports if params are specified");
 		TheConsole.m_messages.push_back("ambient <r> <g> <b> - Changes ambient light, values from 0.0 to 1.0, displays current if no params");
@@ -257,9 +258,8 @@ void ConsoleCommands::help(char * args)
 		TheConsole.m_messages.push_back("fullbright - maximizes ambient light");
 		TheConsole.m_messages.push_back("ini_reload - reloads ini files");
 		TheConsole.m_messages.push_back("level_load <level> - (broken)");
-	}
-	if (pageID == 2)
-	{
+		break;
+	case 2:
 		TheConsole.m_messages.push_back("create <entity> <x> <y> <z> - Creates an entity at specified location, if none - close to player");
 		TheConsole.m_messages.push_back("give <instance> <id> - Gives an entity instance specified item - item must exist");
 		TheConsole.m_messages.push_back("gv <id> - Gives an item to player - item must exist");
@@ -268,6 +268,11 @@ void ConsoleCommands::help(char * args)
 		TheConsole.m_messages.push_back("tp <entity> <x> <y> <z> - Teleports entity instance to specified location, if none - close to player");
 		TheConsole.m_messages.push_back("list <type> <entity> - Does something to selected entity. Type - inv, invr, data");
 		TheConsole.m_messages.push_back("kill <entity>");
+		TheConsole.m_messages.push_back("anim <entity> <id> - Makes entity play a body animation");
+		break;
+	default:
+		TheConsole.m_messages.push_back("Usage: help <1-2>");
+		break;
 	}
 }
 

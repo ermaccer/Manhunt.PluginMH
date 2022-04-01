@@ -2,6 +2,7 @@
 #include "..\..\manhunt\core.h"
 #include <filesystem>
 #include "..\eLog.h"
+#include "..\..\manhunt\Ped.h"
 void eScriptExtender::Init()
 {
 	InitHooks();
@@ -26,7 +27,7 @@ void __declspec(naked) eScriptExtender::HookExtraCommands()
 		jmp jmpPoint_last
 
 		next:
-		cmp edx, 1005
+		cmp edx, 1007
 		jg jump
 		mov ecx, ebx
 		call ProcessNewCommands
@@ -40,6 +41,7 @@ void __declspec(naked) eScriptExtender::HookExtraCommands()
 void eScriptExtender::ProcessNewCommands()
 {
 	int value, size, addr, retn;
+	CEntity* ent;
 	switch (m_commandID)
 	{
 	case PushMessage:
@@ -94,7 +96,6 @@ void eScriptExtender::ProcessNewCommands()
 		m_returnValue = GetAsyncKeyState(key);
 		break;
 	case SetEntityFlag:
-		CEntity* ent;
 		int flag, status;
 
 		status = PopInt();
@@ -105,7 +106,38 @@ void eScriptExtender::ProcessNewCommands()
 			ent->SetFlag(flag, status);
 		else
 			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", SetEntityFlag);
+		break;
+	case SetPedHead:
+		char* headName;
 
+		PopInt();
+		headName = PopCharStar();
+		ent = PopEntity();
+
+		if (ent)
+		{
+			CPed* ped = (CPed*)ent;
+			ped->ChangePedHead(headName);
+		}
+		else
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", SetPedHead);
+		break;
+	case PedPlayAnim:
+		int animID;
+
+		
+		animID = PopInt();
+		ent = PopEntity();
+
+		if (ent)
+		{
+			CPed* ped = (CPed*)ent;
+			CPedBodyAnimFSM* body = ped->m_pPedBodyAnimFSM;
+			body->SetRequested(BT_IDLE1, animID);
+			body->Update(0);
+		}
+		else
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", PedPlayAnim);
 		break;
 	default:
 		return;

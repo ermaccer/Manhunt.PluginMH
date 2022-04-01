@@ -9,6 +9,8 @@ enum eNewCommands {
 		ReadMemory,
 		KeyHit,
 		SetEntityFlag,
+		SetPedHead,
+		PedPlayAnim,
 		TOTAL_NEW_SCRIPT_COMMANDS
 };
 

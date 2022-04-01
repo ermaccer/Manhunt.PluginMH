@@ -24,15 +24,9 @@ public:
 	int field_54;
 	CVector field_58;
 	int field_64;
-	char field_68;
-	char field_69;
-	char field_6A;
-	char field_6B;
+	int field_68;
 	int field_6C;
-	char field_70;
-	char field_71;
-	char field_72;
-	char field_73;
+	int m_bIsHidden;
 	int field_74;
 	int field_78;
 	int field_7C;

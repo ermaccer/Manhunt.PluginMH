@@ -5,10 +5,13 @@
 #include "..\manhunt\TypeData.h"
 #include "..\manhunt\Scene.h"
 #include "..\core\eSettingsManager.h"
+#include "classes/eCustomPed.h"
 
 void eQoLChanges::Init()
 {
 	if (eSettingsManager::bSkipIntroSequence) SkipIntro();
+	FixDecappedHeadsExploding();
+
 //	InjectHook(0x5A53A7, FixCerberusExecutionAudio, PATCH_JUMP);
 }
 
@@ -67,6 +70,14 @@ void __declspec(naked) eQoLChanges::FixCerberusExecutionAudio()
 		}
 	}
 
+}
+
+void eQoLChanges::FixDecappedHeadsExploding()
+{
+	InjectHook(0x49D765, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49D92F, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49D96C, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49DCE7, &CPedEx::ExplodeHeadEx, PATCH_CALL);
 }
 
 

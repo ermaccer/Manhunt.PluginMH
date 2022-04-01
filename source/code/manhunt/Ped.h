@@ -306,7 +306,7 @@ public:
 	char field_129;
 	char field_12A;
 	char field_12B;
-	CPedHead *m_nPedHead;
+	CPedHead *m_pPedHead;
 	char field_130;
 	char field_131;
 	char field_132;

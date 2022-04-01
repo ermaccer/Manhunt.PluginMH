@@ -6,4 +6,5 @@ public:
 
 	static void SkipIntro();
 	static void FixCerberusExecutionAudio();
+	static void FixDecappedHeadsExploding();
 };

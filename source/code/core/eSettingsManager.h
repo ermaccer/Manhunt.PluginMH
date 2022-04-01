@@ -22,6 +22,7 @@ public:
 	static bool bRestoreDamageDirectionIndicator;
 	static bool bDisableExecutionCamera;
 	static bool bUseExclamationMarkForConfirmationIcon;
+	static bool bFixExplodingDecappedHeads;
 	// anims
 	static bool bHookCustomAnimManager;
 	static bool bCustomAnimManagerUseGlobalFile;

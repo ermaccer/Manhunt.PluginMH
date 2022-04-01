@@ -10,7 +10,7 @@
 void eQoLChanges::Init()
 {
 	if (eSettingsManager::bSkipIntroSequence) SkipIntro();
-	FixDecappedHeadsExploding();
+	if (eSettingsManager::bFixExplodingDecappedHeads) FixDecappedHeadsExploding();
 
 //	InjectHook(0x5A53A7, FixCerberusExecutionAudio, PATCH_JUMP);
 }

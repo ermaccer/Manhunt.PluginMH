@@ -20,6 +20,7 @@ bool eSettingsManager::bHookCustomAnimManager;
 bool eSettingsManager::bRestoreDamageDirectionIndicator;
 bool eSettingsManager::bDisableExecutionCamera;
 bool eSettingsManager::bUseExclamationMarkForConfirmationIcon;
+bool eSettingsManager::bFixExplodingDecappedHeads;
 int  eSettingsManager::iCustomAnimManagerSize;
 
 bool eSettingsManager::bCustomAnimManagerUseGlobalFile;
@@ -79,7 +80,7 @@ void eSettingsManager::Init()
 	bHideBSPWarnings = reader.ReadBoolean("Settings.Game", "bHideBSPWarnings", false);
 	bForceFXMode = reader.ReadBoolean("Settings.Game", "bForceFXMode", false);
 	bEnableFirstPersonMode = reader.ReadBoolean("Settings.Game", "bEnableFirstPersonMode", false);
-
+	bFixExplodingDecappedHeads = reader.ReadBoolean("Settings.Game", "bFixExplodingDecappedHeads", false);
 	iForcePlayerSkin = reader.ReadInteger("Settings.Game", "iForcePlayerSkin", 0);
 
 	bRestoreDamageDirectionIndicator = reader.ReadBoolean("Settings.Game", "bRestoreDamageDirectionIndicator", false);

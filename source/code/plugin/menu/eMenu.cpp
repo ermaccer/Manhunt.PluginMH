@@ -121,7 +121,6 @@ void eMenu::Initialize()
 	AddWeaponEntry(CT_PIGSY_WIRE);
 	AddWeaponEntry(CT_PIGSY_SHARD);
 	AddWeaponEntry(CT_BAG);
-	//AddWeaponEntry(CT_BAG);
 
 	AddCategory("Weapons", true);
 
@@ -1016,12 +1015,7 @@ void SetDifficultyHard()
 void PutBagOnPlayerHead()
 {
 	CPed* ped = (CPed*)CScene::FindPlayer();
-	RwFrame* head = ped->GetBoneFrame(1001);
-
-	const RwV3d pos = { 1.15f, -1.25f, 4.05f };
-	RwFrameTranslate(head, &pos, rwCOMBINEPRECONCAT);
-	RwFrameUpdateObjects(head);
-	//ped->ChangePedHead("Bag_Head");
+	ped->ChangePedHead("Bag_Head");
 }
 
 void PlayerDropAllWeapons()

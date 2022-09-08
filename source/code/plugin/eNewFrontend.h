@@ -44,6 +44,7 @@ public:
 	static float m_fBoxPositionY;
 	static float m_fSkinsBoxPositionX;
 	static float m_fSkinsBoxPositionY;
+	static bool  m_bSkinsFreezeRotation;
 
 	static int   m_pStatsMenu[2];
 	static int   m_allStatsPages;
@@ -72,7 +73,7 @@ public:
 	static void Skins();
 	static void ProcessSkins();
 
-	static void AddSkinButton(int id, int pos);
+	static void AddSkinButton(int id, int pos, float offset);
 
 
 	static void DrawStatText(int id);

@@ -6,4 +6,6 @@ public:
 	void UseCollectableEx(eCollectableType item, bool createIfDoesntExist);
 
 	void ExplodeHeadEx(CVector* pos, int headSelection);
+
+	void PreUpdateEx();
 };

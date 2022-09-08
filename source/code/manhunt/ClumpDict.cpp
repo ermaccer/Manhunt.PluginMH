@@ -16,6 +16,11 @@ int CClumpDict::CheckDict()
 	return CallMethodAndReturn<int, 0x59B6F0, CClumpDict*>(this);
 }
 
+int CClumpDict::sub_59B860(const char* name)
+{
+	return CallMethodAndReturn<int, 0x59B860, CClumpDict*, const char*>(this, name);
+}
+
 CClump * CClumpDict::FindClumpDescription(const char * name)
 {
 	return CallMethodAndReturn<CClump*, 0x59B730, CClumpDict*, const char*>(this, name);

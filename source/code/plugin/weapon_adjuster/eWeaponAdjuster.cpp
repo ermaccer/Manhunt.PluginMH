@@ -12,6 +12,7 @@
 #include <string>
 
 eWeaponEntry  eWeaponAdjuster::m_vWeapons[TOTAL_COLLECTABLES];
+bool eWeaponAdjuster::ms_bShouldDecapHead = false;
 void eWeaponAdjuster::InitHooks()
 {
 
@@ -113,7 +114,7 @@ eCollectableType eWeaponAdjuster::GetTypeFromStr(char * string)
 		"CT_D_HUNTLORD","CT_E_L_SIGHT","CT_S_SILENCER","CT_RADIO","CT_BAR_KEY","CT_SYARD_COMB","CT_CAMERA",
 		"CT_BODY_P1","CT_BODY_P2","CT_PREC_KEY","CT_PREC_CARD","CT_PREC_DOCS","CT_PHARM_HAND",
 		"CT_EST_G_KEY","CT_EST_A_KEY","CT_DOLL","CT_ANTIDOTE","CT_KEY","CT_SWIPE_CARD","null","null","null","CT_CHAINSAW",
-		"CT_NAILGUN","CT_WIRE","CT_CAN","CT_WOODEN_SPIKE","null","CT_PIGSY_SHARD","CT_PIGSY_WIRE","CT_PIGSY_SPIKE","CT_HAMMER",
+		"CT_NAILGUN","CT_WIRE","CT_CAN","CT_WOODEN_SPIKE","CT_SNIPER_RIFLE_SILENCED","CT_PIGSY_SHARD","CT_PIGSY_WIRE","CT_PIGSY_SPIKE","CT_HAMMER",
 		"CT_DOLL_1","CT_DOLL_2","CT_DOLL_3","CT_HEAD","CT_AMMO_NAILS","CT_AMMO_SHOTGUN","CT_AMMO_PISTOL",
 		"CT_AMMO_MGUN",	"CT_AMMO_TRANQ","CT_AMMO_SNIPER","CT_CHAINSAW_PLAYER","CT_DVTAPE","CT_HANDYCAM"
 	};
@@ -186,6 +187,15 @@ void __declspec(naked) eWeaponAdjuster::CPed_SetShotDamageStates_ExplodeHead_Mel
 
 	if (m_vWeapons[id_melee].m_nType > 0 && m_vWeapons[id_melee].m_iFlags & EXPLODE_HEAD_BODY)
 	{
+		ms_bShouldDecapHead = false;
+		_asm {
+			popad
+			jmp jmpTrue_melee
+		}
+	}
+	else if (m_vWeapons[id_melee].m_nType > 0 && m_vWeapons[id_melee].m_iFlags & DECAP_HEAD)
+	{
+		ms_bShouldDecapHead = true;
 		_asm {
 			popad
 			jmp jmpTrue_melee

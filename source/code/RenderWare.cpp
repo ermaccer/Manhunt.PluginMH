@@ -201,3 +201,15 @@ RwInt32 RpHAnimIDGetIndex(RpHAnimHierarchy* hierarchy, RwInt32 ID)
 { 
 	return CallAndReturn<RwInt32, 0x617250, RpHAnimHierarchy*, RwInt32>(hierarchy, ID);
 }
+
+RwMatrix* RwFrameGetLTM(RwFrame* frame)
+{
+	return CallAndReturn<RwMatrix*, 0x6184C0, RwFrame*>(frame);
+}
+
+RpHAnimHierarchy* GetAnimHierarchyFromSkinClump(RpClump* clump)
+{
+	RpHAnimHierarchy result;
+	RpClumpForAllAtomics(clump, GetAnimHierarchyCallback, &result);
+	return &result;
+}

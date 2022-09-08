@@ -49,3 +49,15 @@ void eLog::Message(char* function, char* format, ...)
 	}
 
 }
+
+void eLog::ErrorMsg(char* function, char* format, ...)
+{
+	char msg[2048];
+
+	va_list args;
+	va_start(args, format);
+	wvsprintf(msg, format, args);
+	va_end(args);
+
+	MessageBoxA(0, msg, 0, MB_ICONERROR);
+}

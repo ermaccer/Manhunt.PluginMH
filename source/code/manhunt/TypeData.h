@@ -193,6 +193,114 @@ public:
 	eCharacterVoiceType m_nVoice;
 };
 
+class CPedTypeData : public CCharacterTypeData
+{
+public:
+	CString m_strLowLodModel;
+	CString m_strHead;
+	int m_nHeadSelection;
+	float m_fKnockoutTime;
+	float m_fStunTime;
+	float m_fSneakWalkSpeed;
+	float m_fSneakRunSpeed;
+	float m_fWalkSpeed;
+	float m_fRunSpeed;
+	float m_fSprintSpeed;
+	float m_fRunTime;
+	float m_fMaxLegDamage;
+	float m_fMaxArmDamage;
+	float m_fBlockDamage;
+	float m_fWalkCycleRightFoot;
+	float m_fWalkCycleLeftFoot;
+	float field_144;
+	char field_148;
+	char field_149;
+	char field_14A;
+	char field_14B;
+	char field_14C;
+	char field_14D;
+	char field_14E;
+	char field_14F;
+	char field_150;
+	char field_151;
+	char field_152;
+	char field_153;
+	char field_154;
+	char field_155;
+	char field_156;
+	char field_157;
+	char field_158;
+	char field_159;
+	char field_15A;
+	char field_15B;
+	int m_nNumSkins;
+};
+
+class CPlayerTypeData : public CPedTypeData
+{
+public:
+	CVector m_vCamPosition;
+	float m_fKORecoverySpeed;
+	float m_fMoveThresholds[2];
+	float m_fMoveTransSpeed;
+	float m_fAcceleration[2];
+	float m_fStickDeadZone;
+	float m_fCrouchForwardSpeed;
+	float m_fCrouchBackwardSpeed;
+	float m_fCrouchSidewaysSpeed;
+	float m_fAimZones[10];
+	float m_fAimZonesMonkey[10];
+	float m_fAimAxisWidth;
+	float m_fMoveAxisWidth;
+	float m_fVerticalAimLimit;
+	float m_fTurnPause;
+	float m_fTurnAcceleration;
+	float m_fExtraTurnSpeed;
+	float m_fTurnPauseMonkey;
+	float m_fTurnAccelerationMonkey;
+	float m_fExtraTurnSpeedMonkey;
+	float m_fMaxQuickTurnSpeed;
+	float m_fStandTurnScaleMonkey;
+	float m_fWalkTurnScaleMonkey;
+	float m_fRunTurnScaleMonkey;
+	float m_fSprintTurnScaleMonkey;
+	float m_fLadderUseTime;
+	float m_fCamRecentreSpeed;
+	float m_fCamStairSpeed;
+	float m_fZoomAimScale;
+	float m_fZoomAimScaleMoving;
+	float m_fZoomLevels[2];
+	float m_fZoomSpeed;
+	float m_fZoomMoveScales[2];
+	float m_fZoomMaxZones[2];
+	float m_fCrosshairSizes[3];
+	float m_fThrowChargeTime;
+	float m_fMinReleaseTime;
+	CVector m_fMinThrowVelocity;
+	CVector m_fMaxThrowVelocity;
+	float m_fSkidTimer;
+	float m_fCrouchRecoil;
+	float m_fMonkeyTurnAngle;
+	float m_fMonkeyMoveAngle;
+	float m_fMonkeyWalkAngle;
+	float m_fRunThreshold;
+	int m_dwInvertStick;
+	float m_fAimLockOnAngles[2];
+	float m_fAimLockOnDist;
+	char field_2A0;
+	char field_2A1;
+	char field_2A2;
+	char field_2A3;
+	float m_fStaminaTotalSprintTime;
+	float m_fStaminaNoSprintTime;
+	float m_fStaminaRecoveryRunning;
+	float m_fStaminaRecoveryMoving;
+	float m_fStaminaRecoveryStill;
+	float m_fStaminaRecoveryPause;
+	float m_fWiggleTimeDecay;
+	float m_fExecuteStageTimes[2];
+};
+
 
 struct CCollectableTypeData : public CTypeData
 {

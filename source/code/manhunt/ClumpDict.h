@@ -3,7 +3,7 @@
 
 class CClumpDict {
 private:
-	char data[0x288];
+	char data[1024];
 public:
 	void Initialise(const char* texture, const char* name);
 
@@ -12,5 +12,7 @@ public:
 	void	Destroy();
 
 	int CheckDict();
+
+	int sub_59B860(const char* name);
 
 };

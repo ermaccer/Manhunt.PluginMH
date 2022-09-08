@@ -2,6 +2,7 @@
 #include "..\..\manhunt\Collectable.h"
 #include "..\..\manhunt\Anim.h"
 #include "..\..\manhunt\AnimID.h"
+#include "..\..\manhunt\Decal.h"
 #include <vector>
 
 enum eWeaponFlags {
@@ -10,7 +11,8 @@ enum eWeaponFlags {
 	EXPLODE_HEAD_BODY = 4,
 	FIREARM_SILENCED = 8,
 	FIREARM_SCOPE = 16,
-	FIREARM_LASER = 32
+	FIREARM_LASER = 32,
+	DECAP_HEAD = 64
 };
 
 struct eWeaponEntry {
@@ -39,6 +41,8 @@ public:
 	static bool ReadFile(const char* path);
 	static eWeaponEntry		GetWeapon(int type);
 	static eCollectableType GetTypeFromStr(char* string);
+
+	static bool ms_bShouldDecapHead;
 
 	static eExecuteAnimClass		GetExecutionTypeFromString(char* string);
 

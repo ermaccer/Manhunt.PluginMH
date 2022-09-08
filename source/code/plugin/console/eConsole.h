@@ -60,4 +60,8 @@ namespace ConsoleCommands {
 	void list(char* args);
 	void kill(char* args);
 	void anim(char* args);
+	void sound(char* args);
+	void ai(char* args);
+	void bodyguard(char* args);
+	void level(char* args);
 };

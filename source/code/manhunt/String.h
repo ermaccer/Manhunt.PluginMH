@@ -11,4 +11,6 @@ struct CString
 	~CString();
 
 	void __as(CString* src, CString* dest);
+
+	bool Identical(const char* text);
 };

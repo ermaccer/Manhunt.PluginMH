@@ -1,6 +1,7 @@
 #include "eSettingsManager.h"
 #include "..\..\IniReader.h"
 #include "..\manhunt\core.h"
+#include "..\plugin\menu\eMenu.h"
 
 bool eSettingsManager::bEnableLog;
 bool eSettingsManager::bHideVersionInfo;
@@ -90,4 +91,13 @@ void eSettingsManager::Init()
 	keyToggleConsole = reader.ReadInteger("Keys", "keyToggleConsole", VK_OEM_3);
 	keyToggleScreenshotMode = reader.ReadInteger("Keys", "keyToggleScreenshotMode", VK_F3);
 	keyToggleHUD = reader.ReadInteger("Keys", "keyToggleHUD", VK_F4);
+
+
+	TheMenu.KeyEnableMenu = reader.ReadInteger("Keys.Menu", "keyMenuEnable", VK_F2);
+	TheMenu.KeyMenuExecute = reader.ReadInteger("Keys.Menu", "keyMenuExecute", VK_RETURN);
+	TheMenu.KeyMenuGoBack = reader.ReadInteger("Keys.Menu", "keyMenuBack", VK_BACK);
+	TheMenu.KeyMenuItemDOWN = reader.ReadInteger("Keys.Menu", "keyMenuDown", VK_DOWN);
+	TheMenu.KeyMenuItemUP = reader.ReadInteger("Keys.Menu", "keyMenuUp", VK_UP);
+	TheMenu.KeyMenuItemLEFT = reader.ReadInteger("Keys.Menu", "keyMenuLeft", VK_LEFT);
+	TheMenu.KeyMenuItemRIGHT = reader.ReadInteger("Keys.Menu", "keyMenuRight", VK_RIGHT);
 }

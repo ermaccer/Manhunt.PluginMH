@@ -19,7 +19,9 @@
 #include "classes/eCustomProjectile.h"
 #include "..\manhunt\String.h"
 #include "..\manhunt\SpecialFX.h"
+#include "eAchievements.h"
 #include "MHcommon.h"
+#include "classes/eCustomPed.h"
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
@@ -31,7 +33,6 @@ void HookCommonShutdown()
 
 void InitCommonHooks()
 {
-
 	InjectHook(0x4D7F70, HookCommonShutdown, PATCH_CALL);
 
 	InjectHook(0x489B69, CommonHooks::CreateCamera, PATCH_CALL);
@@ -44,10 +45,15 @@ void InitCommonHooks()
 	InjectHook(0x49DE68, ClassHooks::CPed_SetTranqed, PATCH_CALL);
 
 	InjectHook(0x49CDC1, ClassHooks::CPedHead_Explode, PATCH_CALL);
+
+	InjectHook(0x49D765, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49D92F, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49D96C, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+	InjectHook(0x49DCE7, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+
 	if (strlen(eSettingsManager::szCustomUserFilesDirectory) > 0)
 	InjectHook(0x4BE990, CommonHooks::GetMyDocumentsDirectory, PATCH_JUMP);
 
-	InjectHook(0x4D7A58, CommonHooks::HookLoadSFX, PATCH_CALL);
 	InjectHook(0x474A02, CommonHooks::CCheatHandler_SetupForLevel, PATCH_CALL); // open
 	InjectHook(0x473F53, CommonHooks::CCheatHandler_SetupForLevel, PATCH_CALL); // reset
 	InjectHook(0x5F189F, CommonHooks::HookRenderMenu, PATCH_CALL);
@@ -63,15 +69,14 @@ void InitCommonHooks()
 		Nop(0x59032B, 7);
 		InjectHook(0x59032B, CommonHooks::DisableExecutionCamera, PATCH_JUMP);
 	}
+	InjectHook(0x4375AA, CommonHooks::Hook_LoadEntityTypeData, PATCH_CALL);
 
 	if (eSettingsManager::bHookExtraWeapons)
 	{
 		InjectHook(0x443F95, &CCustomProjectileShot::NewDestroy, PATCH_CALL);
 		InjectHook(0x4F7806, &CCustomProjectile::Spawn, PATCH_CALL);
-		InjectHook(0x4375AA, CommonHooks::Hook_LoadEntityTypeData, PATCH_CALL);
 
 	}
-
 }
 
 
@@ -128,12 +133,6 @@ void __declspec(naked) CommonHooks::HookSkipIntroSeq()
 	_asm jmp jmpPoint
 }
 
-void CommonHooks::HookLoadSFX()
-{
-    TheMenu.PreInitialize();
-	Call<0x4D7BB0>();
-}
-
 void CommonHooks::CCheatHandler_SetupForLevel()
 {
 	CCheatHandler::SetupForLevel();
@@ -167,6 +166,9 @@ void CommonHooks::HookRenderMenu()
 	TheMenu.ProcessMenu();
 
 	Call<0x5D7070>();
+	if (eAchievements::m_bWantsToPlayUnlock)
+		eAchievements::PlaySlider();
+
 }
 
 char * CommonHooks::GetMyDocumentsDirectory()
@@ -209,7 +211,7 @@ void CommonHooks::CGameInfo_RenderDamageDirections(int id)
 
 void CommonHooks::GameStartInit()
 {
-	Call<0x5EF510 >();
+	Call<0x5EF510>();
 	if (eSettingsManager::iForcePlayerSkin > 0)
 		CEntityManager::ms_playerCharacterID = eSettingsManager::iForcePlayerSkin;
 
@@ -281,12 +283,39 @@ void __declspec(naked) CommonHooks::DisableExecutionCamera()
 void CommonHooks::Hook_LoadEntityTypeData()
 {
 	CEntityManager::CreateEntityTypesFromIni();
-	// load extraTypeData
-	CString newPath("./data/extraTypeData.ini");
-	Patch<int>(0x4395B0 + 1,(int)&newPath);
-	Patch<int>(0x439435 + 1,(int)&newPath);
+	if (eSettingsManager::bHookExtraWeapons)
+	{
+		// load extraTypeData
+		CString newPath("./data/extraTypeData.ini");
+		Patch<int>(0x4395B0 + 1, (int)&newPath);
+		Patch<int>(0x439435 + 1, (int)&newPath);
 
-	CEntityManager::CreateEntityTypesFromIni();
+		CEntityManager::CreateEntityTypesFromIni();
+	}
+
+
+	// modloader entries
+
+	for (unsigned int i = 0; i < eModLoader::m_vMods.size(); i++)
+	{
+		for (unsigned int a = 0; a < eModLoader::m_vMods[i].files.size(); a++)
+		{
+			std::string fileName = eModLoader::m_vMods[i].files[a];
+			if (fileName.find(EXTRATYPEDATA_EXTENSION) != std::string::npos)
+			{
+				CString newPath(fileName.c_str());
+				Patch<int>(0x4395B0 + 1, (int)&newPath);
+				Patch<int>(0x439435 + 1, (int)&newPath);
+
+				CEntityManager::CreateEntityTypesFromIni();
+			}
+		}
+
+
+	}
+
+
+
 	// patch back
 	Patch<int>(0x4395B0 + 1, 0x69BC7C);
 	Patch<int>(0x439435 + 1, 0x69BC7C);

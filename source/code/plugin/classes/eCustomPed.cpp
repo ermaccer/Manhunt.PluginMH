@@ -1,5 +1,7 @@
 #include "eCustomPed.h"
 #include "..\..\manhunt\core.h"
+#include "..\..\core\eSettingsManager.h"
+#include "..\.\weapon_adjuster\eWeaponAdjuster.h"
 
 void CPedEx::UseCollectableEx(eCollectableType item, bool createIfDoesntExist)
 {
@@ -8,8 +10,21 @@ void CPedEx::UseCollectableEx(eCollectableType item, bool createIfDoesntExist)
 
 void CPedEx::ExplodeHeadEx(CVector* pos, int headSelection)
 {
-	if (m_pPedHead->m_bIsHidden)
-		return;
+	if (eSettingsManager::bFixExplodingDecappedHeads)
+	{
+		if (m_pPedHead->m_bIsHidden)
+			return;
+	}
 
-	ExplodeHead(pos, headSelection);
+	if (eWeaponAdjuster::ms_bShouldDecapHead)
+	{
+		CVector newPos = {1.0f, 1.0f, 1.0f};
+		SeverHead(&newPos);
+	}
+	else
+		ExplodeHead(pos, headSelection);
+}
+
+void CPedEx::PreUpdateEx()
+{
 }

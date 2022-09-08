@@ -97,7 +97,7 @@ bool CCustomAnimManager::Initialise()
 	else
 	{
 		if (eSettingsManager::bCustomLevelsLoader)
-			sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, eLevelsLoader::m_levelNames[CApp::ms_currLevelNum]);
+			sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, eLevelsLoader::m_levelNames[CApp::ms_currLevelNum].name);
 		else
 			sprintf(tmpPath, "%s%s/", CFileNames::ms_CurrentLevelPath.str, (char*)(0x756034 + 20 * CApp::ms_currLevelNum));
 	}
@@ -113,7 +113,13 @@ bool CCustomAnimManager::Initialise()
 	else
 		result = false;
 
-	eLog::Message(__FUNCTION__, "Loaded file %s Animations - %d/%d", tmpPath, CAnimManager::ms_nAvailableAnims, eSettingsManager::iCustomAnimManagerSize);
+	if (!result)
+	{
+		eLog::ErrorMsg(__FUNCTION__, "Failed to load animations! The allanims.ifp file might be missing or corrupted.");
+	}
+
+	else
+		eLog::Message(__FUNCTION__, "Loaded file %s Animations - %d/%d", tmpPath, CAnimManager::ms_nAvailableAnims, eSettingsManager::iCustomAnimManagerSize);
 
 
 	return result;

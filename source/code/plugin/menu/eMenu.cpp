@@ -1,6 +1,7 @@
 #include "eMenu.h"
 #include <Windows.h>
 #include <string>
+#include "..\..\RenderWare.h"
 
 // manhunt includes
 
@@ -25,8 +26,11 @@
 #include "..\..\manhunt\Graph.h"
 #include "..\..\manhunt\Camera.h"
 #include "..\..\manhunt\MusicManager.h"
-
-
+#include "..\..\manhunt\TextOverlay.h"
+#include "..\..\manhunt\Time.h"
+#include "..\..\manhunt\SpecialFX.h"
+#include "..\..\manhunt\Script.h"
+#include "..\..\manhunt\ColLine.h"
 
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
@@ -36,7 +40,7 @@
 #include "..\..\..\IniReader.h"
 #include "..\eMapLimits.h"
 #include "..\MHcommon.h"
-
+#include "..\eAchievements.h"
 
 // custom
 
@@ -50,18 +54,6 @@ char buffer[256];
 eMenu TheMenu;
 
 
-void eMenu::PreInitialize()
-{
-	CIniReader ini("");
-
-	KeyEnableMenu = ini.ReadInteger("Keys.Menu", "keyMenuEnable", VK_F2);
-	KeyMenuExecute = ini.ReadInteger("Keys.Menu", "keyMenuExecute", VK_RETURN);
-	KeyMenuGoBack = ini.ReadInteger("Keys.Menu", "keyMenuBack", VK_BACK);
-	KeyMenuItemDOWN = ini.ReadInteger("Keys.Menu", "keyMenuDown", VK_DOWN);
-	KeyMenuItemUP = ini.ReadInteger("Keys.Menu", "keyMenuUp", VK_UP);
-	KeyMenuItemLEFT = ini.ReadInteger("Keys.Menu", "keyMenuLeft", VK_LEFT);
-	KeyMenuItemRIGHT = ini.ReadInteger("Keys.Menu", "keyMenuRight", VK_RIGHT);
-}
 
 void eMenu::Initialize()
 {
@@ -149,6 +141,7 @@ void eMenu::Initialize()
 	AddToggleCharEntry("Body Count", &bBodyCount);
 	AddToggleIntEntry("Enable Body Count", &m_enableKillCounter);
 	AddToggleIntEntry("Hide Lock-on Triangles (use with free cam)", &m_disableLockOnTriangles);
+	AddToggleIntEntry("Level Timer", &m_levelTimer);
 	AddCategory("HUD");
 
 
@@ -168,6 +161,31 @@ void eMenu::Initialize()
 	AddToggleIntEntry("Hide Stars", &m_hideStars);
 
 	AddCategory("World");
+	if (CEntityManager::GetEntityTypeDataFromName("Hod_BodB1") && CEntityManager::GetEntityTypeDataFromName("Shard_(CT)"))
+		AddFunctionEntry("Hood with Shard", CreateHood);
+	if (CEntityManager::GetEntityTypeDataFromName("Cop_BodB1") && CEntityManager::GetEntityTypeDataFromName("Glock_(CT)"))
+		AddFunctionEntry("Cop with Glock", CreateCop);
+	if (CEntityManager::GetEntityTypeDataFromName("Cop_BodS1") && CEntityManager::GetEntityTypeDataFromName("Shotgun_(CT)"))
+		AddFunctionEntry("Cop with Shotgun", CreateCopShotgun);
+	if (CEntityManager::GetEntityTypeDataFromName("Cop_BodM1") && CEntityManager::GetEntityTypeDataFromName("Uzi_(CT)"))
+		AddFunctionEntry("SWAT with SMG", CreateSwat);
+	if (CEntityManager::GetEntityTypeDataFromName("Cerberus") && CEntityManager::GetEntityTypeDataFromName("C_Commando_(CT)"))
+		AddFunctionEntry("Cerberus with Assault Rifle", CreateCerberusM16);
+	if (CEntityManager::GetEntityTypeDataFromName("Cerberus") && CEntityManager::GetEntityTypeDataFromName("Desert_Eagle_(CT)"))
+		AddFunctionEntry("Cerberus with Desert Eagle", CreateCerberusDeagle);
+	if (CEntityManager::GetEntityTypeDataFromName("Cerberus") && CEntityManager::GetEntityTypeDataFromName("Shotgun_(CT)"))
+		AddFunctionEntry("Cerberus with Shotgun", CreateCerberusShotgun);
+	if (CEntityManager::GetEntityTypeDataFromName("Cerberus") && CEntityManager::GetEntityTypeDataFromName("Shotgun_Torch_(CT)"))
+		AddFunctionEntry("Cerberus with Shotgun + Torch", CreateCerberusShotgunTorch);
+	if (CEntityManager::GetEntityTypeDataFromName("Cerberus") && CEntityManager::GetEntityTypeDataFromName("Sniper_Rifle_(CT)"))
+		AddFunctionEntry("Cerberus with Sniper", CreateCerberusSniper);
+
+	AddCategory("Bodyguards");
+
+	AddToggleIntEntry("Change Gamespeed", &m_slowmo);
+	AddSliderIntEntry("New Value", &m_timestepval, 0, 200);
+	AddCategory("Speed");
+
 
 	AddSliderFloatEntry("Camera Offset X", &TheCamera.m_vCameraOffsets.x, -INT_MAX, INT_MAX);
 	AddSliderFloatEntry("Camera Offset Y", &TheCamera.m_vCameraOffsets.y, -INT_MAX, INT_MAX);
@@ -195,26 +213,33 @@ void eMenu::Initialize()
 	AddFunctionEntry("Set Difficulty To Hardcore", SetDifficultyHard);
 	AddFunctionEntry("Place Bag On Head", PutBagOnPlayerHead);
 	AddToggleIntEntry("Execution Debug", &m_displayHunter);
+	AddToggleIntEntry("Fire Head", &m_fireHead);
 	AddToggleCharEntry("Disable Hunters", (char*)&CEntityManager::ms_disableHunters);
+
+	//AddFunctionEntry("Achievement Test", PrintAchievementTest);
 	AddCategory("Misc.");
 }
 
 void eMenu::ProcessMenu()
 {
-	if (m_infiniteHealth)
+	if (CPlayer* plr = (CPlayer*)CScene::FindPlayer())
 	{
-		if (CScene::FindPlayer())
-		{
-			CScene::FindPlayer()->m_fHealth = 100.0f;
-		}
-	}
-	if (CScene::FindPlayer())
-		CScene::FindPlayer()->SetFlag(0x100, m_godMode);
+		if (m_infiniteHealth)
+			plr->m_fHealth = 100.0f;
 
-	if (m_displayHunter)
-	{
-		CPlayer* plr = (CPlayer*)CScene::FindPlayer();
-		if (plr)
+		plr->SetFlag(0x100, m_godMode);
+		if (m_fireHead)
+		{
+			RwFrame* head = plr->GetBoneFrame(1001);
+			if (head)
+			{
+				CVector* pos = (CVector*)&head->ltm.pos;
+				if (CGameTime::ms_currGameTime & 32)
+					FXSystem_Play("FLM001", pos, nullptr, false);
+			}
+		}
+
+		if (m_displayHunter)
 		{
 			CHunter* hunter = plr->m_pExecuteHunter;
 
@@ -229,6 +254,7 @@ void eMenu::ProcessMenu()
 			CFrontend::Print8(buffer, 0.15f, 0, 0.5, 0.5, 0.0, FONT_TYPE_DEFAULT);
 		}
 	}
+	
 
 	if (m_enableKillCounter)
 		CFrontend::ms_cnt = *(int*)0x7B7D84 + *(int*)0x7B7DA0;
@@ -294,14 +320,14 @@ void eMenu::ProcessMenu()
 
 		sprintf(buffer, "ANALOG STICK %d", *(short*)(0x725684 + 2));
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(buffer, 0.152f, 0.55, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(buffer, 0.152f, 0.55f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(180, 255, 180, 255);
 		CFrontend::Print8(buffer, 0.154f, 0.55f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 
 
 		sprintf(buffer, "STICK STATES %f %f", *(float*)0x725674 ,*(float*)0x725678);
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(buffer, 0.152f, 0.6, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(buffer, 0.152f, 0.6f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(180, 255, 180, 255);
 		CFrontend::Print8(buffer, 0.154f, 0.6f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
@@ -323,6 +349,21 @@ void eMenu::ProcessMenu()
 		CFrontend::Print8(buffer, 0.1f, 0, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 
+	if (m_levelTimer)
+	{
+		// Time
+		{
+			int minutes = (CGameTime::ms_currGameTimePaused / 1000 / 60) % 60;
+			int seconds = (CGameTime::ms_currGameTimePaused / 1000 % 60);
+
+
+			sprintf(buffer, "%02d:%02d", minutes, seconds);
+			CFrontend::SetDrawRGBA(0, 0, 0, 255);
+			CFrontend::Print8(buffer, 0.47f + 0.005f,0.03f + 0.005f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::SetDrawRGBA(255,255,255,255);
+			CFrontend::Print8(buffer, 0.47f, 0.03f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+		}
+	}
 
 	if (m_active)
 	{
@@ -596,12 +637,12 @@ void eMenu::DrawMenu()
 		for (int i = 0; i < vCategories.size(); i++)
 		{
 			CFrontend::SetDrawRGBA(0, 0, 0, 255);
-			CFrontend::Print8(vCategories[i].strName.c_str(), 0.052f, 0.102f + 0.04 * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::Print8(vCategories[i].strName.c_str(), 0.052f, 0.102f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 			if (i == iCurrentCategory)
 				CFrontend::SetDrawRGBA(51, 153, 255, 255);
 			else
 				CFrontend::SetDrawRGBA(255, 255, 255, 255);
-			CFrontend::Print8(vCategories[i].strName.c_str(), 0.050f, 0.10f + 0.04 * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::Print8(vCategories[i].strName.c_str(), 0.050f, 0.10f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 			// draw sub items
 			if (vCategories[i].bHasItems && m_bCategoryOpen)
@@ -626,15 +667,16 @@ void eMenu::DrawMenu()
 
 						if (!vCategories[iCurrentCategory].bHaveBeenPagesCalculated)
 						{
+							const int weaponsPerPage = 14;
 							eMenuPage page;
 							int itemCounter = 0;
-							int fullPages = vCategories[iCurrentCategory].vWeapons.size() / 15;
-							int leftOver = vCategories[iCurrentCategory].vWeapons.size() % 15;
+							int fullPages = vCategories[iCurrentCategory].vWeapons.size() / weaponsPerPage;
+							int leftOver = vCategories[iCurrentCategory].vWeapons.size() % weaponsPerPage;
 							int lastEnd = 0;
 							page.iStart = 0;
 							for (int p = 0; p < vCategories[iCurrentCategory].vWeapons.size(); p++)
 							{
-								if (itemCounter >= 15)
+								if (itemCounter >= weaponsPerPage)
 								{
 									page.iEnd = p;
 									page.iStart += lastEnd;
@@ -657,12 +699,12 @@ void eMenu::DrawMenu()
 							iActualItemID = j;
 							std::string entry = vCategories[i].vWeapons[j].name.c_str();
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 						}
 						if (vCategories[iCurrentCategory].vPages.size() > 1)
 						{
@@ -682,7 +724,7 @@ void eMenu::DrawMenu()
 							{
 								if (vCategories[i].vItems[j].bIsEntity)
 								{
-									if (CEntityManager::GetEntityTypeDataFromName((char*)vCategories[i].vItems[j].strEntity.c_str()));
+									if (CEntityManager::GetEntityTypeDataFromName((char*)vCategories[i].vItems[j].strEntity.c_str()))
 										vTempEntities.push_back(vCategories[i].vItems[j]);
 								}
 							}
@@ -723,12 +765,12 @@ void eMenu::DrawMenu()
 							iActualItemID = j;
 							std::string entry = vCategories[i].vEntities[j].name.c_str();
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 						}
 						if (vCategories[iCurrentCategory].vPages.size() > 1)
 						{
@@ -803,12 +845,12 @@ void eMenu::DrawMenu()
 									entry.append(" >");
 							}
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if (j == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04 * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 
 
@@ -1016,6 +1058,7 @@ void PutBagOnPlayerHead()
 {
 	CPed* ped = (CPed*)CScene::FindPlayer();
 	ped->ChangePedHead("Bag_Head");
+
 }
 
 void PlayerDropAllWeapons()
@@ -1053,7 +1096,7 @@ void PlayerDropAllWeapons()
 
 void PrintEntities()
 {
-	int list = *(int*)0x69BBC4;
+	int list = *(int*)0x7917E8;
 	CEntity* entity;
 	do
 	{
@@ -1066,7 +1109,7 @@ void PrintEntities()
 
 		if (entity)
 		{
-				TheConsole.m_messages.push_back(entity->m_pTypeData->m_szRecordName);
+			printf("%s\n", entity->m_szName);
 		}
 
 	} while (entity);
@@ -1078,9 +1121,15 @@ void PrintExecuteHunter()
 	CPlayer* plr = (CPlayer*)CScene::FindPlayer();
 	CEntity* hunt = *(CEntity**)((int)plr + 0x8B4);
 	if (hunt)
-		printf("%x %s\n", hunt, hunt->m_pTypeData->m_szRecordName);
+		printf("%p %s\n", hunt, hunt->m_pTypeData->m_szRecordName);
 	else
 		printf("no execute\n");
+}
+
+void PrintAchievementTest()
+{
+	if (!eAchievements::m_bWantsToPlayUnlock)
+		eAchievements::Start();
 }
 
 void PlayAnim()
@@ -1093,6 +1142,56 @@ void PlayAnim()
 	body->Update(0);
 
 
+}
+
+void ResetTimeStep()
+{
+	TheMenu.m_timestepval = CGameTime::ms_timeStep;
+}
+
+void CreateHood()
+{
+	MakeABodyguard("Hod_BodB1", CT_SHARD);
+}
+
+void CreateCop()
+{
+	MakeABodyguard("Cop_BodB1", CT_GLOCK);
+}
+
+void CreateCopShotgun()
+{
+	MakeABodyguard("Cop_BodS1", CT_SHOTGUN);
+}
+
+void CreateSwat()
+{
+	MakeABodyguard("Cop_BodM1", CT_UZI);
+}
+
+void CreateCerberusM16()
+{
+	MakeABodyguard("Cerberus", CT_COLT_COMMANDO);
+}
+
+void CreateCerberusDeagle()
+{
+	MakeABodyguard("Cerberus", CT_DESERT_EAGLE);
+}
+
+void CreateCerberusShotgun()
+{
+	MakeABodyguard("Cerberus", CT_SHOTGUN);
+}
+
+void CreateCerberusShotgunTorch()
+{
+	MakeABodyguard("Cerberus", CT_SHOTGUN_TORCH);
+}
+
+void CreateCerberusSniper()
+{
+	MakeABodyguard("Cerberus", CT_SNIPER_RIFLE);
 }
 
 bool KeyHit(unsigned int keyCode)
@@ -1109,5 +1208,20 @@ bool KeyHitOnce(unsigned int keyCode)
 		return (GetAsyncKeyState(keyCode) & 1);
 	else
 		return false;
+}
+
+void __declspec(naked) Hook_Timestep()
+{
+	static int jmp_continue = 0x4D88C4;
+	_asm pushad
+	if (TheMenu.m_slowmo)
+		CGameTime::ms_timeStep = TheMenu.m_timestepval;
+
+	_asm {
+		popad
+		add 	ds:0x75628C, 1
+		jmp jmp_continue
+	}
+	
 }
 

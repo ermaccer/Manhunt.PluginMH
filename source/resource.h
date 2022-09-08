@@ -18,7 +18,7 @@
 
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 5
-#define VERSION_REVISION 8
+#define VERSION_REVISION 9
 
 #define DEF_TO_STR(a) #a
 

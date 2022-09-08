@@ -44,11 +44,11 @@ void eScriptExtender::ProcessNewCommands()
 	CEntity* ent;
 	switch (m_commandID)
 	{
-	case PushMessage:
+	case NC_PushMessage:
 		PopInt();
 		printf("%s\n", PopCharStar());
 		break;
-	case WriteMemory:
+	case NC_WriteMemory:
 		value =PopInt();
 		size = PopInt();
 		addr = PopInt();
@@ -64,11 +64,11 @@ void eScriptExtender::ProcessNewCommands()
 			Memory::VP::Patch<int>(addr, value);
 			break;
 		default:
-			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)! ", WriteMemory, size);
+			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)! ", NC_WriteMemory, size);
 			break;
 		}
 		break;
-	case ReadMemory:
+	case NC_ReadMemory:
 		size = PopInt();
 		addr = PopInt();
 
@@ -84,18 +84,18 @@ void eScriptExtender::ProcessNewCommands()
 			retn = *(int*)(addr);
 			break;
 		default:
-			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)!  Returning 0", ReadMemory, size);
+			eLog::Message(__FUNCTION__, "Command %d | Invalid size (%d)!  Returning 0", NC_ReadMemory, size);
 			retn = 0;
 			break;
 		}
 		m_returnValue = retn;
 		break;
-	case KeyHit:
+	case NC_KeyHit:
 		int key;
 		key = PopInt();
 		m_returnValue = GetAsyncKeyState(key);
 		break;
-	case SetEntityFlag:
+	case NC_SetEntityFlag:
 		int flag, status;
 
 		status = PopInt();
@@ -105,9 +105,9 @@ void eScriptExtender::ProcessNewCommands()
 		if (ent)
 			ent->SetFlag(flag, status);
 		else
-			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", SetEntityFlag);
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", NC_SetEntityFlag);
 		break;
-	case SetPedHead:
+	case NC_SetPedHead:
 		char* headName;
 
 		PopInt();
@@ -120,9 +120,9 @@ void eScriptExtender::ProcessNewCommands()
 			ped->ChangePedHead(headName);
 		}
 		else
-			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", SetPedHead);
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", NC_SetPedHead);
 		break;
-	case PedPlayAnim:
+	case NC_PedPlayAnim:
 		int animID;
 
 		
@@ -137,7 +137,7 @@ void eScriptExtender::ProcessNewCommands()
 			body->Update(0);
 		}
 		else
-			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", PedPlayAnim);
+			eLog::Message(__FUNCTION__, "Command %d | Invalid entity!", NC_PedPlayAnim);
 		break;
 	default:
 		return;

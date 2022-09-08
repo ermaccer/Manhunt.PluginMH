@@ -4,14 +4,14 @@
 #include <vector>
 
 enum eNewCommands {
-		PushMessage = 1001,
-		WriteMemory,
-		ReadMemory,
-		KeyHit,
-		SetEntityFlag,
-		SetPedHead,
-		PedPlayAnim,
-		TOTAL_NEW_SCRIPT_COMMANDS
+	NC_PushMessage = 1001,
+	NC_WriteMemory,
+	NC_ReadMemory,
+	NC_KeyHit,
+	NC_SetEntityFlag,
+	NC_SetPedHead,
+	NC_PedPlayAnim,
+	TOTAL_NEW_SCRIPT_COMMANDS
 };
 
 class eScriptExtender : public CScriptVM {

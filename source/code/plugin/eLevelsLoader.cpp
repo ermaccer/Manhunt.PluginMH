@@ -90,4 +90,9 @@ void eLevelsLoader::Init()
 	m_levelMaps = std::make_unique<level_map[]>(TOTAL_LEVELS);
 	GetLevels();
 	printf("Levels found: %d\n", m_nLevels);
+
+	for (int i = 0; i < m_nLevels; i++)
+	{
+		printf("%s\n", m_levelNames[i].name);
+	}
 }

@@ -22,3 +22,8 @@ void CString::__as(CString * src, CString * dest)
 {
 	Call<0x4F2A90, CString*, CString*>(src, dest);
 }
+
+bool CString::Identical(const char* text)
+{
+	return CallMethodAndReturn<bool, 0x4F2490, CString*, const char*>(this, text);
+}

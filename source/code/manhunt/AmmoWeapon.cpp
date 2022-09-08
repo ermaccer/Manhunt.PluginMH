@@ -15,6 +15,11 @@ void CAmmoWeapon::GetFiringDirection(CVector * dest, float unk, int unk2, int un
 	CallMethod<0x4F92F0, CAmmoWeapon*, CVector*, float, int, int>(this, dest, unk, unk2, unk3);
 }
 
+void CAmmoWeapon::GetFiringPoint(CVector* dest, int unk)
+{
+	CallMethod<0x4F90C0, CAmmoWeapon*, CVector*, int>(this, dest, unk);
+}
+
 void CAmmoWeapon::UpdateFiringDirection(float unk)
 {
 	CallMethod<0x4F96C0, CAmmoWeapon*, float>(this, unk);

@@ -126,6 +126,8 @@ public:
 	static void Print8(const char* text, float x, float y, float sizex, float sizey, float unk, eFontType font);
 	static void SetMenuBackground(char* file);
 	static void PrintInfo(wchar_t* button1, wchar_t* button2, wchar_t* button3, wchar_t* button4);
+	static int  GetInfoBarInput3();
+	static int  GetInfoBarInput4();
 	static void PrintDebugInfo(int lineID, char* format, ...);
 	static int GetTextureFromTXD(int txd, const char* texture);
 
@@ -133,6 +135,7 @@ public:
 	static void ForceAndPlayLevel(int levelID, int unk);
 
 	static float CalculateTextLen(wchar_t* text, float charScale, int byteLen);
+	static float CalculateTextLen8(char* text, float charScale, int byteLen);
 
 	static void DrawDisc2D(CVector* pos, float scale, int red, int green, int blue, float a6);
 	static void DrawDisc3D(CVector* pos, float scale, int red, int green, int blue, float a6);
@@ -140,4 +143,9 @@ public:
 	static void Set_Difficulty(int difficulty);
 
 	static RwCamera* GetFrontendCamera();
+	static RwCamera* GetSceneCamera();
+
+	static float GetAspectRatio();
+
+	static void LaserDraw(CVector* start, CVector* end);
 };

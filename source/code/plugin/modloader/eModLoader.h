@@ -5,6 +5,8 @@
 
 #include "..\..\manhunt\Misc.h"
 
+#define EXTRATYPEDATA_EXTENSION ".eini"
+
 struct file_entry {
 	char path[MAX_PATH];
 };
@@ -31,4 +33,6 @@ public:
 	static CFile* LoadFile(char* fileName, int* fileBuffer, int* arg3, CFile** pFile, int* fileSize);
 	static bool  CustomFileExists(char* input);
 	static bool  IsFileIgnored(std::string& name);
+
 };
+

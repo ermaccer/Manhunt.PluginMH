@@ -92,7 +92,8 @@ enum eCollectableType {
 	CT_WIRE,
 	CT_CAN,
 	CT_WOODEN_SPIKE,
-	CT_PIGSY_SHARD = 94,
+	CT_SNIPER_RIFLE_SILENCED,
+	CT_PIGSY_SHARD,
 	CT_PIGSY_WIRE,
 	CT_PIGSY_SPIKE,
 	CT_HAMMER,
@@ -172,7 +173,73 @@ public:
 };
 
 class CWeaponCollectable : public CCollectable {
-public:
+public:int field_1A8;
+	  int* m_pWeapon;
+	  char field_1B0;
+	  char field_1B1;
+	  char field_1B2;
+	  char field_1B3;
+	  char field_1B4;
+	  char field_1B5;
+	  char field_1B6;
+	  char field_1B7;
+	  char field_1B8;
+	  char field_1B9;
+	  char field_1BA;
+	  char field_1BB;
+	  char field_1BC;
+	  char field_1BD;
+	  char field_1BE;
+	  char field_1BF;
+	  int field_1C0;
+	  char field_1C4;
+	  char field_1C5;
+	  char field_1C6;
+	  char field_1C7;
+	  int field_1C8;
+	  char gap1CC[8];
+	  int m_pLaserBone;
+	  char field_1D8;
+	  char field_1D9;
+	  char field_1DA;
+	  char field_1DB;
+	  char field_1DC;
+	  char field_1DD;
+	  char field_1DE;
+	  char field_1DF;
+	  char field_1E0;
+	  char field_1E1;
+	  char field_1E2;
+	  char field_1E3;
+	  char field_1E4;
+	  char field_1E5;
+	  char field_1E6;
+	  char field_1E7;
+	  char field_1E8;
+	  char field_1E9;
+	  char field_1EA;
+	  char field_1EB;
+	  char field_1EC;
+	  char field_1ED;
+	  char field_1EE;
+	  char field_1EF;
+	  char field_1F0;
+	  char field_1F1;
+	  char field_1F2;
+	  char field_1F3;
+	  char field_1F4;
+	  char field_1F5;
+	  char field_1F6;
+	  char field_1F7;
+	  char field_1F8;
+	  char field_1F9;
+	  char field_1FA;
+	  char field_1FB;
+	  char field_1FC;
+	  char field_1FD;
+	  char field_1FE;
+	  char field_1FF;
+
 	eExecuteAnimClass GetExecuteAnimClass();
 	void Spawn(RwMatrix* mat);
 	void Drop();

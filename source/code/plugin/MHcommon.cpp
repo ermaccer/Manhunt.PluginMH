@@ -11,19 +11,19 @@
 #include "..\manhunt\AI.h"
 #include "..\manhunt\Player.h"
 #include "..\manhunt\Ped.h"
+#include "..\manhunt\Graph.h"
 
-void CreateEntity(char * name, CVector* pos)
-{
-	
+CEntity* CreateEntity(char * name, CVector* pos)
+{	
 	CTypeData* typeData = CEntityManager::GetEntityTypeDataFromName(name);
-
+	CEntity* entity = nullptr;
 	if (!typeData)
 	{
 		TheConsole.m_messages.push_back("Entity does not exist - " + (std::string)name);
 	}
 	if (typeData)
 	{
-		CEntity* entity = CCreationManager::CreateEntity(typeData);
+		entity = CCreationManager::CreateEntity(typeData);
 		if (entity)
 		{
 			char ent[256];
@@ -37,6 +37,8 @@ void CreateEntity(char * name, CVector* pos)
 			TheConsole.m_entityID++;
 		}
 	}
+
+	return entity;
 }
 
 void GiveWeaponToEntity(CEntity * ent, int weaponID)
@@ -82,6 +84,32 @@ void StripAllWeapons(CEntity * ent)
 	//		inv->RemoveItem(item);
 	//}
 
+}
+
+void MakeABodyguard(char* name, int weaponID, CVector* pos)
+{
+	CVector position;
+
+	RwMatrix* matrix = CScene::FindPlayer()->GetEntityMatrix();
+	CVector forward(matrix->at.x, matrix->at.y, matrix->at.z);
+	position = *CScene::FindPlayer()->GetLocation();
+
+	position += forward * 1.5f;
+
+
+	if (pos)
+		position = *pos;
+
+
+	CAutoPed* bodyguard = (CAutoPed*)CreateEntity(name, &position);
+	if (bodyguard)
+	{
+		if (!(weaponID == CT_FISTS))
+		GiveWeaponToEntity(bodyguard, weaponID);
+		char line[256] = {};
+		sprintf(line, "buddy %s", bodyguard->m_szName);
+		ConsoleCommands::ai(line);
+	}
 }
 
 CEntity * GetHunterAboutToBeExecuted()

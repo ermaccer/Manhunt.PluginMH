@@ -20,6 +20,7 @@
 #include "eSkinLoader.h"
 #include "..\core\eSettingsManager.h"
 #include "eGUI.h"
+#include "..\manhunt\AudioManager.h"
 #include <iostream>
 
 int eNewFrontend::m_pStatsMenu[2] = { (int)eNewFrontend::ProcessStatsMenu, (int)eNewFrontend::StatsMenu };
@@ -42,6 +43,7 @@ wchar_t* eNewFrontend::m_szCheatText = (wchar_t*)0x7D6360;
 RpWorld * eNewFrontend::ms_pMenuWorld;
 RpLight * eNewFrontend::ms_pMenuLight;
 bool eNewFrontend::m_bNewLevels;
+bool eNewFrontend::m_bSkinsFreezeRotation;
 	
 void eNewFrontend::InitHooks()
 {
@@ -77,6 +79,7 @@ void eNewFrontend::Init()
 	m_nSkinAdjustID = eSkinLoader::ms_iCurrentSkinAdjust;
 	m_nModAdjustID = 0;
 	m_nCurrentModPos = 0;
+	m_bSkinsFreezeRotation = false;
 }
 
 
@@ -164,7 +167,6 @@ bool __declspec(naked) eNewFrontend::ProcessMainMenu()
 
 	static int maxButton = MB_QUITPRG;
 	static int totalButton = MB_TOTAL_MENUS;
-
 
 	if (m_bNewLevels)
 	{
@@ -361,12 +363,12 @@ void eNewFrontend::StatsMenu()
 	}
 
 
-	CFrontend::PrintInfo(L"Press ESC to quit, ~up~ or ~down~ to navigate", (wchar_t*)0x7D6360, (wchar_t*)0x7D6360, (wchar_t*)0x7D6360);
+	CFrontend::PrintInfo(L"Press ~up~ or ~down~ to navigate", L"", CText::GetFromKey16("IBACK"), L"");
 }
 
 void eNewFrontend::ProcessStatsMenu()
 {
-	if (CInputManager::FrontendPressedEscape())
+	if (CInputManager::FrontendPressedEscape() || CFrontend::GetInfoBarInput3())
 		CFrontend::SetCurrentMenu(MENU_19);
 
 	if (CInputManager::FrontendPressedUp())
@@ -385,16 +387,17 @@ void eNewFrontend::ProcessStatsMenu()
 
 void eNewFrontend::ModsMenu()
 {
+	float infoBarOffset = -0.08f;
 	int mods = eModLoader::modFolders.size();
 	char tmp[128];
 
 	CFrontend::SetDrawRGBA(255,255,255, 255);
 
 	sprintf(tmp, "LOADED MODIFICATIONS: %d", mods);
-	CFrontend::Print8(tmp, m_fBoxPositionX, m_fBoxPositionY - 0.10f, 1.0, 1.0, 0.0, FONT_FRONTEND);
+	CFrontend::Print8(tmp, m_fBoxPositionX, m_fBoxPositionY - 0.10f + (infoBarOffset / 2), 1.0, 1.0, 0.0, FONT_FRONTEND);
 	CFrontend::DrawMenuCameraCounter(L"MODIFICATIONS");
 
-	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX - 0.40f, m_fSkinsBoxPositionY, 0.80f, 0.6f, 180, 180, 180, 90, 0);
+	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX - 0.40f, m_fSkinsBoxPositionY + infoBarOffset, 0.80f, 0.6f, 180, 180, 180, 90, 0);
 
 	/*const char* modHelp = "Press ~up~ or ~down~ or use mouse to select a mod. ESC to quit.";
 	CFrontend::SetDrawRGBA(0, 0, 0, 255);
@@ -405,15 +408,17 @@ void eNewFrontend::ModsMenu()
 	for (int i = 0; i < mods; i++)
 	{
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02 + 0.004, m_fBoxPositionY + 0.05 * i + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02f + 0.004f, m_fBoxPositionY + 0.05f * i + 0.004f + infoBarOffset, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(255, 255, 255, 255);
-		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02, m_fBoxPositionY + 0.05 * i, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eModLoader::modFolders[i].c_str(), m_fSkinsBoxPositionX - 0.40f + 0.02f, m_fBoxPositionY + 0.05f * i + infoBarOffset, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
+
+	CFrontend::PrintInfo(L"", L"", CText::GetFromKey16("IBACK"), L"");
 }
 
 void eNewFrontend::ProcessModsMenu()
 {
-	if (CInputManager::FrontendPressedEscape())
+	if (CInputManager::FrontendPressedEscape() || CFrontend::GetInfoBarInput3())
 		CFrontend::SetCurrentMenu(MENU_19);
 
 }
@@ -502,7 +507,7 @@ void eNewFrontend::ProcessNewSettingMenu()
 
 void eNewFrontend::Skins()
 {
-
+	float infoBarOffset = -0.08f;
 	CFrontend::DrawMenuCameraCounter(L"SKINS");
 
 
@@ -511,10 +516,10 @@ void eNewFrontend::Skins()
 		static float rotation = 0.0f;
 		static unsigned int LastFlash = 0;
 
-		const RwV3d pos = { 1.15f, -1.25f, 4.05f };
+		const RwV3d pos = { 1.15f, -1.00f, 4.05f };
 		const RwV3d axis2 = { 0.0f, 1.0f, 0.0f };
-		RwRGBAReal AmbientColor = { 0.80, 0.80, 0.80, 1.0f };
-		if (GetTickCount() - LastFlash > 7) {
+		RwRGBAReal AmbientColor = { 0.80f, 0.80f, 0.80f, 1.0f };
+		if (GetTickCount() - LastFlash > 7 && !m_bSkinsFreezeRotation) {
 			rotation += 1.0f;
 			if (rotation > 360.0f)
 				rotation -= 360.0f;
@@ -539,27 +544,17 @@ void eNewFrontend::Skins()
 		CRenderer::SetIngameInfoRenderStates(0);
 	}
 
-	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX, m_fSkinsBoxPositionY, 0.40f, 0.6f, 180, 180, 180, 90, 0);
+	CRenderer::DrawQuad2d(m_fSkinsBoxPositionX, m_fSkinsBoxPositionY + infoBarOffset, 0.40f, 0.6f, 180, 180, 180, 90, 0);
 
-	const char* skinsHelp = "Press ~up~ or ~down~ to change skin. ESC to save & quit.";
-	CFrontend::SetDrawRGBA(0, 0, 0, 255);
-	CFrontend::Print8(skinsHelp, 0.05f + 0.004f, 0.90f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-	CFrontend::SetDrawRGBA(255, 255, 255, 255);
-	CFrontend::Print8(skinsHelp, 0.05f, 0.90f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 
-	static char skinNo[128] = {};
-	sprintf(skinNo, "Skins: %d", eSkinLoader::vSkins.size());
-	CFrontend::SetDrawRGBA(0, 0, 0, 255);
-	CFrontend::Print8(skinNo, m_fSkinsBoxPositionX + 0.30f + 0.004f, m_fSkinsBoxPositionY + 0.60f + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-	CFrontend::SetDrawRGBA(255, 255, 255, 255);
-	CFrontend::Print8(skinNo, m_fSkinsBoxPositionX + 0.30f, m_fSkinsBoxPositionY + 0.60f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
-
+	wsprintfW(m_szStatsBuffer, L"Skins: %d", eSkinLoader::vSkins.size());
+	CFrontend::PrintInfo(L"Press ~up~ or ~down~ to change skin", m_szStatsBuffer, CText::GetFromKey16("IBACK"), m_bSkinsFreezeRotation ? L"Rotate" : L"Freeze");
 
 	int skins = eSkinLoader::vSkins.size();
 
 	float arrowX = m_fSkinsBoxPositionX + 0.37f;
-	float downY = m_fSkinsBoxPositionY + 0.52f;
-	float upY = m_fSkinsBoxPositionY;
+	float downY = m_fSkinsBoxPositionY + 0.52f + infoBarOffset;
+	float upY = m_fSkinsBoxPositionY + infoBarOffset;
 	float arrow_x = 0.05f;
 	float arrow_y = 0.055f;
 	bool isDown = false;
@@ -625,7 +620,7 @@ void eNewFrontend::Skins()
 	{
 		skins = 11;
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8("~down~", arrowX + 0.004f, downY + 0.004, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8("~down~", arrowX + 0.004f, downY + 0.004f, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
 		if (isDown)
 			CFrontend::SetDrawRGBA(180, 180, 255, 255);
 		else
@@ -633,12 +628,12 @@ void eNewFrontend::Skins()
 		CFrontend::Print8("~down~", arrowX, downY, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
 
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37 + 0.004f, upY + 0.004, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37f + 0.004f, upY + 0.004f, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
 		if (isUp)
 			CFrontend::SetDrawRGBA(180, 180, 255, 255);
 		else
 			CFrontend::SetDrawRGBA(120, 120, 170, 255);
-		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37, upY, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8("~up~", m_fSkinsBoxPositionX + 0.37f, upY, 1.25f, 1.25f, 0.0, FONT_TYPE_DEFAULT);
 
 	}
 
@@ -675,7 +670,7 @@ void eNewFrontend::Skins()
 
 	for (int i = 0; i < skins; i++)
 	{
-		AddSkinButton(i + m_nSkinAdjustID, i);
+		AddSkinButton(i + m_nSkinAdjustID, i, infoBarOffset);
 	}
 
 
@@ -685,11 +680,14 @@ void eNewFrontend::ProcessSkins()
 {
 	eSkinLoader::LoadPlayerDff();
 
-	if (CInputManager::FrontendPressedEscape())
+	if (CInputManager::FrontendPressedEscape() || CFrontend::GetInfoBarInput3())
 	{
 		eSkinLoader::SaveFile(m_nCurrentSkinPos,m_nSkinAdjustID);
 		CFrontend::SetCurrentMenu(MENU_19);
 	}
+
+	if (CFrontend::GetInfoBarInput4())
+		m_bSkinsFreezeRotation ^= 1;
 
 
 	if (CInputManager::FrontendPressedUp())
@@ -739,12 +737,12 @@ void eNewFrontend::ProcessSkins()
 
 }
 
-void eNewFrontend::AddSkinButton(int id, int pos)
+void eNewFrontend::AddSkinButton(int id, int pos, float offset)
 {
 	int len = eSkinLoader::vSkins[id].sName.length();
 
 	float x = m_fSkinsBoxPositionX + 0.01f;
-	float y = m_fSkinsBoxPositionY + 0.03f + 0.05f* pos;
+	float y = m_fSkinsBoxPositionY + 0.03f + 0.05f* pos + offset;
 	float x_size = len * 0.0097f;
 	float y_size = 0.045f;
 
@@ -759,10 +757,11 @@ void eNewFrontend::AddSkinButton(int id, int pos)
 
 	if (isInside)
 	{
-		if (CPad::NewMouseControllerState.lmb)
+		if (CPad::NewMouseControllerState.lmb && !CPad::OldMouseControllerState.lmb)
 		{
 			m_nCurrentSkinPos = pos;
 			eSkinLoader::ReloadPlayerDff(id);
+			DMAudio.PlayFrontEndSound(0, -1.0f);
 		}
 	}
 
@@ -785,18 +784,18 @@ void eNewFrontend::DrawStatText(int id)
 
 		// stat names
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(eStatsManager::GetStatName(id), m_fBoxPositionX + 0.02 + 0.004, m_fBoxPositionY + 0.05 * drawID + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eStatsManager::GetStatName(id), m_fBoxPositionX + 0.02f + 0.004f, m_fBoxPositionY + 0.05f * drawID + 0.004f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(255, 255, 255, 255);
-		CFrontend::Print8(eStatsManager::GetStatName(id), m_fBoxPositionX + 0.02, m_fBoxPositionY + 0.05 * drawID, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(eStatsManager::GetStatName(id), m_fBoxPositionX + 0.02f, m_fBoxPositionY + 0.05f * drawID, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		// stat values
 		sprintf(statsBuffer, "%d", eStatsManager::GetStat(id));
 
 
 
 		CFrontend::SetDrawRGBA(0, 0, 0, 255);
-		CFrontend::Print8(statsBuffer, m_fBoxPositionX + 0.02 + 0.55 + 0.004, m_fBoxPositionY + 0.05 * drawID + 0.004, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(statsBuffer, m_fBoxPositionX + 0.02f + 0.55f + 0.004f, m_fBoxPositionY + 0.05f * drawID + 0.004f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 		CFrontend::SetDrawRGBA(255, 255, 255, 255);
-		CFrontend::Print8(statsBuffer, m_fBoxPositionX + 0.02 + 0.55, m_fBoxPositionY + 0.05 * drawID, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+		CFrontend::Print8(statsBuffer, m_fBoxPositionX + 0.02f + 0.55f, m_fBoxPositionY + 0.05f * drawID, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 	}
 }
 
@@ -857,7 +856,7 @@ void __declspec(naked) eNewFrontend::HookExecuteMenuProcess()
 	else if (CFrontend::ms_currentMenu == MENU_NEW_SETTINGS)
 	{
 		ProcessNewSettingMenu();
-		NewSettingMenu();		
+		NewSettingMenu();
 	}
 	else if (CFrontend::ms_currentMenu == MENU_SKINS)
 	{
@@ -910,7 +909,10 @@ void eNewFrontend::HookCreateMenuLight()
 
 void eNewFrontend::DestroyMenuLightWorld()
 {
-	RpWorldRemoveLight(ms_pMenuWorld, ms_pMenuLight);
-	RpLightDestroy(ms_pMenuLight);
-	RpWorldDestroy(ms_pMenuWorld);
+	if (ms_pMenuWorld && ms_pMenuLight)
+		RpWorldRemoveLight(ms_pMenuWorld, ms_pMenuLight);
+	if (ms_pMenuLight)
+		RpLightDestroy(ms_pMenuLight);
+	if (ms_pMenuWorld)
+		RpWorldDestroy(ms_pMenuWorld);
 }

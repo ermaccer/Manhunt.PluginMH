@@ -261,6 +261,30 @@
     <ClInclude Include="code\manhunt\AnimID.h">
       <Filter>Header Files\manhunt</Filter>
     </ClInclude>
+    <ClInclude Include="code\manhunt\AudioManager.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\TextOverlay.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\plugin\eAchievements.h">
+      <Filter>Header Files\plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\Decal.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\ColLine.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\ContactInfo.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\TexDictionary.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\plugin\eLaserSights.h">
+      <Filter>Header Files\plugin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -448,6 +472,30 @@
     </ClCompile>
     <ClCompile Include="code\manhunt\Hunter.cpp">
       <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\AudioManager.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\TextOverlay.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\eAchievements.cpp">
+      <Filter>Header Files\plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\Decal.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\ColLine.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\Vector.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\TexDictionary.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\eLaserSights.cpp">
+      <Filter>Header Files\plugin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

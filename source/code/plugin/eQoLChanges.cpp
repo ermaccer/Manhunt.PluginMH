@@ -9,8 +9,7 @@
 
 void eQoLChanges::Init()
 {
-	if (eSettingsManager::bSkipIntroSequence) SkipIntro();
-	if (eSettingsManager::bFixExplodingDecappedHeads) FixDecappedHeadsExploding();
+	if (eSettingsManager::bSkipIntroSequence)SkipIntro();
 
 //	InjectHook(0x5A53A7, FixCerberusExecutionAudio, PATCH_JUMP);
 }
@@ -21,6 +20,9 @@ void eQoLChanges::SkipIntro()
 	Patch<int>(0x5E275F + 2, 0);
 	Nop(0x5E2652, 5);
 	Nop(0x5E26DC, 5);
+
+	// movie
+	Nop(0x4C17AF, 5);
 
 }
 
@@ -74,10 +76,7 @@ void __declspec(naked) eQoLChanges::FixCerberusExecutionAudio()
 
 void eQoLChanges::FixDecappedHeadsExploding()
 {
-	InjectHook(0x49D765, &CPedEx::ExplodeHeadEx, PATCH_CALL);
-	InjectHook(0x49D92F, &CPedEx::ExplodeHeadEx, PATCH_CALL);
-	InjectHook(0x49D96C, &CPedEx::ExplodeHeadEx, PATCH_CALL);
-	InjectHook(0x49DCE7, &CPedEx::ExplodeHeadEx, PATCH_CALL);
+
 }
 
 

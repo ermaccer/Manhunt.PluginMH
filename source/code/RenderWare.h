@@ -13,6 +13,6 @@
 #define SCREEN_VIEWWINDOW (tanf(DEGTORAD(45.0f * 0.5f)))
 
 RpClump* RpClumpRender(RpClump* clump);
-
+RpHAnimHierarchy* GetAnimHierarchyFromSkinClump(RpClump*);
 
 void CameraSize(RwCamera * camera, RwRect * rect, RwReal viewWindow, RwReal aspectRatio);

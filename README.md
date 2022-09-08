@@ -167,8 +167,7 @@ Currently, Manhunt version of modloader doesn't support swapping:
 It depends on type, but every mod needs a folder.
 Create a folder with any name inside modloader folder.
 
-Modloader comes with a custom DFF loader which allows to load multiple .dff files a
-nd append them to the model list.
+Modloader comes with a custom DFF loader which allows to load multiple .dff files and append them to the model list.
 
 Some files are ignored from beign loaded, they are specified
 in modloader.ini file.

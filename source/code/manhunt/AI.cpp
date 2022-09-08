@@ -29,7 +29,7 @@ int AISCRIPT_SetEntityVoiceID(char * entity, int voiceID)
 	return CallMethodAndReturn<int,0x53BF20, int, char*, int>(0x799B50, entity, voiceID);
 }
 
-int AIScript_BuddyFollow(char * entity)
+int AISCRIPT_BuddyFollow(char * entity)
 {
 	return CallMethodAndReturn<int, 0x53B9D0, int, char*>(0x799B50, entity);
 }
@@ -52,6 +52,26 @@ int AISCRIPT_DefineGoal_HuntEnemy(char * refName, char * who, bool unk, int unk2
 int AISCRIPT_DefineGoal_BeBuddy(char * goalName, char * entityName, char * whoToBeBuddyWith, char * home, float radius)
 {
 	return CallMethodAndReturn<int, 0x53A020, int, char*, char*, char*, char*, float>(0x799B50, goalName, entityName, whoToBeBuddyWith, home, radius);
+}
+
+int AISCRIPT_SetSubpackCombatType(char* entityName, char* pack, int type)
+{
+	return CallMethodAndReturn<int, 0x5391E0, int, char*, char*, int>(0x799B50, entityName, pack, type);
+}
+
+int AISCRIPT_AddSubpack_ForLeader(char* entity, char* subpack)
+{
+	return CallMethodAndReturn<int, 0x5386F0, int, char*, char*>(0x799B50, entity, subpack);
+}
+
+int AISCRIPT_AddAllHuntersInPackAsLeaderEnemies(char* entity, char* leaderName)
+{
+	return CallMethodAndReturn<int, 0x538BC0, int, char*, char*>(0x799B50, entity, leaderName);
+}
+
+int AISCRIPT_AddGoal_Subpack(char* entity, char* subpack, char* goalName)
+{
+	return CallMethodAndReturn<int, 0x538C80, int, char*, char*, char*>(0x799B50, entity, subpack, goalName);
 }
 
 int modAI_Audio_RegisterAISound(eAISounds sound, CEntity * entity, int unk, int unk2)

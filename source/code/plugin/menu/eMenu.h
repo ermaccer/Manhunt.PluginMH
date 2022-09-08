@@ -92,6 +92,9 @@ public:
 	int m_obstructTest = 0;
 	int m_displayHunter = 0;
 	int m_animationID = 0;
+	int m_fireHead = 0;
+	int m_slowmo = 0;
+	int m_timestepval = 0;
 
 	int m_enableKillCounter = 0;
 	int m_infiniteAmmo = 0;
@@ -112,7 +115,6 @@ public:
 
 
 
-	void PreInitialize();
 	void Initialize();
 	void ProcessMenu();
 	void ProcessControls();
@@ -161,12 +163,22 @@ void		PutBagOnPlayerHead();
 void		PlayerDropAllWeapons();
 void		PrintEntities();
 void		PrintExecuteHunter();
-
+void		PrintAchievementTest();
 void		PlayAnim();
-
-
+void		ResetTimeStep();
+void		CreateHood();
+void		CreateCop();
+void		CreateCopShotgun();
+void		CreateSwat();
+void		CreateCerberusM16();
+void		CreateCerberusDeagle();
+void		CreateCerberusShotgun();
+void		CreateCerberusShotgunTorch();
+void		CreateCerberusSniper();
 extern eMenu TheMenu;
 
 
-bool KeyHit(unsigned int keyCode);
-bool KeyHitOnce(unsigned int keyCode);
+static bool KeyHit(unsigned int keyCode);
+static bool KeyHitOnce(unsigned int keyCode);
+
+void Hook_Timestep();

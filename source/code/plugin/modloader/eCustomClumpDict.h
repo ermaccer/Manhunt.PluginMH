@@ -17,7 +17,16 @@ public:
 
 class eCustomClumpDict {
 public:
+
 	CClump* FindClumpDescription(const char* name);
 	CClump* FindClump(const char* name);
 	void	Destroy();
+
+	int	CustomUnkFunc(const char* name);
+};
+
+
+class eCustomTexDict {
+public:
+	static int FindNamedTexture(CClumpDict*dict, const char* name);
 };

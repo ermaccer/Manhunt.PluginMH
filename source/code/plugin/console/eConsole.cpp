@@ -6,9 +6,13 @@
 #include "..\..\manhunt\Scene.h"
 #include "..\..\manhunt\SpecialFX.h"
 #include "..\..\manhunt\Ped.h"
+#include "..\..\manhunt\AudioManager.h"
 #include "..\..\manhunt\Character.h"
+#include "..\..\manhunt\AI.h"
+#include "..\..\manhunt\Graph.h"
 #include "..\MHcommon.h"
 #include "..\menu\eMenu.h"
+#include "..\..\manhunt\App.h"
 eConsole TheConsole;
 
 using namespace ConsoleCommands;
@@ -87,7 +91,7 @@ void eConsole::ExecuteCommand(char * command, char * args)
 {
 	char* tmp = command;
 
-	for (int i = 0; i < strlen(tmp); i++)
+	for (unsigned int i = 0; i < strlen(tmp); i++)
 		tmp[i] = tolower(tmp[i]);
 
 	std::string cmd = tmp;
@@ -112,6 +116,10 @@ void eConsole::ExecuteCommand(char * command, char * args)
 	else if (cmd == "list") list(args);
 	else if (cmd == "kill") kill(args);
 	else if (cmd == "anim") anim(args);
+	else if (cmd == "sound") sound(args);
+	else if (cmd == "ai") ai(args);
+	else if (cmd == "bodyguard") bodyguard(args);
+	else if (cmd == "level") level(args);
 	command[0] = 0;
 	args[0] = 0;
 }
@@ -245,7 +253,7 @@ void ConsoleCommands::help(char * args)
 	int argc = sscanf(args, "%d", &pageID);
 
 	if (strlen(args) <= 0)
-		TheConsole.m_messages.push_back("Usage: help <1-2>");
+		TheConsole.m_messages.push_back("Usage: help <1-3>");
 
 	switch (pageID)
 	{
@@ -269,9 +277,14 @@ void ConsoleCommands::help(char * args)
 		TheConsole.m_messages.push_back("list <type> <entity> - Does something to selected entity. Type - inv, invr, data");
 		TheConsole.m_messages.push_back("kill <entity>");
 		TheConsole.m_messages.push_back("anim <entity> <id> - Makes entity play a body animation");
+		TheConsole.m_messages.push_back("sound <id> - Play a sound");
+		break;
+	case 3:
+		TheConsole.m_messages.push_back("ai <type> <instance> <arg> - Sets up a simple ai for an entity instance");
+		TheConsole.m_messages.push_back("bodyguard <entity> <id> - Creates a bodyguard with specified entity and weapon or item");
+		TheConsole.m_messages.push_back("level - Prints current level name");
 		break;
 	default:
-		TheConsole.m_messages.push_back("Usage: help <1-2>");
 		break;
 	}
 }
@@ -391,7 +404,7 @@ void ConsoleCommands::kill(char * args)
 		return;
 	}
 
-	entity->Kill();
+	CallMethod<0x4A1EC0, CEntity*>(entity);
 }
 
 void ConsoleCommands::anim(char* args)
@@ -416,6 +429,138 @@ void ConsoleCommands::anim(char* args)
 		body->Update(0);
 	}
 
+}
+
+void ConsoleCommands::sound(char* args)
+{
+	eSampleIDs soundID = (eSampleIDs)-1;
+	int argc = sscanf(args, "%d", &soundID);
+
+	if (soundID == -1)
+	{
+		TheConsole.m_messages.push_back("No sound ID specified.");
+		return;
+	}
+
+	AudioManager.RequestMiscOneShot(CScene::FindPlayer()->GetLocation(), soundID, -1, -1);
+
+}
+
+void ConsoleCommands::ai(char* args)
+{
+	char aiType[64] = {};
+	char entityName[256] = {};
+	char enemyName[256] = {};
+	int argc = sscanf(args, "%s %s %s",&aiType, &entityName, &enemyName);
+
+	CEntity* entity = CEntityManager::FindInstance(entityName);
+
+	if (!entity)
+	{
+		TheConsole.m_messages.push_back("Entity instance does not exist - " + (std::string)entityName);
+		return;
+	}
+
+	if (strcmp(aiType, "enemy") == 0)
+	{
+		AISCRIPT_AddAIEntity(entityName);
+		AISCRIPT_SetAIEntityAsLeader(entityName);
+
+		char pack[256];
+
+		sprintf(pack, "TestPack%d", TheConsole.m_entityID);
+
+		AISCRIPT_AddSubpack_ForLeader(entityName, pack);
+
+		CAutoPed* ped = (CAutoPed*)(entity);
+
+		CWeaponCollectable* weapon_collectable = (CWeaponCollectable*)ped->m_pInventory->m_inventory[ped->m_nCurrentSlot];
+		if (weapon_collectable)
+		{
+			CWeapon* wep = (CWeapon*)*(int*)((int)weapon_collectable + 428);
+
+			if (wep->m_TypeData->m_eWeaponClass == WC_AMMO)
+				AISCRIPT_SetSubpackCombatType(entityName, pack, COMBATTYPEID_COVER);
+			else
+				AISCRIPT_SetSubpackCombatType(entityName, pack, COMBATTYPEID_MELEE);
+		}
+
+
+
+		AISCRIPT_AddHunterToLeaderSubpack(entityName, pack, entityName);
+		AISCRIPT_AddLeaderEnemy(entityName, enemyName);
+		
+		
+		char goal[256];
+		sprintf(goal, "Goal%d", TheConsole.m_entityID);
+		AISCRIPT_DefineGoal_HuntEnemy(goal, enemyName, false, 1);
+		AISCRIPT_AddGoal_Subpack(entityName, pack, goal);
+
+
+	}
+	if (strcmp(aiType, "buddy") == 0)
+	{
+		AISCRIPT_AddAIEntity(entityName);
+		AISCRIPT_EntityAlwaysEnabled(entityName);
+		AISCRIPT_SetAIEntityAsLeader(entityName);
+
+		char pack[256];
+
+		sprintf(pack, "TestPack%d", TheConsole.m_entityID);
+
+		AISCRIPT_AddSubpack_ForLeader(entityName, pack);
+		CAutoPed* ped = (CAutoPed*)(entity);
+
+		CWeaponCollectable* weapon_collectable = (CWeaponCollectable*)ped->m_pInventory->m_inventory[ped->m_nCurrentSlot];
+		if (weapon_collectable)
+		{
+			CWeapon* wep = (CWeapon*)*(int*)((int)weapon_collectable + 428);
+
+			if (wep->m_TypeData->m_eWeaponClass == WC_AMMO)
+				AISCRIPT_SetSubpackCombatType(entityName, pack, COMBATTYPEID_COVER);
+			else
+				AISCRIPT_SetSubpackCombatType(entityName, pack, COMBATTYPEID_MELEE);
+		}
+
+		char* leaderNames[] = { "LEADER", "hLeader","hLeader2","LEADER_HOODS","LEADER_SMILE","LEADER_INNO", "Barman", "LEADER_STARTGUYS", "MONKEYCUT1",};
+
+		for (int i = 0; i < sizeof(leaderNames) / sizeof(leaderNames[0]); i++)
+		{
+			if (CEntityManager::FindInstance(leaderNames[i]))
+				AISCRIPT_AddAllHuntersInPackAsLeaderEnemies(entityName, leaderNames[i]);
+		}
+
+
+		AISCRIPT_AddHunterToLeaderSubpack(entityName, pack, entityName);
+
+
+		char goal[256];
+		sprintf(goal, "Goal%d", TheConsole.m_entityID);
+
+	
+		AISCRIPT_DefineGoal_BeBuddy(goal, entityName, "player", TheGraph.nodes[0].node->name, 53.0);
+		AISCRIPT_AddGoal_Subpack(entityName, pack, goal);
+		AISCRIPT_BuddyFollow(entityName);
+	}
+
+	
+}
+
+void ConsoleCommands::bodyguard(char* args)
+{
+	char entityName[256] = {};
+	int weaponID;
+	int argc = sscanf(args, "%s %d", &entityName, &weaponID);
+
+	MakeABodyguard(entityName, weaponID);
+
+}
+
+void ConsoleCommands::level(char* args)
+{
+	char msg[512] = {};
+	sprintf(msg, "%s %d", (char*)(0x756034 + 20 * CApp::ms_currLevelNum), CApp::ms_currLevelNum);
+	TheConsole.m_messages.push_back(msg);
 }
 
 void __fastcall HookAddLine(int console, char * line)

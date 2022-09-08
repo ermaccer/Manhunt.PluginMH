@@ -374,7 +374,7 @@ public:
 	int field_1A0;
 	int field_1A4;
 	int field_1A8;
-	int field_1AC;
+	float m_fAngle;
 	int field_1B0;
 	float field_1B4;
 	int field_1B8;
@@ -1088,6 +1088,9 @@ public:
 	void SeverHead(CVector* pos);
 	void SetHeading(float heading, bool unk);
 	void SelectInventoryItem(eHolsterSlot slot, int unk);
+
+	void PreUpdate();
+	void PostUpdate();
 
 	void UseCollectable(eCollectableType item, bool createIfDoesntExist);
 

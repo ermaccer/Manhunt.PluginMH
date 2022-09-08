@@ -26,6 +26,16 @@ void CPed::SelectInventoryItem(eHolsterSlot slot, int unk)
 	CallMethod<0x4ABE70, CPed*, eHolsterSlot, int>(this,slot, unk);
 }
 
+void CPed::PreUpdate()
+{
+	CallMethod<0x4A7550, CPed*>(this);
+}
+
+void CPed::PostUpdate()
+{
+	CallMethod<0x4A7730, CPed*>(this);
+}
+
 void CPed::UseCollectable(eCollectableType item, bool createIfDoesntExist)
 {
 	CallMethod<0x4ABB50, CPed*, eCollectableType, bool>(this, item, createIfDoesntExist);

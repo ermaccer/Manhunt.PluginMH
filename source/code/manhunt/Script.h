@@ -22,3 +22,9 @@ public:
 	CEntity* PopEntity();
 
 };
+
+
+namespace ScriptCommands {
+	void SetCameraPosition(CVector* pos);
+	void SetAllVideoEffects(bool status);
+}

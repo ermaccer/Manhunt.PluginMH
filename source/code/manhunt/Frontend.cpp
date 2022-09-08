@@ -85,6 +85,16 @@ void CFrontend::PrintInfo(wchar_t * button1, wchar_t * button2, wchar_t * button
 	Call<0x5D5BB0, wchar_t*, wchar_t*, wchar_t*, wchar_t*>(button1, button2, button3, button4);
 }
 
+int CFrontend::GetInfoBarInput3()
+{
+	return *(int*)0x7C8F9C;
+}
+
+int CFrontend::GetInfoBarInput4()
+{
+	return *(int*)0x7C8FA0;
+}
+
 void CFrontend::PrintDebugInfo(int lineID, char * format, ...)
 {
 	((void(__cdecl*)(int,char*,...))0x5E5480)(lineID, format);
@@ -110,6 +120,11 @@ float CFrontend::CalculateTextLen(wchar_t * text, float charScale, int byteLen)
 	return CallAndReturn<float, 0x5E56F0, wchar_t*, float, int>(text, charScale, byteLen);
 }
 
+float CFrontend::CalculateTextLen8(char* text, float charScale, int byteLen)
+{
+	return CallAndReturn<float, 0x5E5670, char*, float, int>(text, charScale, byteLen);
+}
+
 void CFrontend::DrawDisc2D(CVector* pos, float scale, int red, int green, int blue, float a6)
 {
 	Call<0x5FB6D0, CVector*, float, int, int, int, float>(pos, scale, red, green, blue, a6);
@@ -128,4 +143,19 @@ void CFrontend::Set_Difficulty(int difficulty)
 RwCamera * CFrontend::GetFrontendCamera()
 {
 	return *(RwCamera**)0x7CF078;
+}
+
+RwCamera* CFrontend::GetSceneCamera()
+{
+	return *(RwCamera**)0x715B94;
+}
+
+float CFrontend::GetAspectRatio()
+{
+	return (float)(*(int*)0x829584 / *(int*)0x829588);
+}
+
+void CFrontend::LaserDraw(CVector* start, CVector* end)
+{
+	Call<0x5FA7D0, CVector*, CVector*>(start, end);
 }

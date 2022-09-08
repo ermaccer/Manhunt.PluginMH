@@ -48,7 +48,6 @@ public:
 	static bool bForceFXMode;
 	static bool bEnableFirstPersonMode;
 
-
 	// keys
 	static int  keyToggleDebugMenu;
 	static int  keyToggleConsole;

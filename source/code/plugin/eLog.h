@@ -7,4 +7,5 @@ public:
 
 	static void Initialise();
 	static void Message(char* function, char* format, ...);
+	static void ErrorMsg(char* function, char* format, ...);
 };

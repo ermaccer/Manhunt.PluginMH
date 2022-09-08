@@ -3,6 +3,8 @@
 #include "..\..\core\FileFunctions.h"
 #include "..\..\core\eMain.h"
 #include "..\..\manhunt\core.h"
+#include "..\..\manhunt\String.h"
+#include "..\..\manhunt\EntityManager.h"
 #include <filesystem>
 #include <Windows.h>
 #include "..\eLog.h"
@@ -51,6 +53,7 @@ void eModLoader::InitClumpDicts()
 
 					dict->Initialise(possibleTXD.c_str(), m_vMods[i].files[a].c_str());
 					eLog::Message(__FUNCTION__, "Initialising custom clump [%x] %s [%s]", dict, m_vMods[i].files[a].c_str(), possibleTXD.c_str());
+					dict->CheckDict();
 					eCustomClumpDictManager::m_vecClumps.push_back(dict);
 				}
 
@@ -96,7 +99,7 @@ void eModLoader::ScanFolderForFiles(const char* folder)
 	std::vector<std::string> tmp_files;
 	std::vector<std::string> tmp_gfiles;
 	std::vector<file_entry>  tmp_sfiles;
-	for (int i = 0; i < m_vMods.size(); i++)
+	for (unsigned int i = 0; i < m_vMods.size(); i++)
 	{
 		std::filesystem::current_path(getExecutablePath_str());
 		std::filesystem::current_path(folder);
@@ -111,7 +114,7 @@ void eModLoader::ScanFolderForFiles(const char* folder)
 				char buffer[MAX_PATH];
 				sprintf(buffer, tmp.c_str());
 
-				for (int i = 0; i < strlen(buffer); i++)
+				for (unsigned int i = 0; i < strlen(buffer); i++)
 				{
 					buffer[i] = tolower(buffer[i]);
 				}
@@ -155,7 +158,7 @@ void eModLoader::ScanFolderForFiles(const char* folder)
 			if (szLine[0] == ';' || szLine[0] == '\n' || szLine[0] == '#')
 				continue;
 
-			for (int i = 0; i < strlen(szLine); i++)
+			for (unsigned int i = 0; i < strlen(szLine); i++)
 				szLine[i] = tolower(szLine[i]);
 
 			std::string name(szLine, strlen(szLine) - sizeof('\n') - 1);
@@ -179,13 +182,13 @@ char * eModLoader::FindFile(char * input)
 		input = tmpBuff;
 	}
 
-	for (int i = 0; i < strlen(input); i++)
+	for (unsigned int i = 0; i < strlen(input); i++)
 	{
 		if (input[i] == '/')
 			input[i] = '\\';
 	}
 
-	for (int i = 0; i < strlen(input); i++)
+	for (unsigned int i = 0; i < strlen(input); i++)
 		input[i] = tolower(input[i]);
 
 	// check file
@@ -195,9 +198,9 @@ char * eModLoader::FindFile(char * input)
 	if (IsFileIgnored(file))
 		return result;
 
-	for (int i = 0; i < m_vMods.size(); i++)
+	for (unsigned int i = 0; i < m_vMods.size(); i++)
 	{
-		for (int a = 0; a < m_vMods[i].files.size(); a++)
+		for (unsigned int a = 0; a < m_vMods[i].files.size(); a++)
 		{
 
 			if (strcmp(m_vMods[i].files_game[a].c_str(), input) == 0)
@@ -230,13 +233,13 @@ bool eModLoader::CustomFileExists(char * input)
 		sprintf(result, tmpBuff);
 	}
 
-	for (int i = 0; i < strlen(result); i++)
+	for (unsigned int i = 0; i < strlen(result); i++)
 	{
 		if (result[i] == '/')
 			result[i] = '\\';
 	}
 
-	for (int i = 0; i < strlen(result); i++)
+	for (unsigned int i = 0; i < strlen(result); i++)
 		result[i] = tolower(result[i]);
 
 	// check file
@@ -246,9 +249,9 @@ bool eModLoader::CustomFileExists(char * input)
 	if (IsFileIgnored(file))
 		return false;
 
-	for (int i = 0; i < m_vMods.size(); i++)
+	for (unsigned int i = 0; i < m_vMods.size(); i++)
 	{
-		for (int a = 0; a < m_vMods[i].files.size(); a++)
+		for (unsigned int a = 0; a < m_vMods[i].files.size(); a++)
 		{
 			if (strcmp(m_vMods[i].files_game[a].c_str(), result) == 0)
 			{
@@ -263,7 +266,7 @@ bool eModLoader::CustomFileExists(char * input)
 bool eModLoader::IsFileIgnored(std::string & name)
 {
 	bool result = false;
-	for (int i = 0; i < ignoredFiles.size(); i++)
+	for (unsigned int i = 0; i < ignoredFiles.size(); i++)
 	{
 		if (strcmp(name.c_str(), ignoredFiles[i].c_str()) == 0)
 		{
@@ -273,5 +276,3 @@ bool eModLoader::IsFileIgnored(std::string & name)
 	}
 	return result;
 }
-
-

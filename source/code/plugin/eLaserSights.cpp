@@ -8,6 +8,9 @@
 #include "..\manhunt\Frontend.h"
 #include "..\manhunt\AmmoWeapon.h"
 
+CVector eLaserSights::debugStart;
+CVector eLaserSights::debugEnd;
+
 
 void eLaserSights::Initialize()
 {
@@ -64,6 +67,9 @@ void eLaserSights::Draw()
 				//end.y = aimPos.y;
 				//end.z = aimPos.z;
 				//
+
+				start = debugStart;
+				end = debugEnd;
 
 				CFrontend::LaserDraw(&start, &end);
 				CFrontend::LaserDraw(&start, &end);

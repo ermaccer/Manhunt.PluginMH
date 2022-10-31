@@ -14,6 +14,7 @@ bool eSettingsManager::bHookExtraWeapons;
 bool eSettingsManager::bHookExtraScriptCommands;
 bool eSettingsManager::bEnableWeaponAdjuster;
 bool eSettingsManager::bEnableExecutionsWithFirearms;
+bool eSettingsManager::bEnableMagazineDecals;
 
 bool eSettingsManager::bDisableHeartBeat;
 bool eSettingsManager::bDisableBreathing;
@@ -83,6 +84,8 @@ void eSettingsManager::Init()
 	bEnableFirstPersonMode = reader.ReadBoolean("Settings.Game", "bEnableFirstPersonMode", false);
 	bFixExplodingDecappedHeads = reader.ReadBoolean("Settings.Game", "bFixExplodingDecappedHeads", false);
 	iForcePlayerSkin = reader.ReadInteger("Settings.Game", "iForcePlayerSkin", 0);
+
+	bEnableMagazineDecals = reader.ReadBoolean("Settings", "bEnableMagazineDecals", false);
 
 	bRestoreDamageDirectionIndicator = reader.ReadBoolean("Settings.Game", "bRestoreDamageDirectionIndicator", false);
 	bDisableExecutionCamera = reader.ReadBoolean("Settings", "bDisableExecutionCamera", false);

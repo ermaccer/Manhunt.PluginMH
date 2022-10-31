@@ -26,3 +26,6 @@ int CPlayer::GetExecuteStage()
 	return CallMethodAndReturn<int, 0x46CB80, CPlayer*>(this);
 }
 
+void CPlayerHelper::SetModel(char* name)
+{
+}

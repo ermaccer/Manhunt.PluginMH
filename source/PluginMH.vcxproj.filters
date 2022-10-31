@@ -285,6 +285,15 @@
     <ClInclude Include="code\plugin\eLaserSights.h">
       <Filter>Header Files\plugin</Filter>
     </ClInclude>
+    <ClInclude Include="code\manhunt\ParticleModel.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manhunt\Matrix.h">
+      <Filter>Header Files\manhunt</Filter>
+    </ClInclude>
+    <ClInclude Include="code\plugin\eMagazineDecals.h">
+      <Filter>Header Files\plugin</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -495,6 +504,12 @@
       <Filter>Header Files\manhunt</Filter>
     </ClCompile>
     <ClCompile Include="code\plugin\eLaserSights.cpp">
+      <Filter>Header Files\plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manhunt\ParticleModel.cpp">
+      <Filter>Header Files\manhunt</Filter>
+    </ClCompile>
+    <ClCompile Include="code\plugin\eMagazineDecals.cpp">
       <Filter>Header Files\plugin</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1094,6 +1094,9 @@ public:
 
 	void UseCollectable(eCollectableType item, bool createIfDoesntExist);
 
+
+	void SF_TorsoReload();
+
 	RwFrame* GetBoneFrame(int id);
 
 	bool HoldingMeleeWeapon();

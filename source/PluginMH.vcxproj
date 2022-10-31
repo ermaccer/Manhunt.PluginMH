@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -128,9 +128,11 @@
     <ClInclude Include="code\manhunt\Input.h" />
     <ClInclude Include="code\manhunt\Inventory.h" />
     <ClInclude Include="code\manhunt\MaterialManager.h" />
+    <ClInclude Include="code\manhunt\Matrix.h" />
     <ClInclude Include="code\manhunt\MemoryHeap.h" />
     <ClInclude Include="code\manhunt\Misc.h" />
     <ClInclude Include="code\manhunt\MusicManager.h" />
+    <ClInclude Include="code\manhunt\ParticleModel.h" />
     <ClInclude Include="code\manhunt\Ped.h" />
     <ClInclude Include="code\manhunt\PedHead.h" />
     <ClInclude Include="code\manhunt\Player.h" />
@@ -162,6 +164,7 @@
     <ClInclude Include="code\plugin\eLaserSights.h" />
     <ClInclude Include="code\plugin\eLevelsLoader.h" />
     <ClInclude Include="code\plugin\eLog.h" />
+    <ClInclude Include="code\plugin\eMagazineDecals.h" />
     <ClInclude Include="code\plugin\eMapLimits.h" />
     <ClInclude Include="code\plugin\eModSettings.h" />
     <ClInclude Include="code\plugin\eNewFrontend.h" />
@@ -208,6 +211,7 @@
     <ClCompile Include="code\manhunt\MemoryHeap.cpp" />
     <ClCompile Include="code\manhunt\Misc.cpp" />
     <ClCompile Include="code\manhunt\MusicManager.cpp" />
+    <ClCompile Include="code\manhunt\ParticleModel.cpp" />
     <ClCompile Include="code\manhunt\Ped.cpp" />
     <ClCompile Include="code\manhunt\Player.cpp" />
     <ClCompile Include="code\manhunt\Renderer.cpp" />
@@ -235,6 +239,7 @@
     <ClCompile Include="code\plugin\eLaserSights.cpp" />
     <ClCompile Include="code\plugin\eLevelsLoader.cpp" />
     <ClCompile Include="code\plugin\eLog.cpp" />
+    <ClCompile Include="code\plugin\eMagazineDecals.cpp" />
     <ClCompile Include="code\plugin\eMapLimits.cpp" />
     <ClCompile Include="code\plugin\eModSettings.cpp" />
     <ClCompile Include="code\plugin\eNewFrontend.cpp" />

@@ -43,18 +43,18 @@ void CPedBodyAnimFSM::SetDamageExecute(eExecuteAnimClass execution, int level)
 	CallMethod<0x41DCA0, CPedBodyAnimFSM*, eExecuteAnimClass, int>(this, execution, level);
 }
 
-void CPedTorsoAnimFSM::SetRequested(int body, int bodyType, int anim)
+void CPedTorsoAnimFSM::SetRequested(int bodyType, int anim)
 {
-	CallMethod<0x41D970, int, int, int>(body, bodyType, anim);
+	CallMethod<0x41D970, CPedTorsoAnimFSM*, int, int>(this, bodyType, anim);
 }
 
-void CPedTorsoAnimFSM::Update(int body, int arg)
+void CPedTorsoAnimFSM::Update(int arg)
 {
-	CallMethod<0x426BD0, int, int>(body, arg);
+	CallMethod<0x426BD0, CPedTorsoAnimFSM*, int>(this, arg);
 }
 
 
-int CPedTorsoAnimFSM::GetIdleAnimIdFromName(int body, const char * name)
+int CPedTorsoAnimFSM::GetIdleAnimIdFromName(const char * name)
 {
-	return CallMethodAndReturn<int, 0x4255F0, int, const char*>(body, name);
+	return CallMethodAndReturn<int, 0x4255F0, CPedTorsoAnimFSM*, const char*>(this, name);
 }

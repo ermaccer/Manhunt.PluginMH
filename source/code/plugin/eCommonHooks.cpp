@@ -22,6 +22,7 @@
 #include "eAchievements.h"
 #include "MHcommon.h"
 #include "classes/eCustomPed.h"
+#include "eMagazineDecals.h"
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
@@ -51,9 +52,13 @@ void InitCommonHooks()
 	InjectHook(0x49D96C, &CPedEx::ExplodeHeadEx, PATCH_CALL);
 	InjectHook(0x49DCE7, &CPedEx::ExplodeHeadEx, PATCH_CALL);
 
-	if (strlen(eSettingsManager::szCustomUserFilesDirectory) > 0)
-	InjectHook(0x4BE990, CommonHooks::GetMyDocumentsDirectory, PATCH_JUMP);
+	if (eSettingsManager::bEnableMagazineDecals)
+		InjectHook(0x428D2C, eMagazineDecals::Hook_CreateClipDecal, PATCH_JUMP);
 
+
+	if (strlen(eSettingsManager::szCustomUserFilesDirectory) > 0)
+		InjectHook(0x4BE990, CommonHooks::GetMyDocumentsDirectory, PATCH_JUMP);
+	
 	InjectHook(0x474A02, CommonHooks::CCheatHandler_SetupForLevel, PATCH_CALL); // open
 	InjectHook(0x473F53, CommonHooks::CCheatHandler_SetupForLevel, PATCH_CALL); // reset
 	InjectHook(0x5F189F, CommonHooks::HookRenderMenu, PATCH_CALL);

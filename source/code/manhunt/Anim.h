@@ -90,7 +90,13 @@ public:
 
 class CPedTorsoAnimFSM {
 public:
-	static void SetRequested(int body, int bodyType, int anim);
-	static void Update(int body, int arg);
-	static int  GetIdleAnimIdFromName(int body, const char* name);
+	char pad[124];
+	int  m_nChangeToState;
+	int  m_nCurrentState;
+	int  m_nLastState;
+	char _pad[8];
+	CEntity* m_pOwner;
+	void SetRequested(int bodyType, int anim);
+	void Update(int arg);
+	int  GetIdleAnimIdFromName(const char* name);
 };

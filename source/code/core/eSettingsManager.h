@@ -19,10 +19,13 @@ public:
 	static bool bEnableExecutionsWithFirearms;
 	static bool bHookExtraWeapons;
 	static bool bHookExtraScriptCommands;
+	static bool bEnableMagazineDecals;
 	static bool bRestoreDamageDirectionIndicator;
 	static bool bDisableExecutionCamera;
 	static bool bUseExclamationMarkForConfirmationIcon;
 	static bool bFixExplodingDecappedHeads;
+
+
 	// anims
 	static bool bHookCustomAnimManager;
 	static bool bCustomAnimManagerUseGlobalFile;

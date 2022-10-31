@@ -7,5 +7,5 @@ int CMemoryHeap::Malloc(int size)
 
 CMemoryHeap * GetMemoryHeap()
 {
-	return	*(CMemoryHeap**)0x67D000;
+	return	(CMemoryHeap*)0x67D000;
 }

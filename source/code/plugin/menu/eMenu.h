@@ -175,6 +175,8 @@ void		CreateCerberusDeagle();
 void		CreateCerberusShotgun();
 void		CreateCerberusShotgunTorch();
 void		CreateCerberusSniper();
+void		CreateDecalTest();
+
 extern eMenu TheMenu;
 
 

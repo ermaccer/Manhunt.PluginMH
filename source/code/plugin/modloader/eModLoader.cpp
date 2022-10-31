@@ -276,3 +276,19 @@ bool eModLoader::IsFileIgnored(std::string & name)
 	}
 	return result;
 }
+
+CClump* eModLoader::GetModloaderClump(const char* name)
+{
+	CClump* clump = nullptr;
+
+	for (unsigned int i = 0; i < eCustomClumpDictManager::m_vecClumps.size(); i++)
+	{
+		clump = eCustomClumpDictManager::m_vecClumps[i]->FindClump(name);
+		if (clump)
+		{
+			eLog::Message(__FUNCTION__, "Loaded model %s!", name);
+			break;
+		}
+	}
+	return clump;
+}

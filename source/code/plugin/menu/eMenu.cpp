@@ -31,6 +31,8 @@
 #include "..\..\manhunt\SpecialFX.h"
 #include "..\..\manhunt\Script.h"
 #include "..\..\manhunt\ColLine.h"
+#include "..\..\manhunt\ParticleModel.h"
+#include "..\..\manhunt\MemoryHeap.h"
 
 #include "..\..\core\eSettingsManager.h"
 #include "..\..\core\eMain.h"
@@ -217,6 +219,7 @@ void eMenu::Initialize()
 	AddToggleCharEntry("Disable Hunters", (char*)&CEntityManager::ms_disableHunters);
 
 	//AddFunctionEntry("Achievement Test", PrintAchievementTest);
+	AddFunctionEntry("Clip Test", CreateDecalTest);
 	AddCategory("Misc.");
 }
 
@@ -1192,6 +1195,34 @@ void CreateCerberusShotgunTorch()
 void CreateCerberusSniper()
 {
 	MakeABodyguard("Cerberus", CT_SNIPER_RIFLE);
+}
+
+void CreateDecalTest()
+{
+	int modelType = 6;
+	CEntity* owner = nullptr;
+	CPlayer* plr = (CPlayer*)CScene::FindPlayer();
+
+	owner = (CEntity*)plr->GetCurrentWeapon()->m_pCollectable;
+	int 	clump = *(int*)(0x791B58);
+	CVector pos = *owner->GetLocation();
+	CVector null = {};
+	float radius = 0.06f;
+	float bounce = 0.0f;
+
+	printf("%p\n", plr->GetCurrentWeapon());
+
+	CParticleModel* particle = CParticleModel::CreateParticle(modelType, owner, (int)clump, &pos, (CMatrix*)owner->GetClumpMatrix(), &null, &null, radius, bounce, 3.0, 0, 0, 0);
+
+	if (particle)
+	{
+		if (CParticleModel::RegisterParticle(particle))
+			CFrontend::PrintDebugInfo(5, "Particle %x ok!", particle);
+	}
+	else
+		CFrontend::PrintDebugInfo(5, "Particle not ok!", particle);
+
+
 }
 
 bool KeyHit(unsigned int keyCode)

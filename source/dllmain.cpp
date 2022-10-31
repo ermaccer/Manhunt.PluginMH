@@ -113,6 +113,7 @@ void Init()
 	//eLaserSights::Initialize();
 
 	InjectHook(0x5E279F, MainHooks::HookWndProc, PATCH_CALL);
+
 	eLog::Message(__FUNCTION__, "PluginMH initialized!");
 
 }

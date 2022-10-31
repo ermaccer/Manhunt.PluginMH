@@ -2,6 +2,7 @@
 #include <vector>
 #include <Windows.h>
 #include <string>
+#include "eCustomClumpDict.h"
 
 #include "..\..\manhunt\Misc.h"
 
@@ -33,6 +34,8 @@ public:
 	static CFile* LoadFile(char* fileName, int* fileBuffer, int* arg3, CFile** pFile, int* fileSize);
 	static bool  CustomFileExists(char* input);
 	static bool  IsFileIgnored(std::string& name);
+
+	static CClump* GetModloaderClump(const char* name);
 
 };
 

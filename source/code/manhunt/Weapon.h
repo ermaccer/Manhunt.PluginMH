@@ -1,6 +1,7 @@
 #pragma once
 #include "Vector.h"
 
+
 enum eWeaponClass {
 	WC_MELEE,
 	WC_MELEE_KICK,
@@ -24,17 +25,17 @@ public:
 
 struct CWeapon
 {
-	void *vTable;
-	CWeaponTypeData *m_TypeData;
-	int field_8;
-	int field_C;
+	void* vTable;
+	CWeaponTypeData* m_TypeData;
+	int m_pOwner;
+	int m_pCollectable;
 	int field_10;
 	int field_14;
 	__declspec(align(16)) int field_20;
-	int field_24;
+	int* m_pShots;
 	int field_28;
 	int field_2C;
-	int field_30;
+	int m_numShots;
 	int field_34;
 	int field_38;
 	int field_3C;

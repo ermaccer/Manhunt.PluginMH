@@ -41,6 +41,11 @@ void CPed::UseCollectable(eCollectableType item, bool createIfDoesntExist)
 	CallMethod<0x4ABB50, CPed*, eCollectableType, bool>(this, item, createIfDoesntExist);
 }
 
+void CPed::SF_TorsoReload()
+{
+	CallMethod<0x4B86E0, CPed*>(this);
+}
+
 RwFrame* CPed::GetBoneFrame(int id)
 {
 	return CallMethodAndReturn<RwFrame*, 0x49D070, CPed*, int>(this, id);

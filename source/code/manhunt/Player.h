@@ -824,3 +824,9 @@ public:
 	int GetExecuteStage();
 
 };
+
+
+class CPlayerHelper : public CPlayer {
+public:
+	void SetModel(char* name);
+};

@@ -2,6 +2,7 @@
 #include <vector>
 #include <Windows.h>
 #include <string>
+#include <unordered_set>
 #include "eCustomClumpDict.h"
 
 #include "..\..\manhunt\Misc.h"
@@ -17,6 +18,9 @@ struct eModEntry {
 	std::vector<std::string> files;
 	std::vector<file_entry> files_struct;
 	std::vector<std::string> files_game;
+	
+	std::unordered_set<std::string> ignored;
+	std::unordered_set<std::string> conficlts;
 };
 
 class eModLoader {

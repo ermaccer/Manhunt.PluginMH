@@ -16,3 +16,5 @@ RpClump* RpClumpRender(RpClump* clump);
 RpHAnimHierarchy* GetAnimHierarchyFromSkinClump(RpClump*);
 
 void CameraSize(RwCamera * camera, RwRect * rect, RwReal viewWindow, RwReal aspectRatio);
+
+RpClump *ClumpRotate(RpClump *clump, RwCamera *camera, RwReal xAngle, RwReal yAngle);

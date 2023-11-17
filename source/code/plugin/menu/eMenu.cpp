@@ -44,6 +44,8 @@
 #include "..\MHcommon.h"
 #include "..\eAchievements.h"
 
+#include "..\..\..\MHWSF.h"
+
 // custom
 
 
@@ -55,6 +57,13 @@ char msgBuffer[256];
 char buffer[256];
 eMenu TheMenu;
 
+#define MENU_ASPECT_RATIO  (16.0f/9.0f)
+#define MENU_SCALE_AR(a)    ((a) * MENU_ASPECT_RATIO / SCREEN_ASPECT_RATIO)
+#define MENU_STRETCH_X(a)   ((a) * GetScrn().fWidthScale)
+#define MENU_SCALE_X(a)     MENU_SCALE_AR(MENU_STRETCH_X(a))
+
+#define MENU_FL(x)           ( MENU_SCALE_X((x)) )
+#define MENU_FROM_LEFT(x)    ( MENU_FL(DEFAULT_SCREEN_WIDTH * (x)) / SCREEN_WIDTH )
 
 
 void eMenu::Initialize()
@@ -640,12 +649,12 @@ void eMenu::DrawMenu()
 		for (int i = 0; i < vCategories.size(); i++)
 		{
 			CFrontend::SetDrawRGBA(0, 0, 0, 255);
-			CFrontend::Print8(vCategories[i].strName.c_str(), 0.052f, 0.102f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::Print8(vCategories[i].strName.c_str(), MENU_FROM_LEFT(0.052f), 0.102f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 			if (i == iCurrentCategory)
 				CFrontend::SetDrawRGBA(51, 153, 255, 255);
 			else
 				CFrontend::SetDrawRGBA(255, 255, 255, 255);
-			CFrontend::Print8(vCategories[i].strName.c_str(), 0.050f, 0.10f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+			CFrontend::Print8(vCategories[i].strName.c_str(), MENU_FROM_LEFT(0.050f), 0.10f + 0.04f * i, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 			// draw sub items
 			if (vCategories[i].bHasItems && m_bCategoryOpen)
@@ -702,20 +711,20 @@ void eMenu::DrawMenu()
 							iActualItemID = j;
 							std::string entry = vCategories[i].vWeapons[j].name.c_str();
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.138f), 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.136f), 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 						}
 						if (vCategories[iCurrentCategory].vPages.size() > 1)
 						{
 							sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(msgBuffer, 0.126f, 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.126f), 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 							CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.124f), 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 						}
 
 					}
@@ -768,20 +777,20 @@ void eMenu::DrawMenu()
 							iActualItemID = j;
 							std::string entry = vCategories[i].vEntities[j].name.c_str();
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.138f), 0.102f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if ((j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)) == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.136f), 0.10f + 0.04f * (j - (vCategories[iCurrentCategory].vPages[iCurrentPage].iStart)), 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 						}
 						if (vCategories[iCurrentCategory].vPages.size() > 1)
 						{
 							sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(msgBuffer, 0.126f, 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.126f), 0.812f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 							CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.124f), 0.810f, 0.7f, 0.7f, 0.0, FONT_TYPE_DEFAULT);
 						}
 
 					}
@@ -848,12 +857,12 @@ void eMenu::DrawMenu()
 									entry.append(" >");
 							}
 							CFrontend::SetDrawRGBA(0, 0, 0, 255);
-							CFrontend::Print8(entry.c_str(), 0.138f, 0.102f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.138f), 0.102f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							if (j == iCurrentItem)
 								CFrontend::SetDrawRGBA(51, 153, 255, 255);
 							else
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-							CFrontend::Print8(entry.c_str(), 0.136f, 0.10f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+							CFrontend::Print8(entry.c_str(), MENU_FROM_LEFT(0.136f), 0.10f + 0.04f * j, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 
 
 
@@ -861,9 +870,9 @@ void eMenu::DrawMenu()
 							{
 								sprintf(msgBuffer, "Page %d/%d", iCurrentPage + 1, vCategories[iCurrentCategory].vPages.size());
 								CFrontend::SetDrawRGBA(0, 0, 0, 255);
-								CFrontend::Print8(msgBuffer, 0.126f, 0.808f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+								CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.126f), 0.808f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 								CFrontend::SetDrawRGBA(255, 255, 255, 255);
-								CFrontend::Print8(msgBuffer, 0.124f, 0.810f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
+								CFrontend::Print8(msgBuffer, MENU_FROM_LEFT(0.124f), 0.810f, 0.6f, 0.6f, 0.0, FONT_TYPE_DEFAULT);
 							}
 						}
 					}

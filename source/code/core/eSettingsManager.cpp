@@ -5,6 +5,7 @@
 
 bool eSettingsManager::bEnableLog;
 bool eSettingsManager::bHideVersionInfo;
+bool eSettingsManager::bOldStyleMenu;
 bool eSettingsManager::bHookSkinLoader;
 bool eSettingsManager::bCustomLevelsLoader;
 bool eSettingsManager::bIncreaseMapLimits;
@@ -37,7 +38,6 @@ bool eSettingsManager::bDisableAutoAim;
 bool eSettingsManager::bRestoreConfirmationIcon;
 bool eSettingsManager::bAllowAllWeaponsExplodeCheat;
 bool eSettingsManager::bHideBSPWarnings;
-bool eSettingsManager::bForceFXMode;
 bool eSettingsManager::bEnableFirstPersonMode;
 int  eSettingsManager::iForcePlayerSkin;
 
@@ -51,6 +51,7 @@ void eSettingsManager::Init()
 	CIniReader reader("");
 	bEnableLog = reader.ReadBoolean("Settings", "bEnableLog", false);
 	bHideVersionInfo = reader.ReadBoolean("Settings", "bHideVersionInfo", false);
+	bOldStyleMenu = reader.ReadBoolean("Settings", "bOldStyleMenu", false);
 	bEnableStatsManager = reader.ReadBoolean("Settings.Features", "bEnableStatsManager", false);
 
 
@@ -80,7 +81,6 @@ void eSettingsManager::Init()
 	bAllowAllWeaponsExplodeCheat = reader.ReadBoolean("Settings.Game", "bAllowAllWeaponsExplodeCheat", false);
 	bRestoreConfirmationIcon = reader.ReadBoolean("Settings.Game", "bRestoreConfirmationIcon", false);
 	bHideBSPWarnings = reader.ReadBoolean("Settings.Game", "bHideBSPWarnings", false);
-	bForceFXMode = reader.ReadBoolean("Settings.Game", "bForceFXMode", false);
 	bEnableFirstPersonMode = reader.ReadBoolean("Settings.Game", "bEnableFirstPersonMode", false);
 	bFixExplodingDecappedHeads = reader.ReadBoolean("Settings.Game", "bFixExplodingDecappedHeads", false);
 	iForcePlayerSkin = reader.ReadInteger("Settings.Game", "iForcePlayerSkin", 0);

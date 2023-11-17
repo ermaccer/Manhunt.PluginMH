@@ -23,6 +23,7 @@
 #include "MHcommon.h"
 #include "classes/eCustomPed.h"
 #include "eMagazineDecals.h"
+#include "..\..\MHWSF.h"
 void HookCommonShutdown()
 {
 	eStatsManager::SaveToFile();
@@ -228,14 +229,13 @@ void CommonHooks::GameStartInit()
 void CommonHooks::HookManTriIcon(float x, float y, float scaleX, float scaleY, int red, int green, int blue, int alpha, int pTexture)
 {
 	CRenderer::DrawQuad2d(x, y, scaleX, scaleY, red, green, blue, alpha, pTexture);
-	// ps2 values
 	 if (*(int*)0x7D343C)
 	 {
 		 if (eSettingsManager::bUseExclamationMarkForConfirmationIcon)
-			 CFrontend::Print8("!", 0.796000049f, 0.902999989f, 0.9f, 0.9f, 0.0, FONT_TYPE_DEFAULT);
+			 CFrontend::Print8("!", x-SCREEN_SCLX(0.044f), y+0.135f, 0.9f, 0.9f, 0.0, FONT_TYPE_DEFAULT);
 		 else
-			 CRenderer::DrawQuad2d(/*xoff+0.042*/0.796000049f, /*yoff+0.406*/0.902999989f, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
-	 }
+			 CRenderer::DrawQuad2d(x-SCREEN_SCLX(0.044f), y+0.135f, 0.06f*(*(float*)0x7D3458), 0.06f, 200, 200, 200, 255, *(int*)0x7D343C);
+	}
 
 }
 

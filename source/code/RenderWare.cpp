@@ -21,6 +21,54 @@ RpClump* RpClumpRender(RpClump * clump)
 	return CallAndReturn<RpClump*, 0x61ABF0, RpClump*>(clump);
 }
 
+RwReal RwV3dLength(const RwV3d * in)
+{
+	return CallAndReturn<RwReal, 0x615430, const RwV3d*>(in);
+}
+
+RwModuleInfo &vectorModule = *(RwModuleInfo*)0x8227B0;
+
+#define RWVECTORGLOBAL(var) (RWPLUGINOFFSET(rwVectorGlobals, RwEngineInstance, vectorModule.globalsOffset)->var)
+
+typedef RwV3d *(*rwVectorMultFn) (RwV3d * pointOut,
+                                  const RwV3d * pointIn,
+                                  const RwMatrix * matrix);
+
+typedef RwV3d *(*rwVectorsMultFn) (RwV3d * pointsOut,
+                                   const RwV3d * pointsIn,
+                                   RwInt32 numPoints,
+                                   const RwMatrix * matrix);
+
+
+typedef struct rwVectorGlobals rwVectorGlobals;
+struct rwVectorGlobals
+{
+     RwSplitBits *SqrtTab;
+     RwSplitBits *InvSqrtTab;
+
+
+    rwVectorMultFn  multPoint;
+    rwVectorsMultFn multPoints;
+    rwVectorMultFn  multVector;
+    rwVectorsMultFn multVectors;
+};
+
+RwV3d *RwV3dTransformPoints(RwV3d * pointsOut, const RwV3d * pointsIn, RwInt32 numPoints, const RwMatrix * matrix)
+{
+   return RWVECTORGLOBAL(multPoints)(pointsOut, pointsIn, numPoints, matrix);
+}
+
+RwMatrix *
+RwMatrixInvert(RwMatrix * matrixOut, const RwMatrix * matrixIn)
+{
+	return CallAndReturn<RwMatrix *, 0x619880, RwMatrix *, const RwMatrix *>(matrixOut, matrixIn);
+}
+
+void _rpAtomicResyncInterpolatedSphere(RpAtomic * atomic)
+{
+	return Call<0x61A390, RpAtomic *>(atomic);
+}
+
 void CameraSize(RwCamera * camera, RwRect * rect, RwReal viewWindow, RwReal aspectRatio)
 {
 	RwVideoMode         videoMode;
@@ -212,4 +260,178 @@ RpHAnimHierarchy* GetAnimHierarchyFromSkinClump(RpClump* clump)
 	RpHAnimHierarchy result;
 	RpClumpForAllAtomics(clump, GetAnimHierarchyCallback, &result);
 	return &result;
+}
+
+
+static RwV3d Zero = {0.0f, 0.0f, 0.0f};
+
+static RpAtomic *
+AtomicAddBSphereCentre(RpAtomic *atomic, void *data)
+{
+    RpGeometry *geometry;
+
+    geometry = RpAtomicGetGeometry(atomic);
+
+    if( geometry )
+    {
+        RwV3d center;
+        RwMatrix *LTM;
+        RpMorphTarget *morphTarget;
+        RwInt32 i, numMorphTargets;
+        RwV3d atomicCentre;
+        RwSphere *clumpSphere;
+
+        clumpSphere = (RwSphere *)data;
+
+        /*
+         * Establish the average centre of this atomic over all morph targets
+         */
+        atomicCentre = Zero;
+
+        numMorphTargets = RpGeometryGetNumMorphTargets (geometry);
+
+        for( i = 0; i < numMorphTargets; i++ )
+        {
+            morphTarget = RpGeometryGetMorphTarget(geometry, i);
+            center = RpMorphTargetGetBoundingSphere(morphTarget)->center;
+            RwV3dAdd(&atomicCentre, &atomicCentre, &center);
+        }
+
+        RwV3dScale(&atomicCentre, &atomicCentre, 1.0f / numMorphTargets);
+
+        /*
+         * Tranform the average centre of the atomic to world space
+         */
+        LTM = RwFrameGetLTM(RpAtomicGetFrame(atomic));
+        RwV3dTransformPoints(&atomicCentre, &atomicCentre, 1, LTM);
+
+        /*
+         * Add the average centre of the atomic up in order to calculate the centre of the clump
+         */
+        RwV3dAdd(&clumpSphere->center, &clumpSphere->center, &atomicCentre);
+    }
+
+    return atomic;
+}
+
+static RpAtomic *
+AtomicCompareBSphere(RpAtomic *atomic, void *data)
+{
+    RpGeometry *geometry;
+
+    geometry = RpAtomicGetGeometry(atomic);
+
+    if( geometry )
+    {
+        RwSphere *sphere, morphTargetSphere;
+        RwV3d tempVec;
+        RpMorphTarget *morphTarget;
+        RwReal dist;
+        RwMatrix *LTM;
+        RwInt32 i, numMorphTargets;
+
+        sphere = (RwSphere *)data;
+
+        LTM = RwFrameGetLTM(RpAtomicGetFrame(atomic));
+
+        numMorphTargets = RpGeometryGetNumMorphTargets(geometry);
+
+        for( i = 0; i < numMorphTargets; i++ )
+        {
+            morphTarget = RpGeometryGetMorphTarget(geometry, i);
+            morphTargetSphere = *RpMorphTargetGetBoundingSphere(morphTarget);
+
+            RwV3dTransformPoints(&morphTargetSphere.center,
+                &morphTargetSphere.center, 1, LTM);
+
+            RwV3dSub(&tempVec, &morphTargetSphere.center, &sphere->center);
+
+            dist = RwV3dLength(&tempVec) + morphTargetSphere.radius;
+            if( dist > sphere->radius )
+            {
+                sphere->radius = dist;
+            }
+        }
+    }
+
+    return atomic;
+}
+
+
+RpClump *RpClumpGetBoundingSphere(RpClump *Clump, RwSphere *Sphere, bool UseLTM)
+{
+	RwMatrix matrix;
+	RwSphere sphere = { 0.0f, 0.0f, 0.0f, 0.0f };
+	 
+	if ( Clump == NULL || Sphere == NULL )
+		return NULL;
+  
+	Sphere->radius = 0.0f;
+	Sphere->center.x = 0.0f;
+	Sphere->center.y = 0.0f;
+	Sphere->center.z = 0.0f;
+	
+	RpClumpForAllAtomics(Clump, AtomicAddBSphereCentre, &sphere);
+	
+	RwV3dScale(&sphere.center, &sphere.center, 1.0f);
+
+	RpClumpForAllAtomics(Clump, AtomicCompareBSphere, &sphere);
+	
+	RwMatrixInvert(&matrix, RwFrameGetLTM(RpClumpGetFrame(Clump)));
+	
+	RwV3dTransformPoints(&sphere.center, &sphere.center, 1, &matrix);
+
+	RwSphereAssign(Sphere, &sphere);
+	  
+	return Clump;
+}
+
+RpClump *
+ClumpRotate(RpClump *clump, RwCamera *camera, RwReal xAngle, RwReal yAngle)
+{
+    RwFrame *clumpFrame = NULL;
+    RwFrame *cameraFrame = NULL;
+    RwMatrix *cameraMatrix = NULL;
+    RwMatrix *clumpMatrix = NULL;
+	RwSphere ClumpSphere;
+    
+    RwV3d right, up, pos;
+
+    /*
+     * Rotate clump about it's origin...
+     */           
+    clumpFrame = RpClumpGetFrame(clump);
+    cameraFrame = RwCameraGetFrame(camera); 
+     
+    clumpMatrix = RwFrameGetMatrix(clumpFrame);
+    cameraMatrix = RwFrameGetMatrix(cameraFrame);
+
+    right = *RwMatrixGetRight(cameraMatrix);
+    up = *RwMatrixGetUp(cameraMatrix);
+
+    //pos = *RwMatrixGetPos(clumpMatrix);
+	
+	RpClumpGetBoundingSphere(clump, &ClumpSphere, false);
+	
+	RwV3dTransformPoints(&pos, &(ClumpSphere.center), 1, RwFrameGetLTM(clumpFrame));
+
+    /*
+     * Translate back to the origin...
+     */
+    RwV3dScale(&pos, &pos, -1.0f);
+    RwFrameTranslate(clumpFrame, &pos, rwCOMBINEPOSTCONCAT);
+
+    /*
+     * Do the rotation...
+     */
+    RwFrameRotate(clumpFrame, &up, xAngle, rwCOMBINEPOSTCONCAT);
+    RwFrameRotate(clumpFrame, &right, yAngle, rwCOMBINEPOSTCONCAT);
+
+    /*
+     * And translate back...
+     */
+    RwV3dScale(&pos, &pos, -1.0f);
+    RwFrameTranslate(clumpFrame, &pos, rwCOMBINEPOSTCONCAT);
+
+    return clump;
 }

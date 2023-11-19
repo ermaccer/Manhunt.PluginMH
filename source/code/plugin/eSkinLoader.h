@@ -21,6 +21,7 @@ public:
 	static bool ms_bSkinLoaded;
 	static RpClump* ms_pPlayerClump;
 	static float ms_fPlayerRotation;
+	static int ms_iLastCharacterID;
 	static int ms_iCurrentSkin;
 	static int ms_iCurrentSkinAdjust;
 	static int ms_iCurrentSkinPos;
@@ -28,6 +29,9 @@ public:
 	static void InitHooks();
 	static int	ReadFolder(const char* folder);
 	static int  Hook(int skinID);
+	static void HookRabbitCheat();
+	static void HookMonkeyCheat();
+	static void HookPiggsyCheat();
 
 	static void LoadSkin(char* file);
 
@@ -36,6 +40,7 @@ public:
 
 
 
+	static void LoadDff(const char* dffpath, const char* txdpath);
 	static void LoadPlayerDff();
 	static void ReloadPlayerDff(int id);
 

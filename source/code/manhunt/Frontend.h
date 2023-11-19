@@ -124,6 +124,8 @@ public:
 	static int  GetHoveredItem();
 	static void SetDrawRGBA(int r, int g, int b, int a);
 	static void Print8(const char* text, float x, float y, float sizex, float sizey, float unk, eFontType font);
+	static float GetTextWidth8(char *text, float sizex, eFontType font);
+	static float GetFontHeight(eFontType font, float sizey);
 	static void SetMenuBackground(char* file);
 	static void PrintInfo(wchar_t* button1, wchar_t* button2, wchar_t* button3, wchar_t* button4);
 	static int  GetInfoBarInput3();

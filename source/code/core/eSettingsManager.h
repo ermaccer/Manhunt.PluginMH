@@ -8,6 +8,7 @@ public:
 	static bool	bEnableStatsManager;
 	static bool bHookSkinLoader;
 	static bool bHideVersionInfo;
+	static bool bOldStyleMenu;
 	static bool bCustomLevelsLoader;
 
 
@@ -48,7 +49,6 @@ public:
 	static bool bRestoreConfirmationIcon;
 	static bool bHideBSPWarnings;
 	static int  iForcePlayerSkin;
-	static bool bForceFXMode;
 	static bool bEnableFirstPersonMode;
 
 	// keys

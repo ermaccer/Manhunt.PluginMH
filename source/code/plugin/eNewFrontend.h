@@ -50,6 +50,8 @@ public:
 	static int   m_allStatsPages;
 	static int   m_leftoverStatsPage;
 	static int   m_nCurrentStatsPage;
+	static float m_fMaxStatsWidth;
+	static int   m_allModsPages;
 	static int   m_nCurrentModsPage;
 	static wchar_t  m_szStatsBuffer[128];
 	static void StatsMenu();
@@ -69,10 +71,15 @@ public:
 
 	static int m_nCurrentSkinPos;
 	static int m_nSkinAdjustID;
+	static int m_allSkinsPages;
+	static int m_nCurrentSkinPage;
+	static float m_fSkinRotationX;
+	static float m_fSkinRotationY;
 
 	static void Skins();
 	static void ProcessSkins();
-
+	static void RenderSkin();
+	static void UpdateSkinId();
 	static void AddSkinButton(int id, int pos, float offset);
 
 

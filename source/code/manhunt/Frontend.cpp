@@ -75,6 +75,16 @@ void CFrontend::Print8(const char * text, float x, float y, float sizex, float s
 	Call<0x5E55E0, const char*, float, float, float, float, float, eFontType>(text, x, y, sizex, sizey, unk, font);
 }
 
+float CFrontend::GetTextWidth8(char *text, float sizex, eFontType font)
+{
+	return CallAndReturn<float, 0x5E5670, const char *, float, eFontType>(text, sizex, font);
+}
+
+float CFrontend::GetFontHeight(eFontType font, float sizey)
+{
+	return CallAndReturn<float, 0x5FBFC0, eFontType, float>(font, sizey);
+}
+
 void CFrontend::SetMenuBackground(char * file)
 {
 	Call<0x5D7DD0, char*, int>(file, 0x7D38E0);

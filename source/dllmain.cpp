@@ -86,9 +86,6 @@ void Init()
 	if (eSettingsManager::bHookCustomAnimManager)
 		CCustomAnimManager::InitHooks();
 
-	if (eSettingsManager::bForceFXMode)
-		Nop(0x5E9180, 10);
-
 	if (eSettingsManager::bEnableFirstPersonMode)
 	{
 		// disable reset

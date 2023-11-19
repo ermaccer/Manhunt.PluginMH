@@ -168,6 +168,44 @@ void eModLoader::ScanFolderForFiles(const char* folder)
 	}
 	else
 		eLog::Message(__FUNCTION__, "Ignore list is not present!");
+	
+	
+	// scan for conflicts
+	
+	for (unsigned int i = 0; i < m_vMods.size(); i++)
+	{
+		eModEntry &thismod = m_vMods[i];
+		
+		for (unsigned int j = 0; j < thismod.files.size(); j++  )
+		{
+			std::string file = splitString(thismod.files[j], true);
+			if (IsFileIgnored(file))
+				thismod.ignored.insert(thismod.files[j]);
+		}
+		
+		for (unsigned int j = 0; j < m_vMods.size(); j++)
+		{
+			if ( j == i )
+				continue;
+			
+			eModEntry &randommod = m_vMods[j];
+			
+			for (unsigned int a = 0; a < randommod.files.size(); a++)
+			{
+				if (_strcmpi(getExtension(randommod.files_game[a]).c_str(), "txt") == 0)
+					continue;
+				
+				for (unsigned int b = 0; b < thismod.files.size(); b++)
+				{
+					if (_strcmpi(getExtension(thismod.files_game[b]).c_str(), "txt") == 0)
+						continue;
+			
+					if (strcmp(randommod.files_game[a].c_str(), thismod.files_game[b].c_str()) == 0)
+						thismod.conficlts.insert(randommod.files[a]);
+				}
+			}
+		}
+	}
 
 }
 
@@ -268,7 +306,7 @@ bool eModLoader::IsFileIgnored(std::string & name)
 	bool result = false;
 	for (unsigned int i = 0; i < ignoredFiles.size(); i++)
 	{
-		if (strcmp(name.c_str(), ignoredFiles[i].c_str()) == 0)
+		if (_strcmpi(name.c_str(), ignoredFiles[i].c_str()) == 0)
 		{
 			result = true;
 			break;

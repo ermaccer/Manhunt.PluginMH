@@ -66,7 +66,7 @@ void eNewFrontend::InitHooks()
 
 	// lcd display
 	if ( !eSettingsManager::bOldStyleMenu )
-		Nop(0x5D7504, 5);
+		InjectHook(0x5D74B0, 0x5D7511, PATCH_JUMP);
 	// lines?
 	InjectHook(0x5D77B1, eNewFrontend::HookDrawRasterLineFX, PATCH_CALL);
 	InjectHook(0x4D7A91, eNewFrontend::HookCreateMenuLight, PATCH_CALL);
